@@ -14,7 +14,11 @@ import {
   Sunset,
   School,
   History,
-  RotateCcw
+  RotateCcw,
+  UserCheck,
+  LogOut,
+  ShieldCheck,
+  Edit3
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -36,7 +40,12 @@ export default function Dashboard() {
     showToast,
     timetableVersions,
     activeVersionId,
-    restoreTimetableVersion
+    restoreTimetableVersion,
+    institution,
+    currentUser,
+    rolePermissions,
+    logout,
+    setIsLoginModalOpen
   } = useTimetable();
 
   const morningClassesCount = classes.filter((c) => c.shift === 'Morning Shift').length;
@@ -65,6 +74,117 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* Admin Dashboard: School Details & Logged-In User Profile Widget */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* School Information Card */}
+        <div className="lg:col-span-2 glass-panel p-5 rounded-2xl border-2 border-indigo-300 dark:border-indigo-800/80 bg-white dark:bg-slate-900 shadow-xl space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-center space-x-3">
+              <div className="h-10 w-10 rounded-xl bg-indigo-700 text-white flex items-center justify-center shadow-md">
+                <School className="h-6 w-6" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase text-indigo-700 dark:text-amber-300 tracking-wider">
+                  ACTIVE ACADEMIC INSTITUTION
+                </span>
+                <h2 className="text-lg font-black text-slate-950 dark:text-white leading-tight">
+                  {institution.name}
+                </h2>
+              </div>
+            </div>
+            <button
+              onClick={() => navigateTo('setup', 'tab-1')}
+              className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-900 dark:text-indigo-200 text-xs font-black rounded-xl border border-indigo-300 dark:border-indigo-700 transition-all flex items-center space-x-1 cursor-pointer"
+            >
+              <Edit3 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Modify Setup</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-500 font-bold block">Board & Medium</span>
+              <p className="font-black text-slate-900 dark:text-slate-100 truncate">{institution.board}</p>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-500 font-bold block">Academic Year</span>
+              <p className="font-black text-slate-900 dark:text-slate-100">{institution.academicYear}</p>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-500 font-bold block">School Code</span>
+              <p className="font-black text-indigo-700 dark:text-indigo-300 font-mono">{institution.code}</p>
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+              <span className="text-[10px] text-slate-500 font-bold block">Principal Head</span>
+              <p className="font-black text-slate-900 dark:text-slate-100 truncate">{institution.principalName}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Admin / User Profile Details Card */}
+        <div className="glass-panel p-5 rounded-2xl border-2 border-emerald-300 dark:border-emerald-800/80 bg-white dark:bg-slate-900 shadow-xl flex flex-col justify-between space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+            <div className="flex items-center space-x-2.5">
+              <div className="h-9 w-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center shadow font-black text-xs uppercase">
+                {currentUser?.username ? currentUser.username.slice(0, 2) : 'AD'}
+              </div>
+              <div>
+                <p className="text-xs font-black text-slate-950 dark:text-white leading-tight">
+                  {currentUser?.name || 'Administrator'}
+                </p>
+                <p className="text-[10px] text-indigo-700 dark:text-indigo-300 font-mono font-bold">
+                  @{currentUser?.username || 'admin'}
+                </p>
+              </div>
+            </div>
+
+            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase border ${
+              currentUser?.role === 'admin'
+                ? 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950 dark:text-amber-200'
+                : currentUser?.role === 'hod'
+                ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-950 dark:text-purple-200'
+                : 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200'
+            }`}>
+              {currentUser?.role || 'admin'}
+            </span>
+          </div>
+
+          <div className="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-xs space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-extrabold text-emerald-900 dark:text-emerald-200 uppercase">
+                Session Status:
+              </span>
+              <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-300">
+                🟢 Signed In
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-700 dark:text-slate-300 font-bold leading-tight">
+              {rolePermissions[currentUser?.role]?.description || 'Full System Administration'}
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-2 pt-1">
+            <button
+              onClick={() => navigateTo('settings')}
+              className="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 text-xs font-black rounded-xl border border-slate-300 dark:border-slate-600 transition-all text-center cursor-pointer"
+            >
+              Manage Users
+            </button>
+
+            <button
+              onClick={logout}
+              className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-black rounded-xl border border-rose-300 dark:border-rose-800 transition-all flex items-center space-x-1 cursor-pointer"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Welcome Banner & Dual Shift Info */}
       <div className="relative overflow-hidden rounded-2xl p-6 bg-gradient-to-r from-indigo-700 via-purple-700 to-indigo-800 text-white shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
