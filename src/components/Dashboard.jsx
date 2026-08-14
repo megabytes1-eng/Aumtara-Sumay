@@ -80,8 +80,12 @@ export default function Dashboard() {
         <div className="lg:col-span-2 glass-panel p-5 rounded-2xl border-2 border-indigo-300 dark:border-indigo-800/80 bg-white dark:bg-slate-900 shadow-xl space-y-3">
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-xl bg-indigo-700 text-white flex items-center justify-center shadow-md">
-                <School className="h-6 w-6" />
+              <div className="h-10 w-10 rounded-xl bg-indigo-700 text-white flex items-center justify-center shadow-md overflow-hidden shrink-0">
+                {institution.logoUrl ? (
+                  <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain bg-white p-0.5" />
+                ) : (
+                  <School className="h-6 w-6" />
+                )}
               </div>
               <div>
                 <span className="text-[10px] font-black uppercase text-indigo-700 dark:text-amber-300 tracking-wider">

@@ -43,8 +43,12 @@ export default function Navbar() {
             onClick={() => setActiveTab('dashboard')}
             className="flex items-center space-x-3 cursor-pointer group select-none"
           >
-            <div className="h-11 w-11 rounded-2xl bg-indigo-700 dark:bg-indigo-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-indigo-800">
-              <Calendar className="h-6 w-6 text-white" />
+            <div className="h-11 w-11 rounded-2xl bg-indigo-700 dark:bg-indigo-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-indigo-800 overflow-hidden shrink-0">
+              {institution.logoUrl ? (
+                <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain bg-white p-0.5" />
+              ) : (
+                <Calendar className="h-6 w-6 text-white" />
+              )}
             </div>
             <div className="flex flex-col justify-center">
               <div className="flex items-center leading-none">

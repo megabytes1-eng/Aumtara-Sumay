@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTimetable } from '../context/TimetableContext';
 import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin } from 'lucide-react';
 
@@ -12,6 +12,38 @@ export default function InstitutionalSetup() {
     setActiveSubTab,
     showToast
   } = useTimetable();
+
+  const logoFileInputRef = useRef(null);
+
+  const handleLogoFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const MAX_SIZE_MB = 2;
+    const maxSizeBytes = MAX_SIZE_MB * 1024 * 1024; // 2MB
+
+    if (file.size > maxSizeBytes) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      showToast(`Selected file size (${fileSizeMB} MB) exceeds maximum limit of ${MAX_SIZE_MB} MB! Please choose a smaller image.`, 'warning');
+      e.target.value = '';
+      return;
+    }
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml', 'image/webp'];
+    if (!validTypes.includes(file.type.toLowerCase())) {
+      showToast('Unsupported logo file type! Allowed formats: PNG, JPG, JPEG, SVG, or WEBP.', 'warning');
+      e.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      setInstitution((prev) => ({ ...prev, logoUrl: evt.target.result }));
+      showToast('School logo image uploaded successfully!', 'success');
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   // Local editable state initialized from global bellSchedule
   const [shifts, setShifts] = useState(bellSchedule.shifts || []);
@@ -349,53 +381,101 @@ export default function InstitutionalSetup() {
             </div>
           </div>
 
-          {/* School Logo Section */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-300 dark:border-slate-700 space-y-3">
-            <label className="block text-xs font-black text-slate-900 dark:text-slate-200">
-              School Logo (Upload Image or Direct Image URL)
-            </label>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl border-2 border-indigo-500 bg-white dark:bg-slate-900 flex items-center justify-center p-1 overflow-hidden shrink-0 shadow-md">
-                {institution.logoUrl ? (
-                  <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain" />
-                ) : (
-                  <School className="h-8 w-8 text-indigo-700 dark:text-indigo-400" />
-                )}
+          {/* School Logo Management Card */}
+          <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-2 border-indigo-200 dark:border-indigo-800/60 space-y-4 shadow-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
+              <div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white flex items-center space-x-2">
+                  <Image className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <span>School / Institution Branding Logo</span>
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">
+                  Upload official school logo image or paste image web link.
+                </p>
               </div>
-              <div className="flex-1 space-y-2">
-                <input
-                  type="text"
-                  value={institution.logoUrl || ''}
-                  onChange={(e) => setInstitution({ ...institution, logoUrl: e.target.value })}
-                  placeholder="Paste image URL (e.g. https://domain.com/logo.png)"
-                  className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-bold text-xs rounded-xl focus:outline-none focus:border-indigo-600"
-                />
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (evt) => {
-                          setInstitution({ ...institution, logoUrl: evt.target.result });
-                          showToast('School Logo image uploaded successfully!', 'success');
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                    className="text-xs text-slate-600 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-700 file:text-white hover:file:bg-indigo-800 cursor-pointer"
-                  />
+
+              {institution.logoUrl ? (
+                <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 border border-emerald-400 text-[10px] font-black self-start sm:self-auto">
+                  ● Custom Logo Active
+                </span>
+              ) : (
+                <span className="px-2.5 py-1 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-[10px] font-black self-start sm:self-auto">
+                  ○ Default System Icon
+                </span>
+              )}
+            </div>
+
+            {/* Hidden File Input */}
+            <input
+              type="file"
+              ref={logoFileInputRef}
+              accept="image/png, image/jpeg, image/jpg, image/svg+xml, image/webp"
+              onChange={handleLogoFileUpload}
+              className="hidden"
+            />
+
+            <div className="flex flex-col md:flex-row md:items-center gap-5">
+              {/* Logo Preview Badge */}
+              <div className="relative group shrink-0">
+                <div className="h-20 w-20 rounded-2xl border-2 border-indigo-500 bg-white dark:bg-slate-900 flex items-center justify-center p-1.5 overflow-hidden shadow-lg">
+                  {institution.logoUrl ? (
+                    <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain" />
+                  ) : (
+                    <School className="h-10 w-10 text-indigo-700 dark:text-indigo-400" />
+                  )}
+                </div>
+              </div>
+
+              {/* Upload & Restrictions Details */}
+              <div className="flex-1 space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div>
+                    <span className="text-slate-400 block font-extrabold">Supported File Formats:</span>
+                    <strong className="text-indigo-700 dark:text-indigo-300">.PNG, .JPG, .JPEG, .SVG, .WEBP</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block font-extrabold">Maximum Allowed File Size:</span>
+                    <strong className="text-rose-600 dark:text-rose-400">Max 2.0 MB (2,048 KB)</strong>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => logoFileInputRef.current && logoFileInputRef.current.click()}
+                    className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center space-x-1.5 border border-indigo-900 cursor-pointer hover:scale-105"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    <span>{institution.logoUrl ? 'Modify / Replace Logo' : '+ Add School Logo'}</span>
+                  </button>
+
                   {institution.logoUrl && (
                     <button
                       type="button"
-                      onClick={() => setInstitution({ ...institution, logoUrl: '' })}
-                      className="text-xs font-black text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                      onClick={() => {
+                        setInstitution({ ...institution, logoUrl: '' });
+                        showToast('School logo removed.', 'warning');
+                      }}
+                      className="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 text-xs font-black rounded-xl border border-rose-300 dark:border-rose-800 transition-all flex items-center space-x-1 cursor-pointer"
                     >
-                      Remove Logo
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span>Remove Logo</span>
                     </button>
                   )}
+                </div>
+
+                {/* Direct Image Web URL Option */}
+                <div className="space-y-1 pt-1">
+                  <label className="block text-[11px] font-black text-slate-700 dark:text-slate-300">
+                    Or Enter Image Direct Web Link (URL):
+                  </label>
+                  <input
+                    type="text"
+                    value={institution.logoUrl || ''}
+                    onChange={(e) => setInstitution({ ...institution, logoUrl: e.target.value })}
+                    placeholder="e.g. https://my-school.edu/logo.png"
+                    className="w-full px-3.5 py-1.5 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-bold text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+                  />
                 </div>
               </div>
             </div>
