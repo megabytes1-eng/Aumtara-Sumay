@@ -59,6 +59,7 @@ export default function Settings() {
     currentUser
   } = useTimetable();
 
+  const [restoreSummary, setRestoreSummary] = useState(null);
   const [editingRoleKey, setEditingRoleKey] = useState(null);
   const [roleTitleInput, setRoleTitleInput] = useState('');
   const [roleDescInput, setRoleDescInput] = useState('');
@@ -366,7 +367,7 @@ export default function Settings() {
                         <td key={roleKey} className="p-3.5 text-center border-l border-slate-200 dark:border-slate-800">
                           <input
                             type="checkbox"
-                            checked={rolePermissions[roleKey][perm.key]}
+                            checked={rolePermissions?.[roleKey]?.[perm.key] || false}
                             onChange={(e) => updateRolePermission(roleKey, perm.key, e.target.checked)}
                             className="h-4 w-4 rounded border-2 border-slate-400 text-indigo-700 focus:ring-indigo-500 cursor-pointer"
                           />
