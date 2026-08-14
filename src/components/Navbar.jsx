@@ -13,7 +13,9 @@ import {
   HelpCircle,
   LogIn,
   LogOut,
-  School
+  School,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
@@ -30,7 +32,9 @@ export default function Navbar() {
     setSelectedShiftFilter,
     currentUser,
     logout,
-    setIsLoginModalOpen
+    setIsLoginModalOpen,
+    isSidebarOpen,
+    toggleSidebar
   } = useTimetable();
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -38,8 +42,20 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-800 px-6 py-2.5 shadow-md">
       <div className="flex items-center justify-between flex-wrap md:flex-nowrap gap-3">
-        {/* Brand & Title */}
+        {/* Brand & Sidebar Toggle */}
         <div className="flex items-center space-x-3 shrink-0">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-xl bg-indigo-50 dark:bg-slate-800 text-indigo-700 dark:text-amber-400 hover:bg-indigo-100 dark:hover:bg-slate-700 border-2 border-indigo-200 dark:border-slate-700 transition-all cursor-pointer shadow-sm hover:scale-105"
+            title={isSidebarOpen ? 'Hide Sidebar (Expand Matrix View)' : 'Show Sidebar'}
+          >
+            {isSidebarOpen ? (
+              <PanelLeftClose className="h-5 w-5" />
+            ) : (
+              <PanelLeftOpen className="h-5 w-5 text-indigo-600 dark:text-amber-300 animate-pulse" />
+            )}
+          </button>
+
           <div
             onClick={() => setActiveTab('dashboard')}
             className="flex items-center space-x-3 cursor-pointer group select-none"

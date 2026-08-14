@@ -24,12 +24,13 @@ import {
   School,
   BarChart3,
   HelpCircle,
-  History
+  History,
+  PanelLeftClose
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
 export default function Sidebar() {
-  const { activeTab, setActiveTab, activeSubTab, setActiveSubTab, conflicts, timetableVersions } = useTimetable();
+  const { activeTab, setActiveTab, activeSubTab, setActiveSubTab, conflicts, timetableVersions, isSidebarOpen, toggleSidebar } = useTimetable();
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
@@ -52,14 +53,25 @@ export default function Sidebar() {
     setActiveSubTab(subtab);
   };
 
+  if (!isSidebarOpen) return null;
+
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-800 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-sm">
       <div className="p-4 space-y-5">
         {/* Navigation Group: Main */}
         <div>
-          <p className="text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase px-3 mb-2">
-            Main Command
-          </p>
+          <div className="flex items-center justify-between px-3 mb-2">
+            <p className="text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase">
+              Main Command
+            </p>
+            <button
+              onClick={toggleSidebar}
+              className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-amber-300 transition-colors"
+              title="Hide Sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          </div>
           <button
             onClick={() => handleNavClick('dashboard')}
             className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-black transition-all ${

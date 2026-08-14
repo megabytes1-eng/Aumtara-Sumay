@@ -18,6 +18,9 @@ export function TimetableProvider({ children }) {
   const [activeSubTab, setActiveSubTab] = useState('');
   const [themeMode, setThemeMode] = useState('light');
   const [selectedShiftFilter, setSelectedShiftFilter] = useState('Morning Shift'); // Always default to Morning Shift on open/login
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   // Master Data State
   const [institution, setInstitution] = useState(initialInstitution);
@@ -556,6 +559,9 @@ export function TimetableProvider({ children }) {
     setThemeMode,
     selectedShiftFilter,
     setSelectedShiftFilter,
+    isSidebarOpen,
+    setIsSidebarOpen,
+    toggleSidebar,
     activeVersionId,
     setActiveVersionId,
     timetableVersions,
