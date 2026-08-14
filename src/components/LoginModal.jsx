@@ -106,7 +106,7 @@ export default function LoginModal({ isOpen, onClose }) {
           <p className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide text-center">
             🔑 1-Click Quick Login Default Accounts:
           </p>
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <button
               type="button"
               onClick={() => handleQuickLogin('admin', 'admin123')}
@@ -141,18 +141,6 @@ export default function LoginModal({ isOpen, onClose }) {
                 <span>Faculty Teacher</span>
               </div>
               <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-bold">teacher / teacher123</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('guest', 'guest123')}
-              className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-300 dark:border-blue-700 hover:bg-blue-100 transition-colors text-left space-y-0.5 cursor-pointer"
-            >
-              <div className="flex items-center space-x-1 font-black text-blue-900 dark:text-blue-200 text-[11px]">
-                <Eye className="h-3.5 w-3.5 text-blue-600" />
-                <span>Guest / Student</span>
-              </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-bold">guest / guest123</p>
             </button>
           </div>
         </div>

@@ -249,8 +249,7 @@ export function TimetableProvider({ children }) {
   const defaultAccounts = [
     { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
     { username: 'hod', password: 'hod123', name: 'Prof. Ramanujan Sharma (HOD)', role: 'hod' },
-    { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' },
-    { username: 'guest', password: 'guest123', name: 'Guest Student View', role: 'faculty' }
+    { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' }
   ];
 
   const [currentUser, setCurrentUser] = useState({
