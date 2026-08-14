@@ -367,16 +367,16 @@ export default function TimetableGenerator() {
                         slotKey = `${day}_${period}_${selectedEntityId}`;
                         slot = timetable[slotKey];
                       } else if (filterType === 'teacher') {
-                        const entry = Object.entries(timetable).find(
-                          ([k, s]) => s.day === day && s.period === period && s.teacherId === selectedEntityId
+                        const entry = Object.entries(timetable || {}).find(
+                          ([k, s]) => s && s.day === day && s.period === period && s.teacherId === selectedEntityId
                         );
                         if (entry) {
                           slotKey = entry[0];
                           slot = entry[1];
                         }
                       } else if (filterType === 'room') {
-                        const entry = Object.entries(timetable).find(
-                          ([k, s]) => s.day === day && s.period === period && s.roomId === selectedEntityId
+                        const entry = Object.entries(timetable || {}).find(
+                          ([k, s]) => s && s.day === day && s.period === period && s.roomId === selectedEntityId
                         );
                         if (entry) {
                           slotKey = entry[0];

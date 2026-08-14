@@ -233,8 +233,10 @@ export default function Dashboard() {
                             style={{ backgroundColor: `${slot.subjectColor}25`, borderColor: slot.subjectColor }}
                             className="p-2 rounded-xl border-2 text-[11px] font-black leading-tight shadow-sm text-slate-950 dark:text-white"
                           >
-                            <p className="font-black text-slate-950 dark:text-white">{slot.subjectCode}</p>
-                            <p className="text-[10px] text-slate-900 dark:text-slate-200 font-extrabold truncate">{slot.teacherName.split(' ')[1] || slot.teacherName}</p>
+                            <p className="font-black text-slate-950 dark:text-white">{slot.subjectCode || 'SUB'}</p>
+                            <p className="text-[10px] text-slate-900 dark:text-slate-200 font-extrabold truncate">
+                              {slot.teacherName ? (slot.teacherName.split(' ')[1] || slot.teacherName) : 'Staff'}
+                            </p>
                           </div>
                         ) : (
                           <span className="text-slate-400 dark:text-slate-600 font-black font-mono">-</span>
