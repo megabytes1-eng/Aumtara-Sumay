@@ -109,16 +109,6 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* 1-Click Load Sample Data */}
-          <button
-            onClick={loadSampleData}
-            title="Preload Morning (CBSE) & Afternoon (State Board) sample data"
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-slate-100 text-xs font-black rounded-xl border border-slate-300 dark:border-slate-600 transition-all shadow-sm"
-          >
-            <Database className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
-            <span className="hidden sm:inline">Reload Sample Data</span>
-          </button>
-
           {/* Solve Conflicts */}
           <button
             onClick={solveAllConflicts}
