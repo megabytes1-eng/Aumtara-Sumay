@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles } from 'lucide-react';
+import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin } from 'lucide-react';
 
 export default function InstitutionalSetup() {
   const {
@@ -228,48 +228,176 @@ export default function InstitutionalSetup() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             <div>
-              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">Institution Name</label>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                School / Institution Name <span className="text-rose-500 font-bold">*</span>
+              </label>
               <input
                 type="text"
-                value={institution.name}
+                value={institution.name || ''}
                 onChange={(e) => setInstitution({ ...institution, name: e.target.value })}
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none focus:border-indigo-600"
+                placeholder="e.g. Apex State & Central Academy"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">Curriculum Boards Served</label>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                School Code / Affiliation ID
+              </label>
               <input
                 type="text"
-                value={institution.board}
+                value={institution.code || ''}
+                onChange={(e) => setInstitution({ ...institution, code: e.target.value })}
+                placeholder="e.g. ASCA-2026"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-indigo-700 dark:text-indigo-300 font-mono font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Academic Year
+              </label>
+              <input
+                type="text"
+                value={institution.academicYear || ''}
+                onChange={(e) => setInstitution({ ...institution, academicYear: e.target.value })}
+                placeholder="e.g. 2026-2027"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Principal / Head Name
+              </label>
+              <input
+                type="text"
+                value={institution.principalName || ''}
+                onChange={(e) => setInstitution({ ...institution, principalName: e.target.value })}
+                placeholder="e.g. Dr. Sarah Jenkins"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Curriculum Boards Served
+              </label>
+              <input
+                type="text"
+                value={institution.board || ''}
                 onChange={(e) => setInstitution({ ...institution, board: e.target.value })}
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none focus:border-indigo-600"
+                placeholder="e.g. State Board & CBSE (Dual Board)"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">Instruction Medium</label>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Instruction Medium
+              </label>
               <input
                 type="text"
-                value={institution.medium}
+                value={institution.medium || ''}
                 onChange={(e) => setInstitution({ ...institution, medium: e.target.value })}
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none focus:border-indigo-600"
+                placeholder="e.g. English Medium"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">Academic Shift Mode</label>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Academic Term
+              </label>
+              <input
+                type="text"
+                value={institution.term || ''}
+                onChange={(e) => setInstitution({ ...institution, term: e.target.value })}
+                placeholder="e.g. Term 1 (Autumn)"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Academic Shift Mode
+              </label>
               <select
-                value={institution.shiftMode}
+                value={institution.shiftMode || 'Dual Shift (Morning & Afternoon)'}
                 onChange={(e) => setInstitution({ ...institution, shiftMode: e.target.value })}
-                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none focus:border-indigo-600"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
               >
                 <option value="Dual Shift (Morning & Afternoon)">Dual Shift (Morning CBSE & Afternoon State Board)</option>
                 <option value="Single Shift">Single Shift Only</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                Campus Address / Location
+              </label>
+              <input
+                type="text"
+                value={institution.address || ''}
+                onChange={(e) => setInstitution({ ...institution, address: e.target.value })}
+                placeholder="e.g. 100 Knowledge Boulevard, Education City"
+                className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+              />
+            </div>
+          </div>
+
+          {/* School Logo Section */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border-2 border-slate-300 dark:border-slate-700 space-y-3">
+            <label className="block text-xs font-black text-slate-900 dark:text-slate-200">
+              School Logo (Upload Image or Direct Image URL)
+            </label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="h-16 w-16 rounded-2xl border-2 border-indigo-500 bg-white dark:bg-slate-900 flex items-center justify-center p-1 overflow-hidden shrink-0 shadow-md">
+                {institution.logoUrl ? (
+                  <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain" />
+                ) : (
+                  <School className="h-8 w-8 text-indigo-700 dark:text-indigo-400" />
+                )}
+              </div>
+              <div className="flex-1 space-y-2">
+                <input
+                  type="text"
+                  value={institution.logoUrl || ''}
+                  onChange={(e) => setInstitution({ ...institution, logoUrl: e.target.value })}
+                  placeholder="Paste image URL (e.g. https://domain.com/logo.png)"
+                  className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-bold text-xs rounded-xl focus:outline-none focus:border-indigo-600"
+                />
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                          setInstitution({ ...institution, logoUrl: evt.target.result });
+                          showToast('School Logo image uploaded successfully!', 'success');
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="text-xs text-slate-600 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-indigo-700 file:text-white hover:file:bg-indigo-800 cursor-pointer"
+                  />
+                  {institution.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setInstitution({ ...institution, logoUrl: '' })}
+                      className="text-xs font-black text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
+                    >
+                      Remove Logo
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

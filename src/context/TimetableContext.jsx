@@ -17,7 +17,7 @@ export function TimetableProvider({ children }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
   const [themeMode, setThemeMode] = useState('light');
-  const [selectedShiftFilter, setSelectedShiftFilter] = useState('All Shifts'); // All Shifts, Morning Shift, Afternoon Shift
+  const [selectedShiftFilter, setSelectedShiftFilter] = useState('Morning Shift'); // Always default to Morning Shift on open/login
 
   // Master Data State
   const [institution, setInstitution] = useState(initialInstitution);
@@ -273,6 +273,7 @@ export function TimetableProvider({ children }) {
         isLoggedIn: true
       });
       setActiveRole(found.role);
+      setSelectedShiftFilter('Morning Shift');
       setIsLoginModalOpen(false);
       showToast(`Welcome back, ${found.name}! Signed in as ${found.role.toUpperCase()}.`, 'success');
       return true;
