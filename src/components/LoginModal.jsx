@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, UserPlus, AlertCircle, Calendar, Eye, EyeOff } from 'lucide-react';
+import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, UserPlus, AlertCircle, Calendar, Eye, EyeOff, Mail, Building2 } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose }) {
   const { login, registerUser, currentUser } = useTimetable();
@@ -12,8 +12,10 @@ export default function LoginModal({ isOpen, onClose }) {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
 
-  // Sign Up State
+  // Sign Up State (Compulsory Email & School Name)
   const [fullNameInput, setFullNameInput] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupSchoolName, setSignupSchoolName] = useState('');
   const [signupUsername, setSignupUsername] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
@@ -40,6 +42,16 @@ export default function LoginModal({ isOpen, onClose }) {
     e.preventDefault();
     setErrorMsg('');
 
+    if (!signupEmail.trim() || !signupEmail.includes('@')) {
+      setErrorMsg('Compulsory Email Address is required (e.g. principal@school.edu)!');
+      return;
+    }
+
+    if (!signupSchoolName.trim()) {
+      setErrorMsg('Compulsory School / Institution Name is required!');
+      return;
+    }
+
     if (signupPassword !== signupConfirmPassword) {
       setErrorMsg('Passwords do not match! Please verify your password entry.');
       return;
@@ -52,6 +64,8 @@ export default function LoginModal({ isOpen, onClose }) {
 
     const success = registerUser({
       name: fullNameInput.trim(),
+      email: signupEmail.trim().toLowerCase(),
+      schoolName: signupSchoolName.trim(),
       username: signupUsername.trim().toLowerCase(),
       password: signupPassword.trim(),
       role: signupRole
@@ -59,6 +73,8 @@ export default function LoginModal({ isOpen, onClose }) {
 
     if (success) {
       setFullNameInput('');
+      setSignupEmail('');
+      setSignupSchoolName('');
       setSignupUsername('');
       setSignupPassword('');
       setSignupConfirmPassword('');
@@ -189,31 +205,65 @@ export default function LoginModal({ isOpen, onClose }) {
 
         {/* MODE 2: Sign Up (Create New User Account) Form */}
         {authMode === 'signup' && (
-          <form onSubmit={handleSignupSubmit} className="space-y-3.5">
+          <form onSubmit={handleSignupSubmit} className="space-y-3">
             <div>
               <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                Full Name & Title
+                Full Name & Title <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
                 type="text"
                 value={fullNameInput}
                 onChange={(e) => setFullNameInput(e.target.value)}
                 placeholder="e.g. Prof. Rajesh Kumar"
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
                 required
               />
             </div>
 
             <div>
               <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                Choose Username
+                School / Institution Name <span className="text-rose-500 font-bold">* (Compulsory)</span>
+              </label>
+              <div className="relative">
+                <Building2 className="h-4 w-4 absolute left-3.5 top-3 text-amber-600" />
+                <input
+                  type="text"
+                  value={signupSchoolName}
+                  onChange={(e) => setSignupSchoolName(e.target.value)}
+                  placeholder="e.g. St. Xavier State & CBSE Academy"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Official Email Address <span className="text-rose-500 font-bold">* (Compulsory)</span>
+              </label>
+              <div className="relative">
+                <Mail className="h-4 w-4 absolute left-3.5 top-3 text-amber-600" />
+                <input
+                  type="email"
+                  value={signupEmail}
+                  onChange={(e) => setSignupEmail(e.target.value)}
+                  placeholder="e.g. principal@school.edu"
+                  className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-amber-300 dark:border-amber-700 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Choose Username <span className="text-rose-500 font-bold">*</span>
               </label>
               <input
                 type="text"
                 value={signupUsername}
                 onChange={(e) => setSignupUsername(e.target.value)}
                 placeholder="e.g. rajeshkumar"
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
                 required
               />
             </div>
@@ -221,7 +271,7 @@ export default function LoginModal({ isOpen, onClose }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                  Password
+                  Password <span className="text-rose-500 font-bold">*</span>
                 </label>
                 <input
                   type="password"
@@ -235,7 +285,7 @@ export default function LoginModal({ isOpen, onClose }) {
 
               <div>
                 <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                  Confirm Password
+                  Confirm Password <span className="text-rose-500 font-bold">*</span>
                 </label>
                 <input
                   type="password"
@@ -255,7 +305,7 @@ export default function LoginModal({ isOpen, onClose }) {
               <select
                 value={signupRole}
                 onChange={(e) => setSignupRole(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
               >
                 <option value="admin">🛡️ Administrator (Full Control)</option>
                 <option value="hod">🎓 Department HOD (Approvals & Solver)</option>

@@ -290,10 +290,15 @@ export function TimetableProvider({ children }) {
     }
     const updated = [...userAccounts, newUserObj];
     setUserAccounts(updated);
+    if (newUserObj.schoolName) {
+      setInstitution((prev) => ({ ...prev, name: newUserObj.schoolName }));
+    }
     setCurrentUser({
       username: newUserObj.username,
       name: newUserObj.name,
       role: newUserObj.role,
+      email: newUserObj.email,
+      schoolName: newUserObj.schoolName,
       isLoggedIn: true
     });
     setActiveRole(newUserObj.role);
