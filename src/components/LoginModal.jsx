@@ -321,52 +321,7 @@ export default function LoginModal({ isOpen, onClose }) {
               <span>Create Account & Sign In</span>
             </button>
           </form>
-        )}
-
-        {/* 1-Click Quick Demo Accounts Presets (No Passwords Displayed!) */}
-        <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
-          <p className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide text-center">
-            🔑 Quick 1-Click Demo Profiles:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin', 'admin123')}
-              className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 hover:bg-amber-100 transition-colors text-left space-y-0.5 cursor-pointer"
-            >
-              <div className="flex items-center space-x-1 font-black text-amber-900 dark:text-amber-200 text-[11px]">
-                <Shield className="h-3.5 w-3.5 text-amber-600" />
-                <span>Admin Staff</span>
-              </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Principal</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('hod', 'hod123')}
-              className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 border border-purple-300 dark:border-purple-700 hover:bg-purple-100 transition-colors text-left space-y-0.5 cursor-pointer"
-            >
-              <div className="flex items-center space-x-1 font-black text-purple-900 dark:text-purple-200 text-[11px]">
-                <GraduationCap className="h-3.5 w-3.5 text-purple-600" />
-                <span>HOD Dept</span>
-              </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Dept Head</p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('teacher', 'teacher123')}
-              className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100 transition-colors text-left space-y-0.5 cursor-pointer"
-            >
-              <div className="flex items-center space-x-1 font-black text-emerald-900 dark:text-emerald-200 text-[11px]">
-                <Users className="h-3.5 w-3.5 text-emerald-600" />
-                <span>Faculty Teacher</span>
-              </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Faculty</p>
-            </button>
-          </div>
-        </div>
-      </div>
+        )}      </div>
     </div>
   );
 }
