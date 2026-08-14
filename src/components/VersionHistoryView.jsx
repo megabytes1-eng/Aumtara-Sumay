@@ -51,13 +51,14 @@ export default function VersionHistoryView() {
 
   const filteredVersions = (timetableVersions || []).filter(
     (ver) =>
-      ver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ver.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ver.id.toLowerCase().includes(searchTerm.toLowerCase())
+      ver &&
+      ((ver.name || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
+        (ver.description || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
+        (ver.id || '').toLowerCase().includes((searchTerm || '').toLowerCase()))
   );
 
-  const activeVersion = (timetableVersions || []).find((v) => v.id === activeVersionId) || timetableVersions?.[0];
-  const latestVersion = timetableVersions?.[0];
+  const activeVersion = (timetableVersions || []).find((v) => v?.id === activeVersionId) || timetableVersions?.[0];
+  const latestVersion = (timetableVersions || [])[0];
 
   return (
     <div className="space-y-6 pb-12">

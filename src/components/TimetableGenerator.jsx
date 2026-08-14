@@ -562,7 +562,8 @@ export default function TimetableGenerator() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
-                  {timetableVersions.map((ver, idx) => {
+                  {(timetableVersions || []).map((ver, idx) => {
+                    if (!ver) return null;
                     const isActive = ver.id === activeVersionId;
                     const isLatest = idx === 0;
                     const isBaseline = ver.id === 'VER-001';
