@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, Eye, AlertCircle, Calendar } from 'lucide-react';
+import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, UserPlus, AlertCircle, Calendar, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose }) {
-  const { login, defaultAccounts, currentUser } = useTimetable();
+  const { login, registerUser, currentUser } = useTimetable();
 
+  const [authMode, setAuthMode] = useState('signin'); // 'signin' or 'signup'
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Sign In State
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+
+  // Sign Up State
+  const [fullNameInput, setFullNameInput] = useState('');
+  const [signupUsername, setSignupUsername] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [signupRole, setSignupRole] = useState('teacher');
+
   const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen && currentUser?.isLoggedIn) return null;
@@ -20,7 +32,37 @@ export default function LoginModal({ isOpen, onClose }) {
       setPasswordInput('');
       if (onClose) onClose();
     } else {
-      setErrorMsg('Invalid username or password! Please check default credentials below.');
+      setErrorMsg('Invalid username or password! Please try again or create a new account.');
+    }
+  };
+
+  const handleSignupSubmit = (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    if (signupPassword !== signupConfirmPassword) {
+      setErrorMsg('Passwords do not match! Please verify your password entry.');
+      return;
+    }
+
+    if (signupPassword.length < 4) {
+      setErrorMsg('Password must be at least 4 characters long!');
+      return;
+    }
+
+    const success = registerUser({
+      name: fullNameInput.trim(),
+      username: signupUsername.trim().toLowerCase(),
+      password: signupPassword.trim(),
+      role: signupRole
+    });
+
+    if (success) {
+      setFullNameInput('');
+      setSignupUsername('');
+      setSignupPassword('');
+      setSignupConfirmPassword('');
+      if (onClose) onClose();
     }
   };
 
@@ -32,7 +74,7 @@ export default function LoginModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border-2 border-indigo-500 shadow-2xl p-6 sm:p-8 space-y-6 animate-fadeIn text-slate-900 dark:text-slate-100 max-h-[95vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border-2 border-indigo-500 shadow-2xl p-6 sm:p-8 space-y-5 animate-fadeIn text-slate-900 dark:text-slate-100 max-h-[95vh] overflow-y-auto">
         {/* Modal Brand Header */}
         <div className="text-center space-y-2">
           <div className="h-14 w-14 rounded-2xl bg-indigo-700 text-white mx-auto flex items-center justify-center shadow-lg border-2 border-indigo-800">
@@ -43,9 +85,44 @@ export default function LoginModal({ isOpen, onClose }) {
               AUMTARA SAMAY
             </h2>
             <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
-              Dual-Shift Timetable Management Authentication Portal
+              Dual-Shift Timetable Security & Access Portal
             </p>
           </div>
+        </div>
+
+        {/* Tab Switcher: Sign In vs Sign Up */}
+        <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800 p-1 border border-slate-300 dark:border-slate-700">
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('signin');
+              setErrorMsg('');
+            }}
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all flex items-center justify-center space-x-1.5 ${
+              authMode === 'signin'
+                ? 'bg-indigo-700 text-white shadow'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            <span>Sign In</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode('signup');
+              setErrorMsg('');
+            }}
+            className={`flex-1 py-2 text-xs font-black rounded-lg transition-all flex items-center justify-center space-x-1.5 ${
+              authMode === 'signup'
+                ? 'bg-indigo-700 text-white shadow'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            <span>Create Account / Sign Up</span>
+          </button>
         </div>
 
         {/* Error Alert */}
@@ -56,55 +133,150 @@ export default function LoginModal({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleLoginSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
-              Username
-            </label>
-            <div className="relative">
-              <UserCheck className="h-4 w-4 absolute left-3.5 top-3 text-slate-400" />
+        {/* MODE 1: Sign In Form */}
+        {authMode === 'signin' && (
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Username
+              </label>
+              <div className="relative">
+                <UserCheck className="h-4 w-4 absolute left-3.5 top-3 text-slate-400" />
+                <input
+                  type="text"
+                  value={usernameInput}
+                  onChange={(e) => setUsernameInput(e.target.value)}
+                  placeholder="Enter username"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Password
+              </label>
+              <div className="relative">
+                <KeyRound className="h-4 w-4 absolute left-3.5 top-3 text-slate-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  placeholder="Enter password"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 border border-indigo-900 cursor-pointer hover:scale-[1.02]"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign In to Aumtara Samay</span>
+            </button>
+          </form>
+        )}
+
+        {/* MODE 2: Sign Up (Create New User Account) Form */}
+        {authMode === 'signup' && (
+          <form onSubmit={handleSignupSubmit} className="space-y-3.5">
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Full Name & Title
+              </label>
               <input
                 type="text"
-                value={usernameInput}
-                onChange={(e) => setUsernameInput(e.target.value)}
-                placeholder="Enter username (e.g. admin)"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                value={fullNameInput}
+                onChange={(e) => setFullNameInput(e.target.value)}
+                placeholder="e.g. Prof. Rajesh Kumar"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
                 required
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
-              Password
-            </label>
-            <div className="relative">
-              <KeyRound className="h-4 w-4 absolute left-3.5 top-3 text-slate-400" />
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Choose Username
+              </label>
               <input
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Enter password (e.g. admin123)"
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                type="text"
+                value={signupUsername}
+                onChange={(e) => setSignupUsername(e.target.value)}
+                placeholder="e.g. rajeshkumar"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
                 required
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 border border-indigo-900 cursor-pointer hover:scale-[1.02]"
-          >
-            <LogIn className="h-4 w-4" />
-            <span>Sign In to Aumtara Samay</span>
-          </button>
-        </form>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={signupPassword}
+                  onChange={(e) => setSignupPassword(e.target.value)}
+                  placeholder="Set password"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
 
-        {/* 1-Click Quick Demo Accounts Presets */}
+              <div>
+                <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  value={signupConfirmPassword}
+                  onChange={(e) => setSignupConfirmPassword(e.target.value)}
+                  placeholder="Confirm password"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Account Role / Access Level
+              </label>
+              <select
+                value={signupRole}
+                onChange={(e) => setSignupRole(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
+              >
+                <option value="admin">🛡️ Administrator (Full Control)</option>
+                <option value="hod">🎓 Department HOD (Approvals & Solver)</option>
+                <option value="faculty">👤 Faculty Teacher (Staff Duty View)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 border border-emerald-900 cursor-pointer hover:scale-[1.02]"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Create Account & Sign In</span>
+            </button>
+          </form>
+        )}
+
+        {/* 1-Click Quick Demo Accounts Presets (No Passwords Displayed!) */}
         <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <p className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide text-center">
-            🔑 1-Click Quick Login Default Accounts:
+            🔑 Quick 1-Click Demo Profiles:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
             <button
@@ -116,7 +288,7 @@ export default function LoginModal({ isOpen, onClose }) {
                 <Shield className="h-3.5 w-3.5 text-amber-600" />
                 <span>Admin Staff</span>
               </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-bold">admin / admin123</p>
+              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Principal</p>
             </button>
 
             <button
@@ -128,7 +300,7 @@ export default function LoginModal({ isOpen, onClose }) {
                 <GraduationCap className="h-3.5 w-3.5 text-purple-600" />
                 <span>HOD Dept</span>
               </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-bold">hod / hod123</p>
+              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Dept Head</p>
             </button>
 
             <button
@@ -140,7 +312,7 @@ export default function LoginModal({ isOpen, onClose }) {
                 <Users className="h-3.5 w-3.5 text-emerald-600" />
                 <span>Faculty Teacher</span>
               </div>
-              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-mono font-bold">teacher / teacher123</p>
+              <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">Role: Faculty</p>
             </button>
           </div>
         </div>

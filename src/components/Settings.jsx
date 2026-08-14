@@ -19,7 +19,11 @@ import {
   AlertTriangle,
   CheckSquare,
   Square,
-  X
+  X,
+  Plus,
+  KeyRound,
+  Users,
+  UserPlus
 } from 'lucide-react';
 
 export default function Settings() {
@@ -47,13 +51,62 @@ export default function Settings() {
     restoreBackupData,
     timetableVersions,
     setActiveTab,
-    setActiveSubTab
+    setActiveSubTab,
+    userAccounts,
+    addUserAccount,
+    updateUserAccount,
+    deleteUserAccount,
+    currentUser
   } = useTimetable();
 
   const [editingRoleKey, setEditingRoleKey] = useState(null);
   const [roleTitleInput, setRoleTitleInput] = useState('');
   const [roleDescInput, setRoleDescInput] = useState('');
-  const [restoreSummary, setRestoreSummary] = useState(null);
+  // User Profile Management State
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [editingUserObj, setEditingUserObj] = useState(null);
+  const [userNameInput, setUserNameInput] = useState('');
+  const [userUsernameInput, setUserUsernameInput] = useState('');
+  const [userPasswordInput, setUserPasswordInput] = useState('');
+  const [userRoleInput, setUserRoleInput] = useState('faculty');
+
+  const handleOpenAddUserModal = () => {
+    setEditingUserObj(null);
+    setUserNameInput('');
+    setUserUsernameInput('');
+    setUserPasswordInput('');
+    setUserRoleInput('faculty');
+    setUserModalOpen(true);
+  };
+
+  const handleOpenEditUserModal = (usr) => {
+    setEditingUserObj(usr);
+    setUserNameInput(usr.name);
+    setUserUsernameInput(usr.username);
+    setUserPasswordInput(usr.password);
+    setUserRoleInput(usr.role);
+    setUserModalOpen(true);
+  };
+
+  const handleSaveUserSubmit = (e) => {
+    e.preventDefault();
+    if (editingUserObj) {
+      updateUserAccount({
+        name: userNameInput.trim(),
+        username: editingUserObj.username,
+        password: userPasswordInput.trim(),
+        role: userRoleInput
+      });
+    } else {
+      addUserAccount({
+        name: userNameInput.trim(),
+        username: userUsernameInput.trim().toLowerCase(),
+        password: userPasswordInput.trim(),
+        role: userRoleInput
+      });
+    }
+    setUserModalOpen(false);
+  };
 
   // Clear All Data Confirmation Modal State
   const [clearModalOpen, setClearModalOpen] = useState(false);
@@ -327,7 +380,104 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* 3. Comprehensive Data Backup & Restore Center */}
+        {/* 3. User Profiles & Login Accounts Manager (Add, Modify & Remove Users) */}
+        <div className="glass-panel p-6 rounded-2xl border-2 border-indigo-300 dark:border-indigo-800 bg-white dark:bg-slate-900 space-y-6 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div className="flex items-center space-x-3">
+              <Users className="h-6 w-6 text-indigo-700 dark:text-indigo-400" />
+              <div>
+                <h3 className="text-base font-black text-slate-900 dark:text-white">
+                  User Profiles & Login Accounts Management
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">
+                  Create new login profiles, modify passwords & roles, or delete inactive user accounts.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleOpenAddUserModal}
+              className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black rounded-xl shadow-md transition-all flex items-center space-x-1.5 border border-indigo-900 cursor-pointer hover:scale-105 self-start sm:self-auto"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>+ Add New User Account</span>
+            </button>
+          </div>
+
+          {/* User Accounts Table */}
+          <div className="overflow-x-auto rounded-xl border-2 border-slate-300 dark:border-slate-800">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+                <tr>
+                  <th className="p-3.5">Full Name</th>
+                  <th className="p-3.5">Username</th>
+                  <th className="p-3.5">Assigned Role</th>
+                  <th className="p-3.5 text-center">Status</th>
+                  <th className="p-3.5 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-bold text-slate-900 dark:text-slate-200">
+                {(userAccounts || []).map((usr) => {
+                  const isCurrentActive = currentUser?.username?.toLowerCase() === usr.username?.toLowerCase();
+                  return (
+                    <tr key={usr.username} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
+                      <td className="p-3.5 font-black text-slate-900 dark:text-slate-100">
+                        {usr.name}
+                      </td>
+                      <td className="p-3.5 font-mono text-indigo-700 dark:text-indigo-300">
+                        @{usr.username}
+                      </td>
+                      <td className="p-3.5">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase border ${
+                          usr.role === 'admin'
+                            ? 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950 dark:text-amber-200'
+                            : usr.role === 'hod'
+                            ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-950 dark:text-purple-200'
+                            : 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200'
+                        }`}>
+                          {usr.role}
+                        </span>
+                      </td>
+                      <td className="p-3.5 text-center">
+                        {isCurrentActive ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400 text-[10px] font-black">
+                            ● Active Logged In
+                          </span>
+                        ) : (
+                          <span className="px-2 py-0.5 text-slate-500 text-[10px]">Registered Profile</span>
+                        )}
+                      </td>
+                      <td className="p-3.5 text-right space-x-1.5">
+                        <button
+                          onClick={() => handleOpenEditUserModal(usr)}
+                          className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-indigo-700 dark:text-indigo-300 transition-colors cursor-pointer"
+                          title="Modify User Profile & Password"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          onClick={() => deleteUserAccount(usr.username)}
+                          disabled={isCurrentActive || userAccounts.length <= 1}
+                          className={`p-1.5 rounded-lg text-rose-600 dark:text-rose-400 transition-colors ${
+                            isCurrentActive || userAccounts.length <= 1
+                              ? 'opacity-40 cursor-not-allowed'
+                              : 'hover:bg-rose-100 dark:hover:bg-rose-950/60 cursor-pointer'
+                          }`}
+                          title={isCurrentActive ? "Cannot delete active session profile" : "Remove User Profile"}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* 4. Comprehensive Data Backup & Restore Center */}
         <div className="glass-panel p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-6 shadow-xl">
           <div className="flex items-center space-x-3 border-b border-slate-200 dark:border-slate-800 pb-4">
             <Database className="h-6 w-6 text-purple-700 dark:text-purple-400" />
@@ -566,6 +716,96 @@ export default function Settings() {
             >
               Continue to Dashboard
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add / Modify User Account Modal */}
+      {userModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border-2 border-indigo-500 shadow-2xl p-6 space-y-4 animate-fadeIn text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-black flex items-center space-x-2 text-indigo-950 dark:text-amber-300">
+                <UserCheck className="h-5 w-5 text-indigo-600" />
+                <span>{editingUserObj ? 'Modify User Profile & Password' : 'Create New User Account'}</span>
+              </h3>
+              <button onClick={() => setUserModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveUserSubmit} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-black mb-1">Full Name & Professional Title</label>
+                <input
+                  type="text"
+                  value={userNameInput}
+                  onChange={(e) => setUserNameInput(e.target.value)}
+                  placeholder="e.g. Prof. Sunita Rao"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl font-black text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-black mb-1">Username (Login ID)</label>
+                <input
+                  type="text"
+                  value={userUsernameInput}
+                  onChange={(e) => setUserUsernameInput(e.target.value)}
+                  disabled={!!editingUserObj}
+                  placeholder="e.g. sunitarao"
+                  className={`w-full px-3.5 py-2 border-2 rounded-xl font-black ${
+                    editingUserObj
+                      ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 border-slate-300 dark:border-slate-700 cursor-not-allowed'
+                      : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white'
+                  }`}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-black mb-1">Password</label>
+                <input
+                  type="password"
+                  value={userPasswordInput}
+                  onChange={(e) => setUserPasswordInput(e.target.value)}
+                  placeholder="Set account password"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl font-black text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block font-black mb-1">Assigned Role & Access Level</label>
+                <select
+                  value={userRoleInput}
+                  onChange={(e) => setUserRoleInput(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl font-black text-slate-900 dark:text-white"
+                >
+                  <option value="admin">🛡️ Administrator (Full Control)</option>
+                  <option value="hod">🎓 Department HOD (Approvals & Solver)</option>
+                  <option value="faculty">👤 Faculty Teacher (Staff Duty View)</option>
+                </select>
+              </div>
+
+              <div className="pt-2 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setUserModalOpen(false)}
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-black rounded-xl shadow-md flex items-center space-x-1 border border-indigo-900"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>{editingUserObj ? 'Save Changes' : 'Create User Account'}</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

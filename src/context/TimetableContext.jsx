@@ -245,12 +245,12 @@ export function TimetableProvider({ children }) {
     showToast(`Substitute teacher ${subTeacherName} assigned!`, 'success');
   };
 
-  // Authentication & Default Users State
-  const defaultAccounts = [
+  // Authentication & Dynamic Users Management State
+  const [userAccounts, setUserAccounts] = useState([
     { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
     { username: 'hod', password: 'hod123', name: 'Prof. Ramanujan Sharma (HOD)', role: 'hod' },
     { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' }
-  ];
+  ]);
 
   const [currentUser, setCurrentUser] = useState({
     username: 'admin',
@@ -262,7 +262,7 @@ export function TimetableProvider({ children }) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const login = (username, password) => {
-    const found = defaultAccounts.find(
+    const found = userAccounts.find(
       (acc) => acc.username.toLowerCase() === username.trim().toLowerCase() && acc.password === password.trim()
     );
     if (found) {
@@ -278,6 +278,70 @@ export function TimetableProvider({ children }) {
       return true;
     }
     return false;
+  };
+
+  const registerUser = (newUserObj) => {
+    const exists = userAccounts.some(
+      (acc) => acc.username.toLowerCase() === newUserObj.username.trim().toLowerCase()
+    );
+    if (exists) {
+      showToast(`Username "${newUserObj.username}" is already taken!`, 'warning');
+      return false;
+    }
+    const updated = [...userAccounts, newUserObj];
+    setUserAccounts(updated);
+    setCurrentUser({
+      username: newUserObj.username,
+      name: newUserObj.name,
+      role: newUserObj.role,
+      isLoggedIn: true
+    });
+    setActiveRole(newUserObj.role);
+    setIsLoginModalOpen(false);
+    showToast(`Account created successfully! Welcome, ${newUserObj.name}.`, 'success');
+    return true;
+  };
+
+  const addUserAccount = (newUserObj) => {
+    const exists = userAccounts.some(
+      (acc) => acc.username.toLowerCase() === newUserObj.username.trim().toLowerCase()
+    );
+    if (exists) {
+      showToast(`Username "${newUserObj.username}" already exists!`, 'warning');
+      return false;
+    }
+    setUserAccounts((prev) => [...prev, newUserObj]);
+    showToast(`User account "${newUserObj.name}" created!`, 'success');
+    return true;
+  };
+
+  const updateUserAccount = (updatedUserObj) => {
+    setUserAccounts((prev) =>
+      prev.map((acc) => (acc.username.toLowerCase() === updatedUserObj.username.toLowerCase() ? updatedUserObj : acc))
+    );
+    if (currentUser.username.toLowerCase() === updatedUserObj.username.toLowerCase()) {
+      setCurrentUser((prev) => ({
+        ...prev,
+        name: updatedUserObj.name,
+        role: updatedUserObj.role
+      }));
+    }
+    showToast(`User profile "${updatedUserObj.name}" updated!`, 'info');
+    return true;
+  };
+
+  const deleteUserAccount = (usernameToDelete) => {
+    if (userAccounts.length <= 1) {
+      showToast('Cannot delete the only remaining user account!', 'warning');
+      return false;
+    }
+    if (currentUser.username.toLowerCase() === usernameToDelete.toLowerCase()) {
+      showToast('You cannot delete your own active logged-in profile!', 'warning');
+      return false;
+    }
+    setUserAccounts((prev) => prev.filter((acc) => acc.username.toLowerCase() !== usernameToDelete.toLowerCase()));
+    showToast(`Deleted user account "${usernameToDelete}".`, 'warning');
+    return true;
   };
 
   const logout = () => {
@@ -538,10 +602,15 @@ export function TimetableProvider({ children }) {
     addAbsence,
     assignSubstitute,
     currentUser,
-    defaultAccounts,
+    userAccounts,
+    defaultAccounts: userAccounts,
     isLoginModalOpen,
     setIsLoginModalOpen,
     login,
+    registerUser,
+    addUserAccount,
+    updateUserAccount,
+    deleteUserAccount,
     logout,
     toast,
     showToast
