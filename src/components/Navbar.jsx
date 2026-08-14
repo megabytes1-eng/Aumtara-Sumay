@@ -57,11 +57,13 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center: School Name (High-Contrast Vibrant Display) */}
-        <div className="flex-1 flex justify-center items-center px-2">
-          <div className="px-4 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-300 text-xs sm:text-sm font-black tracking-wide shadow-sm flex items-center space-x-2 truncate max-w-xs sm:max-w-md md:max-w-lg">
-            <School className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <span className="truncate">{institution.name}</span>
+        {/* Center: School Name (Large, Bold Text Without Background Box) */}
+        <div className="flex-1 flex justify-center items-center px-4">
+          <div className="flex items-center space-x-2.5 truncate max-w-xs sm:max-w-md md:max-w-xl">
+            <School className="h-5 w-5 text-indigo-700 dark:text-amber-400 shrink-0" />
+            <span className="text-base sm:text-lg font-black text-indigo-950 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
+              {institution.name}
+            </span>
           </div>
         </div>
 
