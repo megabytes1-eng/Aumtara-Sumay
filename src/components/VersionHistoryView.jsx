@@ -49,16 +49,28 @@ export default function VersionHistoryView() {
     setSaveModalOpen(false);
   };
 
-  const filteredVersions = (timetableVersions || []).filter(
+  const safeVersions = Array.isArray(timetableVersions) ? timetableVersions : [];
+
+  const filteredVersions = safeVersions.filter(
     (ver) =>
       ver &&
+      typeof ver === 'object' &&
       ((ver.name || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
         (ver.description || '').toLowerCase().includes((searchTerm || '').toLowerCase()) ||
         (ver.id || '').toLowerCase().includes((searchTerm || '').toLowerCase()))
   );
 
-  const activeVersion = (timetableVersions || []).find((v) => v?.id === activeVersionId) || timetableVersions?.[0];
-  const latestVersion = (timetableVersions || [])[0];
+  const activeVersion = safeVersions.find((v) => v && v.id === activeVersionId) || safeVersions[0] || {
+    id: 'VER-001',
+    name: 'Baseline Schedule',
+    description: 'Default baseline timetable grid',
+    timestamp: new Date().toLocaleString(),
+    createdBy: 'System',
+    optimizationScore: 100,
+    slotsCount: 120
+  };
+
+  const latestVersion = safeVersions[0] || activeVersion;
 
   return (
     <div className="space-y-6 pb-12">
@@ -75,7 +87,7 @@ export default function VersionHistoryView() {
                   Saved Timetable Versions & Revisions Hub
                 </h1>
                 <span className="px-3 py-0.5 rounded-full bg-teal-100 text-teal-950 dark:bg-teal-500/20 dark:text-teal-300 text-xs font-black border border-teal-300">
-                  {timetableVersions.length} Snapshots Saved
+                  {safeVersions.length} Snapshots Saved
                 </span>
               </div>
               <p className="text-xs text-slate-700 dark:text-slate-300 font-extrabold mt-1">
@@ -97,14 +109,14 @@ export default function VersionHistoryView() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-xl bg-teal-50 dark:bg-teal-950/40 border-2 border-teal-300 dark:border-teal-800 space-y-1">
             <span className="text-[10px] font-black text-teal-900 dark:text-teal-300 uppercase tracking-wider">TOTAL VERSIONS IN SESSION</span>
-            <p className="text-2xl font-black text-teal-950 dark:text-white">{timetableVersions.length} Saved Snapshots</p>
+            <p className="text-2xl font-black text-teal-950 dark:text-white">{safeVersions.length} Saved Snapshots</p>
             <p className="text-[11px] text-teal-800 dark:text-teal-300 font-bold">1-Click restore any historical timetable</p>
           </div>
 
           <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-300 dark:border-emerald-800 space-y-1">
             <span className="text-[10px] font-black text-emerald-900 dark:text-emerald-300 uppercase tracking-wider">CURRENT ACTIVE GRID</span>
             <p className="text-base font-black text-emerald-950 dark:text-emerald-200 truncate">
-              {activeVersion?.name || 'Baseline Schedule'}
+              {activeVersion.name || 'Baseline Schedule'}
             </p>
             <span className="inline-block text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-600 text-white border border-emerald-700">
               ACTIVE LOADED GRID
@@ -114,7 +126,7 @@ export default function VersionHistoryView() {
           <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 border-2 border-indigo-300 dark:border-indigo-800 space-y-1">
             <span className="text-[10px] font-black text-indigo-900 dark:text-indigo-300 uppercase tracking-wider">LATEST SAVED VERSION</span>
             <p className="text-base font-black text-indigo-950 dark:text-indigo-200 truncate">
-              {latestVersion?.name || 'v1.0 Baseline'}
+              {latestVersion.name || 'v1.0 Baseline'}
             </p>
             <span className="inline-block text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-600 text-white border border-indigo-700">
               MOST RECENT REVISION
@@ -156,7 +168,7 @@ export default function VersionHistoryView() {
             <p className="text-base font-black text-slate-900 dark:text-white">No timetable versions match your search filter.</p>
             <button
               onClick={() => setSearchTerm('')}
-              className="px-4 py-2 bg-indigo-700 text-white text-xs font-black rounded-xl"
+              className="px-4 py-2 bg-indigo-700 text-white text-xs font-black rounded-xl cursor-pointer"
             >
               Clear Search Filter
             </button>
@@ -175,15 +187,23 @@ export default function VersionHistoryView() {
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
               {filteredVersions.map((ver, idx) => {
-                const isActive = ver.id === activeVersionId;
+                if (!ver || typeof ver !== 'object') return null;
+                const verId = ver.id || `VER-${idx}`;
+                const verName = ver.name || `Version ${idx + 1}`;
+                const verDesc = ver.description || 'Saved timetable revision.';
+                const verTime = ver.timestamp || new Date().toLocaleString();
+                const verAuthor = ver.createdBy || 'Administrator';
+                const verScore = ver.optimizationScore ?? 100;
+                const verSlots = ver.slotsCount || 120;
+                const isActive = verId === activeVersionId;
                 const isLatest = idx === 0;
-                const isBaseline = ver.id === 'VER-001';
+                const isBaseline = verId === 'VER-001';
 
                 return (
-                  <tr key={ver.id} className={`transition-colors ${isActive ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-l-4 border-l-indigo-600' : 'hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}>
+                  <tr key={verId} className={`transition-colors ${isActive ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-l-4 border-l-indigo-600' : 'hover:bg-slate-100 dark:hover:bg-slate-800/40'}`}>
                     <td className="p-4 font-black text-indigo-950 dark:text-white">
                       <div className="flex items-center space-x-2">
-                        <p className="text-sm font-black text-slate-950 dark:text-white">{ver.name}</p>
+                        <p className="text-sm font-black text-slate-950 dark:text-white">{verName}</p>
                         {isActive && (
                           <span className="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] font-black border border-emerald-700 shadow-sm animate-pulse">
                             ACTIVE GRID
@@ -200,19 +220,19 @@ export default function VersionHistoryView() {
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-slate-500 font-mono font-black">{ver.id} • {ver.slotsCount || 120} Periods Scheduled</span>
+                      <span className="text-[10px] text-slate-500 font-mono font-black">{verId} • {verSlots} Periods Scheduled</span>
                     </td>
-                    <td className="p-4 text-slate-700 dark:text-slate-300 font-extrabold max-w-xs">{ver.description}</td>
+                    <td className="p-4 text-slate-700 dark:text-slate-300 font-extrabold max-w-xs">{verDesc}</td>
                     <td className="p-4 font-mono text-slate-800 dark:text-slate-300 font-black">
                       <span className="flex items-center space-x-1">
                         <Clock className="h-3.5 w-3.5 text-indigo-600" />
-                        <span>{ver.timestamp}</span>
+                        <span>{verTime}</span>
                       </span>
                     </td>
-                    <td className="p-4 font-black text-slate-900 dark:text-slate-200">{ver.createdBy}</td>
+                    <td className="p-4 font-black text-slate-900 dark:text-slate-200">{verAuthor}</td>
                     <td className="p-4 text-center font-black text-emerald-700 dark:text-emerald-400">
                       <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 text-xs font-black">
-                        {ver.optimizationScore}%
+                        {verScore}%
                       </span>
                     </td>
                     <td className="p-4 text-right space-x-2">
@@ -224,7 +244,7 @@ export default function VersionHistoryView() {
                       ) : (
                         <button
                           onClick={() => {
-                            restoreTimetableVersion(ver.id);
+                            if (restoreTimetableVersion) restoreTimetableVersion(verId);
                             setActiveTab('generator');
                             setActiveSubTab('grid');
                           }}
@@ -237,7 +257,7 @@ export default function VersionHistoryView() {
                       )}
 
                       <button
-                        onClick={() => deleteTimetableVersion(ver.id)}
+                        onClick={() => deleteTimetableVersion && deleteTimetableVersion(verId)}
                         className="p-2 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 hover:text-rose-700 rounded-xl inline-flex cursor-pointer transition-colors"
                         title="Delete version from history"
                       >
