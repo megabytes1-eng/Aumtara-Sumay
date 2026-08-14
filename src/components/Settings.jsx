@@ -285,14 +285,14 @@ export default function Settings() {
               </div>
             </div>
             <span className="px-3 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-950 dark:text-indigo-200 border border-indigo-300 text-xs font-black self-start sm:self-auto">
-              ACTIVE ROLE: {rolePermissions[activeRole]?.name.toUpperCase()}
+              ACTIVE ROLE: {(rolePermissions?.[activeRole]?.name || 'Academic Administrator').toUpperCase()}
             </span>
           </div>
 
           {/* Role Cards Switcher */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {Object.keys(rolePermissions).map((roleKey) => {
-              const role = rolePermissions[roleKey];
+            {Object.keys(rolePermissions || {}).map((roleKey) => {
+              const role = rolePermissions?.[roleKey] || { name: roleKey, description: '' };
               const isActive = activeRole === roleKey;
               return (
                 <div
@@ -417,15 +417,17 @@ export default function Settings() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-bold text-slate-900 dark:text-slate-200">
-                {(userAccounts || []).map((usr) => {
-                  const isCurrentActive = currentUser?.username?.toLowerCase() === usr.username?.toLowerCase();
+                {(userAccounts || []).map((usr, idx) => {
+                  if (!usr) return null;
+                  const username = usr.username || `user-${idx}`;
+                  const isCurrentActive = currentUser?.username?.toLowerCase() === username.toLowerCase();
                   return (
-                    <tr key={usr.username} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
+                    <tr key={username} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
                       <td className="p-3.5 font-black text-slate-900 dark:text-slate-100">
-                        {usr.name}
+                        {usr.name || 'Unnamed User'}
                       </td>
                       <td className="p-3.5 font-mono text-indigo-700 dark:text-indigo-300">
-                        @{usr.username}
+                        @{username}
                       </td>
                       <td className="p-3.5">
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase border ${
@@ -435,7 +437,7 @@ export default function Settings() {
                             ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-950 dark:text-purple-200'
                             : 'bg-emerald-100 text-emerald-950 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200'
                         }`}>
-                          {usr.role}
+                          {usr.role || 'faculty'}
                         </span>
                       </td>
                       <td className="p-3.5 text-center">
@@ -457,10 +459,10 @@ export default function Settings() {
                         </button>
 
                         <button
-                          onClick={() => deleteUserAccount(usr.username)}
-                          disabled={isCurrentActive || userAccounts.length <= 1}
+                          onClick={() => deleteUserAccount(username)}
+                          disabled={isCurrentActive || (userAccounts || []).length <= 1}
                           className={`p-1.5 rounded-lg text-rose-600 dark:text-rose-400 transition-colors ${
-                            isCurrentActive || userAccounts.length <= 1
+                            isCurrentActive || (userAccounts || []).length <= 1
                               ? 'opacity-40 cursor-not-allowed'
                               : 'hover:bg-rose-100 dark:hover:bg-rose-950/60 cursor-pointer'
                           }`}

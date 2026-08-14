@@ -151,19 +151,18 @@ export default function Navbar() {
               <button
                 onClick={logout}
                 title="Sign Out of Aumtara Samay"
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-black rounded-xl border border-rose-300 dark:border-rose-800 transition-all cursor-pointer shadow-sm"
+                className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl border border-rose-800 transition-all cursor-pointer shadow hover:scale-105"
               >
-                <LogOut className="h-3.5 w-3.5" />
-                <span className="hidden md:inline">Sign Out</span>
+                <LogOut className="h-4 w-4" />
               </button>
             </div>
           ) : (
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="flex items-center space-x-1.5 px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl shadow-md transition-all border border-emerald-900 cursor-pointer hover:scale-105"
+              title="Sign In to Aumtara Samay"
+              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl border border-emerald-800 transition-all cursor-pointer shadow hover:scale-105"
             >
               <LogIn className="h-4 w-4" />
-              <span>Sign In</span>
             </button>
           )}
         </div>
