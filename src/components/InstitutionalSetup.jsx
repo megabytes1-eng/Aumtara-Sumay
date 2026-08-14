@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin } from 'lucide-react';
+import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin, Layers } from 'lucide-react';
 
 export default function InstitutionalSetup() {
   const {
@@ -10,7 +10,9 @@ export default function InstitutionalSetup() {
     setBellSchedule,
     activeSubTab,
     setActiveSubTab,
-    showToast
+    showToast,
+    selectedShiftFilter,
+    setSelectedShiftFilter
   } = useTimetable();
 
   const logoFileInputRef = useRef(null);
@@ -378,6 +380,68 @@ export default function InstitutionalSetup() {
                 placeholder="e.g. 100 Knowledge Boulevard, Education City"
                 className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
               />
+            </div>
+          </div>
+
+          {/* Active Shift Filter Control (Morning, Afternoon & Combined Shifts) */}
+          <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border-2 border-indigo-200 dark:border-indigo-800/60 space-y-3">
+            <div>
+              <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
+                Active Shift View Selector (Morning, Afternoon & Combined Shifts)
+              </label>
+              <p className="text-[11px] text-slate-600 dark:text-slate-400 font-bold mb-2">
+                Configure baseline shift focus view across the software:
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedShiftFilter('Morning Shift');
+                  showToast('Selected Morning Shift view filter', 'info');
+                }}
+                className={`flex items-center space-x-2 px-4 py-2 text-xs font-black rounded-xl border transition-all cursor-pointer ${
+                  selectedShiftFilter === 'Morning Shift'
+                    ? 'bg-amber-500 text-amber-950 border-amber-600 shadow-md ring-2 ring-amber-300'
+                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Sun className="h-4 w-4" />
+                <span>Morning Shift (CBSE)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedShiftFilter('Afternoon Shift');
+                  showToast('Selected Afternoon Shift view filter', 'info');
+                }}
+                className={`flex items-center space-x-2 px-4 py-2 text-xs font-black rounded-xl border transition-all cursor-pointer ${
+                  selectedShiftFilter === 'Afternoon Shift'
+                    ? 'bg-purple-700 text-white border-purple-800 shadow-md ring-2 ring-purple-400'
+                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Sunset className="h-4 w-4" />
+                <span>Afternoon Shift (State Board)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedShiftFilter('All Shifts');
+                  showToast('Selected Combined Shifts view filter', 'info');
+                }}
+                className={`flex items-center space-x-2 px-4 py-2 text-xs font-black rounded-xl border transition-all cursor-pointer ${
+                  selectedShiftFilter === 'All Shifts'
+                    ? 'bg-indigo-700 text-white border-indigo-800 shadow-md ring-2 ring-indigo-400'
+                    : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                <Layers className="h-4 w-4" />
+                <span>Combined Shifts (Both Shifts)</span>
+              </button>
             </div>
           </div>
 

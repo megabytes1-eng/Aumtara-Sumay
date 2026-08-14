@@ -63,55 +63,8 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Global Shift & Quick Actions */}
+        {/* Global Quick Actions */}
         <div className="flex items-center space-x-3">
-          {/* Shift Selector */}
-          <div className="flex items-center space-x-1 bg-slate-200 dark:bg-slate-800 p-1 rounded-xl border border-slate-300 dark:border-slate-700">
-            <button
-              onClick={() => {
-                setSelectedShiftFilter('All Shifts');
-                showToast('Switched to Combined Shifts view', 'info');
-              }}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
-                selectedShiftFilter === 'All Shifts'
-                  ? 'bg-indigo-700 text-white shadow-sm border border-indigo-800'
-                  : 'text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
-              }`}
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span>Combined Shifts</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setSelectedShiftFilter('Morning Shift');
-                showToast('Filtered view to Morning Shift (CBSE)', 'info');
-              }}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
-                selectedShiftFilter === 'Morning Shift'
-                  ? 'bg-amber-600 text-white shadow-sm border border-amber-700'
-                  : 'text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
-              }`}
-            >
-              <Sun className="h-3.5 w-3.5" />
-              <span>Morning Shift</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setSelectedShiftFilter('Afternoon Shift');
-                showToast('Filtered view to Afternoon Shift (State Board)', 'info');
-              }}
-              className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-black rounded-lg transition-all ${
-                selectedShiftFilter === 'Afternoon Shift'
-                  ? 'bg-purple-700 text-white shadow-sm border border-purple-800'
-                  : 'text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
-              }`}
-            >
-              <Sunset className="h-3.5 w-3.5" />
-              <span>Afternoon Shift</span>
-            </button>
-          </div>
 
           {/* Solve Conflicts */}
           <button
