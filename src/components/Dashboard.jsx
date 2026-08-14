@@ -149,7 +149,108 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Saved Timetable Versions Quick Hub */}
+      {/* Timetable Quick Preview Matrix */}
+      <div className="glass-panel p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div>
+            <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center space-x-2">
+              <School className="h-5 w-5 text-indigo-700 dark:text-indigo-400" />
+              <span>Shift Timetable Matrix Preview (Monday)</span>
+            </h3>
+            <p className="text-xs text-slate-700 dark:text-slate-300 font-black">
+              Active Filter: <span className="text-indigo-700 dark:text-indigo-300 font-black uppercase underline">{selectedShiftFilter}</span> ({filteredClasses.length} Active Sections)
+            </p>
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <select
+              value={selectedShiftFilter}
+              onChange={(e) => {
+                setSelectedShiftFilter(e.target.value);
+                showToast(`Switched view to ${e.target.value}`, 'info');
+              }}
+              className="px-3.5 py-1.5 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600 cursor-pointer"
+            >
+              <option value="All Shifts">Combined (All Shifts)</option>
+              <option value="Morning Shift">Morning Shift (CBSE)</option>
+              <option value="Afternoon Shift">Afternoon Shift (State Eng Med)</option>
+            </select>
+
+            <button
+              onClick={() => navigateTo('generator', 'grid')}
+              className="text-xs text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-black flex items-center space-x-1 cursor-pointer"
+            >
+              <span>Open Full Grid</span>
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto rounded-xl border-2 border-slate-300 dark:border-slate-800">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+              <tr>
+                <th className="p-3.5 w-52 border-r border-slate-300 dark:border-slate-700">Class Section & Shift</th>
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <th key={i} className="p-3.5 text-center border-r border-slate-300/80 dark:border-slate-700/50">
+                    Period {i + 1}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-bold text-slate-900 dark:text-slate-200">
+              {filteredClasses.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="p-10 text-center text-slate-500">
+                    <div className="space-y-2">
+                      <p className="text-sm font-black text-slate-950 dark:text-white">No Active Classes or Schedule Loaded</p>
+                      <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        Class data has been cleared. Add new classes in Master Data Setup or reload sample demo data in Settings.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredClasses.map((cls) => (
+                  <tr key={cls.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
+                  <td className="p-3.5 border-r border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40">
+                    <p className="font-black text-indigo-950 dark:text-indigo-300">{cls.name}</p>
+                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
+                      cls.shift === 'Afternoon Shift'
+                        ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-500/20 dark:text-purple-300'
+                        : 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-500/20 dark:text-amber-300'
+                    }`}>
+                      {cls.shift} ({cls.board})
+                    </span>
+                  </td>
+                  {Array.from({ length: 7 }).map((_, pIdx) => {
+                    const slotKey = `Monday_${pIdx + 1}_${cls.id}`;
+                    const slot = timetable[slotKey];
+                    return (
+                      <td key={pIdx} className="p-2 border-r border-slate-200 dark:border-slate-800 text-center">
+                        {slot ? (
+                          <div
+                            style={{ backgroundColor: `${slot.subjectColor}25`, borderColor: slot.subjectColor }}
+                            className="p-2 rounded-xl border-2 text-[11px] font-black leading-tight shadow-sm text-slate-950 dark:text-white"
+                          >
+                            <p className="font-black text-slate-950 dark:text-white">{slot.subjectCode}</p>
+                            <p className="text-[10px] text-slate-900 dark:text-slate-200 font-extrabold truncate">{slot.teacherName.split(' ')[1] || slot.teacherName}</p>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 dark:text-slate-600 font-black font-mono">-</span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Saved Timetable Versions Quick Hub (Moved Below Timetable Preview Grid) */}
       <div className="glass-panel p-5 rounded-2xl border-2 border-teal-300 dark:border-teal-800 bg-white dark:bg-slate-900 shadow-lg space-y-3">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
           <div className="flex items-center space-x-2">
@@ -219,107 +320,6 @@ export default function Dashboard() {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* Timetable Quick Preview Matrix */}
-      <div className="glass-panel p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-          <div>
-            <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center space-x-2">
-              <School className="h-5 w-5 text-indigo-700 dark:text-indigo-400" />
-              <span>Shift Timetable Matrix Preview (Monday)</span>
-            </h3>
-            <p className="text-xs text-slate-700 dark:text-slate-300 font-black">
-              Active Filter: <span className="text-indigo-700 dark:text-indigo-300 font-black uppercase underline">{selectedShiftFilter}</span> ({filteredClasses.length} Active Sections)
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <select
-              value={selectedShiftFilter}
-              onChange={(e) => {
-                setSelectedShiftFilter(e.target.value);
-                showToast(`Switched view to ${e.target.value}`, 'info');
-              }}
-              className="px-3.5 py-1.5 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
-            >
-              <option value="All Shifts">Combined (All Shifts)</option>
-              <option value="Morning Shift">Morning Shift (CBSE)</option>
-              <option value="Afternoon Shift">Afternoon Shift (State Eng Med)</option>
-            </select>
-
-            <button
-              onClick={() => navigateTo('generator', 'grid')}
-              className="text-xs text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 font-black flex items-center space-x-1"
-            >
-              <span>Open Full Grid</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto rounded-xl border-2 border-slate-300 dark:border-slate-800">
-          <table className="w-full text-left border-collapse text-xs">
-            <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
-              <tr>
-                <th className="p-3.5 w-52 border-r border-slate-300 dark:border-slate-700">Class Section & Shift</th>
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <th key={i} className="p-3.5 text-center border-r border-slate-300/80 dark:border-slate-700/50">
-                    Period {i + 1}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-bold text-slate-900 dark:text-slate-200">
-              {filteredClasses.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="p-10 text-center text-slate-500">
-                    <div className="space-y-2">
-                      <p className="text-sm font-black text-slate-950 dark:text-white">No Active Classes or Schedule Loaded</p>
-                      <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                        Class data has been cleared. Add new classes in Master Data Setup or reload sample demo data in Settings.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                filteredClasses.map((cls) => (
-                  <tr key={cls.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
-                  <td className="p-3.5 border-r border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/40">
-                    <p className="font-black text-indigo-950 dark:text-indigo-300">{cls.name}</p>
-                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
-                      cls.shift === 'Afternoon Shift'
-                        ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-500/20 dark:text-purple-300'
-                        : 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-500/20 dark:text-amber-300'
-                    }`}>
-                      {cls.shift} ({cls.board})
-                    </span>
-                  </td>
-                  {Array.from({ length: 7 }).map((_, pIdx) => {
-                    const slotKey = `Monday_${pIdx + 1}_${cls.id}`;
-                    const slot = timetable[slotKey];
-                    return (
-                      <td key={pIdx} className="p-2 border-r border-slate-200 dark:border-slate-800 text-center">
-                        {slot ? (
-                          <div
-                            style={{ backgroundColor: `${slot.subjectColor}25`, borderColor: slot.subjectColor }}
-                            className="p-2 rounded-xl border-2 text-[11px] font-black leading-tight shadow-sm text-slate-950 dark:text-white"
-                          >
-                            <p className="font-black text-slate-950 dark:text-white">{slot.subjectCode}</p>
-                            <p className="text-[10px] text-slate-900 dark:text-slate-200 font-extrabold truncate">{slot.teacherName.split(' ')[1] || slot.teacherName}</p>
-                          </div>
-                        ) : (
-                          <span className="text-slate-400 dark:text-slate-600 font-black font-mono">-</span>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-                ))
-              )}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

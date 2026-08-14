@@ -12,7 +12,8 @@ import {
   Info,
   HelpCircle,
   LogIn,
-  LogOut
+  LogOut,
+  School
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
@@ -35,10 +36,10 @@ export default function Navbar() {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-800 px-6 py-3 shadow-md">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        {/* Brand & Institution Info */}
-        <div className="flex items-center space-x-3">
+    <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b-2 border-slate-300 dark:border-slate-800 px-6 py-2.5 shadow-md">
+      <div className="flex items-center justify-between flex-wrap md:flex-nowrap gap-3">
+        {/* Brand & Title */}
+        <div className="flex items-center space-x-3 shrink-0">
           <div
             onClick={() => setActiveTab('dashboard')}
             className="flex items-center space-x-3 cursor-pointer group select-none"
@@ -50,15 +51,17 @@ export default function Navbar() {
                 <Calendar className="h-5 w-5 text-white" />
               )}
             </div>
-            <div className="flex items-center space-x-4 sm:space-x-6">
-              <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans shrink-0">
-                AUMTARA SAMAY
-              </h1>
-              <span className="text-slate-400 dark:text-slate-600 font-extrabold hidden sm:inline">|</span>
-              <span className="text-sm font-black text-slate-800 dark:text-slate-200 truncate max-w-[280px] sm:max-w-lg">
-                {institution.name}
-              </span>
-            </div>
+            <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans shrink-0">
+              AUMTARA SAMAY
+            </h1>
+          </div>
+        </div>
+
+        {/* Center: School Name (High-Contrast Vibrant Display) */}
+        <div className="flex-1 flex justify-center items-center px-2">
+          <div className="px-4 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 border-2 border-amber-400 dark:border-amber-700 text-amber-950 dark:text-amber-300 text-xs sm:text-sm font-black tracking-wide shadow-sm flex items-center space-x-2 truncate max-w-xs sm:max-w-md md:max-w-lg">
+            <School className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span className="truncate">{institution.name}</span>
           </div>
         </div>
 
