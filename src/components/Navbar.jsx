@@ -50,12 +50,12 @@ export default function Navbar() {
                 <Calendar className="h-5 w-5 text-white" />
               )}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans">
+            <div className="flex items-center space-x-4 sm:space-x-6">
+              <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans shrink-0">
                 AUMTARA SAMAY
               </h1>
-              <span className="text-slate-300 dark:text-slate-700 font-bold hidden sm:inline">•</span>
-              <span className="px-2.5 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 text-xs font-black truncate max-w-[240px] sm:max-w-md shadow-sm">
+              <span className="text-slate-400 dark:text-slate-600 font-extrabold hidden sm:inline">|</span>
+              <span className="text-sm font-black text-slate-800 dark:text-slate-200 truncate max-w-[280px] sm:max-w-lg">
                 {institution.name}
               </span>
             </div>
