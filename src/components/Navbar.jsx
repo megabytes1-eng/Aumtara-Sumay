@@ -43,22 +43,21 @@ export default function Navbar() {
             onClick={() => setActiveTab('dashboard')}
             className="flex items-center space-x-3 cursor-pointer group select-none"
           >
-            <div className="h-11 w-11 rounded-2xl bg-indigo-700 dark:bg-indigo-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-indigo-800 overflow-hidden shrink-0">
+            <div className="h-10 w-10 rounded-2xl bg-indigo-700 dark:bg-indigo-600 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform border border-indigo-800 overflow-hidden shrink-0">
               {institution.logoUrl ? (
                 <img src={institution.logoUrl} alt="School Logo" className="h-full w-full object-contain bg-white p-0.5" />
               ) : (
-                <Calendar className="h-6 w-6 text-white" />
+                <Calendar className="h-5 w-5 text-white" />
               )}
             </div>
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center leading-none">
-                <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans">
-                  AUMTARA SAMAY
-                </h1>
-              </div>
-              <p className="text-[11px] text-slate-700 dark:text-slate-300 font-black mt-1 leading-tight">
-                {institution.name} ({institution.board})
-              </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="font-black text-xl tracking-tight text-indigo-950 dark:text-amber-300 uppercase font-sans">
+                AUMTARA SAMAY
+              </h1>
+              <span className="text-slate-300 dark:text-slate-700 font-bold hidden sm:inline">•</span>
+              <span className="px-2.5 py-1 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-900 dark:text-indigo-200 border border-indigo-200 dark:border-indigo-800 text-xs font-black truncate max-w-[240px] sm:max-w-md shadow-sm">
+                {institution.name}
+              </span>
             </div>
           </div>
         </div>
