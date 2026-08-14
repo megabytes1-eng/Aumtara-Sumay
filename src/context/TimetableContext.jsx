@@ -245,6 +245,48 @@ export function TimetableProvider({ children }) {
     showToast(`Substitute teacher ${subTeacherName} assigned!`, 'success');
   };
 
+  // Authentication & Default Users State
+  const defaultAccounts = [
+    { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
+    { username: 'hod', password: 'hod123', name: 'Prof. Ramanujan Sharma (HOD)', role: 'hod' },
+    { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' },
+    { username: 'guest', password: 'guest123', name: 'Guest Student View', role: 'faculty' }
+  ];
+
+  const [currentUser, setCurrentUser] = useState({
+    username: 'admin',
+    name: 'Dr. Sarah Jenkins (Principal)',
+    role: 'admin',
+    isLoggedIn: true
+  });
+
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const login = (username, password) => {
+    const found = defaultAccounts.find(
+      (acc) => acc.username.toLowerCase() === username.trim().toLowerCase() && acc.password === password.trim()
+    );
+    if (found) {
+      setCurrentUser({
+        username: found.username,
+        name: found.name,
+        role: found.role,
+        isLoggedIn: true
+      });
+      setActiveRole(found.role);
+      setIsLoginModalOpen(false);
+      showToast(`Welcome back, ${found.name}! Signed in as ${found.role.toUpperCase()}.`, 'success');
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setCurrentUser({ username: '', name: '', role: 'faculty', isLoggedIn: false });
+    setIsLoginModalOpen(true);
+    showToast('Signed out of Aumtara Samay.', 'info');
+  };
+
   // RBAC State
   const [activeRole, setActiveRole] = useState('admin'); // admin, hod, faculty
   const [rolePermissions, setRolePermissions] = useState({
@@ -496,6 +538,12 @@ export function TimetableProvider({ children }) {
     absences,
     addAbsence,
     assignSubstitute,
+    currentUser,
+    defaultAccounts,
+    isLoginModalOpen,
+    setIsLoginModalOpen,
+    login,
+    logout,
     toast,
     showToast
   };

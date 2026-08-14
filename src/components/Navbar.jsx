@@ -10,7 +10,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   Info,
-  HelpCircle
+  HelpCircle,
+  LogIn,
+  LogOut
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
@@ -24,7 +26,10 @@ export default function Navbar() {
     toast,
     setActiveTab,
     selectedShiftFilter,
-    setSelectedShiftFilter
+    setSelectedShiftFilter,
+    currentUser,
+    logout,
+    setIsLoginModalOpen
   } = useTimetable();
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -135,6 +140,42 @@ export default function Navbar() {
             <Sparkles className={`h-4 w-4 ${isGenerating ? 'animate-spin' : ''}`} />
             <span>{isGenerating ? 'Solving Shifts...' : 'Run Dual-Shift AI'}</span>
           </button>
+
+          {/* User Authentication Badge & Sign Out / Sign In Button */}
+          {currentUser?.isLoggedIn ? (
+            <div className="flex items-center space-x-2 pl-2 border-l-2 border-slate-300 dark:border-slate-700">
+              <div className="flex items-center space-x-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                <div className="h-6 w-6 rounded-full bg-indigo-600 text-white font-black text-[10px] flex items-center justify-center uppercase">
+                  {currentUser.username.slice(0, 2)}
+                </div>
+                <div className="hidden lg:block text-left leading-tight">
+                  <p className="text-[11px] font-black text-slate-900 dark:text-slate-100 truncate max-w-[120px]">
+                    {currentUser.name.split(' ')[0]}
+                  </p>
+                  <span className="text-[9px] font-black uppercase text-indigo-700 dark:text-amber-300">
+                    {currentUser.role}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={logout}
+                title="Sign Out of Aumtara Samay"
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-700 dark:text-rose-300 text-xs font-black rounded-xl border border-rose-300 dark:border-rose-800 transition-all cursor-pointer shadow-sm"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden md:inline">Sign Out</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              className="flex items-center space-x-1.5 px-4 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl shadow-md transition-all border border-emerald-900 cursor-pointer hover:scale-105"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
       </div>
 

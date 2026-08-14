@@ -14,9 +14,10 @@ import Settings from './components/Settings';
 import VersionHistoryView from './components/VersionHistoryView';
 
 import GlobalHelpFloatingButton from './components/GlobalHelpFloatingButton';
+import LoginModal from './components/LoginModal';
 
 function AppContent() {
-  const { activeTab, themeMode } = useTimetable();
+  const { activeTab, themeMode, isLoginModalOpen, setIsLoginModalOpen } = useTimetable();
 
   return (
     <div className={`min-h-screen ${themeMode === 'dark' ? 'theme-dark bg-slate-900 text-slate-100' : 'bg-gradient-to-br from-slate-50 via-indigo-50/20 to-purple-50/30 text-slate-800'} flex flex-col font-sans transition-colors duration-300 relative`}>
@@ -37,6 +38,9 @@ function AppContent() {
           {!['dashboard', 'setup', 'data', 'constraints', 'generator', 'substitute', 'tools', 'reports', 'settings', 'history'].includes(activeTab) && <Dashboard />}
         </main>
       </div>
+
+      {/* Global Authentication Modal */}
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
 
       {/* Global Floating Colorful Help Button present on EVERY Page */}
       <GlobalHelpFloatingButton />
