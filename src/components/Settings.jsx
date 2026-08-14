@@ -23,7 +23,11 @@ import {
   Plus,
   KeyRound,
   Users,
-  UserPlus
+  UserPlus,
+  Eye,
+  EyeOff,
+  Mail,
+  Key
 } from 'lucide-react';
 
 export default function Settings() {
@@ -67,13 +71,26 @@ export default function Settings() {
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [editingUserObj, setEditingUserObj] = useState(null);
   const [userNameInput, setUserNameInput] = useState('');
+  const [userEmailInput, setUserEmailInput] = useState('');
   const [userUsernameInput, setUserUsernameInput] = useState('');
   const [userPasswordInput, setUserPasswordInput] = useState('');
   const [userRoleInput, setUserRoleInput] = useState('faculty');
 
+  // Password Visibility Map
+  const [visiblePasswords, setVisiblePasswords] = useState({});
+  const togglePasswordVisibility = (username) => {
+    setVisiblePasswords((prev) => ({ ...prev, [username]: !prev[username] }));
+  };
+
+  // Reset Password Modal State
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetUserTarget, setResetUserTarget] = useState(null);
+  const [newResetPassword, setNewResetPassword] = useState('');
+
   const handleOpenAddUserModal = () => {
     setEditingUserObj(null);
     setUserNameInput('');
+    setUserEmailInput('');
     setUserUsernameInput('');
     setUserPasswordInput('');
     setUserRoleInput('faculty');
@@ -82,10 +99,11 @@ export default function Settings() {
 
   const handleOpenEditUserModal = (usr) => {
     setEditingUserObj(usr);
-    setUserNameInput(usr.name);
-    setUserUsernameInput(usr.username);
-    setUserPasswordInput(usr.password);
-    setUserRoleInput(usr.role);
+    setUserNameInput(usr.name || '');
+    setUserEmailInput(usr.email || '');
+    setUserUsernameInput(usr.username || '');
+    setUserPasswordInput(usr.password || '');
+    setUserRoleInput(usr.role || 'faculty');
     setUserModalOpen(true);
   };
 
@@ -94,6 +112,7 @@ export default function Settings() {
     if (editingUserObj) {
       updateUserAccount({
         name: userNameInput.trim(),
+        email: userEmailInput.trim(),
         username: editingUserObj.username,
         password: userPasswordInput.trim(),
         role: userRoleInput
@@ -101,12 +120,33 @@ export default function Settings() {
     } else {
       addUserAccount({
         name: userNameInput.trim(),
+        email: userEmailInput.trim(),
         username: userUsernameInput.trim().toLowerCase(),
         password: userPasswordInput.trim(),
         role: userRoleInput
       });
     }
     setUserModalOpen(false);
+  };
+
+  const handleOpenResetModal = (usr) => {
+    setResetUserTarget(usr);
+    setNewResetPassword('');
+    setResetModalOpen(true);
+  };
+
+  const handleResetPasswordSubmit = (e) => {
+    e.preventDefault();
+    if (!newResetPassword.trim() || newResetPassword.length < 4) {
+      showToast('New password must be at least 4 characters long!', 'warning');
+      return;
+    }
+    updateUserAccount({
+      ...resetUserTarget,
+      password: newResetPassword.trim()
+    });
+    showToast(`Password for @${resetUserTarget.username} reset successfully!`, 'success');
+    setResetModalOpen(false);
   };
 
   // Clear All Data Confirmation Modal State
@@ -410,11 +450,13 @@ export default function Settings() {
             <table className="w-full text-left text-xs border-collapse">
               <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
                 <tr>
-                  <th className="p-3.5">Full Name</th>
-                  <th className="p-3.5">Username</th>
-                  <th className="p-3.5">Assigned Role</th>
-                  <th className="p-3.5 text-center">Status</th>
-                  <th className="p-3.5 text-right">Actions</th>
+                  <th className="p-3">Full Name</th>
+                  <th className="p-3">Email ID</th>
+                  <th className="p-3">Username (ID)</th>
+                  <th className="p-3">Password</th>
+                  <th className="p-3">Role</th>
+                  <th className="p-3 text-center">Status</th>
+                  <th className="p-3 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-bold text-slate-900 dark:text-slate-200">
@@ -422,15 +464,32 @@ export default function Settings() {
                   if (!usr) return null;
                   const username = usr.username || `user-${idx}`;
                   const isCurrentActive = currentUser?.username?.toLowerCase() === username.toLowerCase();
+                  const isPassVisible = visiblePasswords[username];
                   return (
                     <tr key={username} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
-                      <td className="p-3.5 font-black text-slate-900 dark:text-slate-100">
+                      <td className="p-3 font-black text-slate-900 dark:text-slate-100">
                         {usr.name || 'Unnamed User'}
                       </td>
-                      <td className="p-3.5 font-mono text-indigo-700 dark:text-indigo-300">
+                      <td className="p-3 text-slate-600 dark:text-slate-400 font-bold">
+                        {usr.email || `${username}@school.edu`}
+                      </td>
+                      <td className="p-3 font-mono text-indigo-700 dark:text-indigo-300">
                         @{username}
                       </td>
-                      <td className="p-3.5">
+                      <td className="p-3 font-mono">
+                        <div className="flex items-center space-x-1.5">
+                          <span>{isPassVisible ? usr.password : '••••••••'}</span>
+                          <button
+                            type="button"
+                            onClick={() => togglePasswordVisibility(username)}
+                            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                            title={isPassVisible ? "Hide password" : "Show password"}
+                          >
+                            {isPassVisible ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="p-3">
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase border ${
                           usr.role === 'admin'
                             ? 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-950 dark:text-amber-200'
@@ -441,7 +500,7 @@ export default function Settings() {
                           {usr.role || 'faculty'}
                         </span>
                       </td>
-                      <td className="p-3.5 text-center">
+                      <td className="p-3 text-center">
                         {isCurrentActive ? (
                           <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border border-emerald-400 text-[10px] font-black">
                             ● Active Logged In
@@ -450,11 +509,20 @@ export default function Settings() {
                           <span className="px-2 py-0.5 text-slate-500 text-[10px]">Registered Profile</span>
                         )}
                       </td>
-                      <td className="p-3.5 text-right space-x-1.5">
+                      <td className="p-3 text-right space-x-1">
+                        <button
+                          onClick={() => handleOpenResetModal(usr)}
+                          className="px-2 py-1 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 rounded-lg text-[11px] font-black transition-colors cursor-pointer inline-flex items-center space-x-1"
+                          title="Reset Password for this user"
+                        >
+                          <Key className="h-3.5 w-3.5 text-amber-600" />
+                          <span className="hidden sm:inline">Reset Pass</span>
+                        </button>
+
                         <button
                           onClick={() => handleOpenEditUserModal(usr)}
                           className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-indigo-700 dark:text-indigo-300 transition-colors cursor-pointer"
-                          title="Modify User Profile & Password"
+                          title="Modify User Profile & Role"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -751,6 +819,18 @@ export default function Settings() {
               </div>
 
               <div>
+                <label className="block font-black mb-1">Official Email Address</label>
+                <input
+                  type="email"
+                  value={userEmailInput}
+                  onChange={(e) => setUserEmailInput(e.target.value)}
+                  placeholder="e.g. sunita.rao@school.edu"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 rounded-xl font-black text-slate-900 dark:text-white"
+                  required
+                />
+              </div>
+
+              <div>
                 <label className="block font-black mb-1">Username (Login ID)</label>
                 <input
                   type="text"
@@ -796,16 +876,68 @@ export default function Settings() {
                 <button
                   type="button"
                   onClick={() => setUserModalOpen(false)}
-                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black rounded-xl"
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-black rounded-xl shadow-md flex items-center space-x-1 border border-indigo-900"
+                  className="px-5 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-black rounded-xl shadow-md flex items-center space-x-1 border border-indigo-900 cursor-pointer"
                 >
                   <Save className="h-4 w-4" />
                   <span>{editingUserObj ? 'Save Changes' : 'Create User Account'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Dedicated Reset Password Modal */}
+      {resetModalOpen && resetUserTarget && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl border-2 border-amber-500 shadow-2xl p-6 space-y-4 animate-fadeIn text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-black flex items-center space-x-2 text-amber-950 dark:text-amber-300">
+                <Key className="h-5 w-5 text-amber-600" />
+                <span>Reset User Password (@{resetUserTarget.username})</span>
+              </h3>
+              <button onClick={() => setResetModalOpen(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">
+              Set a new password for account <strong>{resetUserTarget.name}</strong> (@{resetUserTarget.username}).
+            </p>
+
+            <form onSubmit={handleResetPasswordSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-black mb-1">Enter New Password</label>
+                <input
+                  type="text"
+                  value={newResetPassword}
+                  onChange={(e) => setNewResetPassword(e.target.value)}
+                  placeholder="Enter new strong password"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-amber-400 dark:border-amber-700 rounded-xl font-black text-slate-900 dark:text-white focus:outline-none focus:border-amber-600"
+                  required
+                />
+              </div>
+
+              <div className="pt-2 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setResetModalOpen(false)}
+                  className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black rounded-xl shadow-md flex items-center space-x-1 border border-amber-800 cursor-pointer"
+                >
+                  <Key className="h-4 w-4" />
+                  <span>Confirm Reset Password</span>
                 </button>
               </div>
             </form>
