@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --border-color: #cbd5e1;
+  --accent-primary: #4338ca;
+  --accent-hover: #3730a3;
+  --text-main: #0f172a;
+  --text-muted: #334155;
+}
+
+.theme-dark {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --border-color: #475569;
+  --accent-primary: #6366f1;
+  --accent-hover: #4f46e5;
+  --text-main: #ffffff;
+  --text-muted: #cbd5e1;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-main);
+}
+
+/* Custom High Contrast Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+.theme-dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* High Contrast Card Panels */
+.glass-panel {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+}
+
+.theme-dark .glass-panel {
+  background: #1e293b;
+  border: 1.5px solid #334155;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* Form controls high contrast */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+select {
+  color: var(--text-main) !important;
+  font-weight: 600 !important;
+}
+
+.timetable-cell {
+  min-height: 90px;
+  transition: all 0.2s ease;
+}
+
+.timetable-cell:hover {
+  border-color: #4338ca !important;
+}
+
+.cell-dragging {
+  opacity: 0.6;
+  border: 2.5px dashed #4338ca !important;
+}
+
+.cell-drag-over {
+  background-color: rgba(67, 56, 202, 0.1) !important;
+  border: 2.5px solid #4338ca !important;
+}
+
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .glass-panel {
+    background: white !important;
+    border: 1px solid #999 !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  th, td {
+    border: 1px solid #666 !important;
+    color: black !important;
+  }
+}
