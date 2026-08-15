@@ -691,15 +691,57 @@ export function TimetableProvider({ children }) {
     }
   ]);
 
+  // Super Admin Real Profile Credentials State
+  const [superAdminProfile, setSuperAdminProfile] = useState({
+    name: 'Aumtara SaaS Master Admin',
+    email: 'admin@aumtara.com',
+    phone: '+91 98765 43210',
+    password: 'superadmin123',
+    isProfileConfigured: false
+  });
+
   // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
   const [superAdmin2FA, setSuperAdmin2FA] = useState({
     isVerified: false,
-    email: 'superadmin@aumtara.saas',
+    email: 'admin@aumtara.com',
     phone: '+91 98765 43210',
     sentOTP: '789012',
     otpMethod: 'email', // 'email' | 'mobile'
     otpStep: 'request' // 'request' | 'verify' | 'authenticated'
   });
+
+  const updateSuperAdminProfile = (name, email, phone, password) => {
+    const updatedName = name || superAdminProfile.name;
+    const updatedEmail = email || superAdminProfile.email;
+    const updatedPhone = phone || superAdminProfile.phone;
+    const updatedPassword = password || superAdminProfile.password;
+
+    setSuperAdminProfile({
+      name: updatedName,
+      email: updatedEmail,
+      phone: updatedPhone,
+      password: updatedPassword,
+      isProfileConfigured: true
+    });
+    setSuperAdmin2FA((prev) => ({
+      ...prev,
+      email: updatedEmail,
+      phone: updatedPhone
+    }));
+    setUserAccounts((prev) =>
+      prev.map((acc) =>
+        acc.role === 'superadmin'
+          ? {
+              ...acc,
+              name: updatedName,
+              password: updatedPassword,
+              email: updatedEmail
+            }
+          : acc
+      )
+    );
+    showToast(`Saved Super Admin Real Profile! Email: ${updatedEmail}, Phone: ${updatedPhone}`, 'success');
+  };
 
   const sendSuperAdminOTP = (method = 'email') => {
     const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
@@ -1012,7 +1054,9 @@ export function TimetableProvider({ children }) {
     verifySuperAdminOTP,
     updateModulePrice,
     createCustomPackage,
-    assignPackageToSchool
+    assignPackageToSchool,
+    superAdminProfile,
+    updateSuperAdminProfile
   };
 
   return <TimetableContext.Provider value={value}>{children}</TimetableContext.Provider>;

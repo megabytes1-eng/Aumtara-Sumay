@@ -48,6 +48,8 @@ export default function SuperAdminHub() {
     updateModulePrice,
     createCustomPackage,
     assignPackageToSchool,
+    superAdminProfile,
+    updateSuperAdminProfile,
     showToast
   } = useTimetable();
 
@@ -58,6 +60,30 @@ export default function SuperAdminHub() {
   // 2FA Security OTP Challenge State
   const [otpInput, setOtpInput] = useState('');
   const [selectedOtpMethod, setSelectedOtpMethod] = useState('email');
+
+  // Super Admin Real Profile Configuration Form State
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    name: superAdminProfile.name || 'Aumtara SaaS Master Admin',
+    email: superAdminProfile.email || 'admin@aumtara.com',
+    phone: superAdminProfile.phone || '+91 98765 43210',
+    password: superAdminProfile.password || 'superadmin123'
+  });
+
+  const handleSaveSuperAdminProfile = (e) => {
+    e.preventDefault();
+    if (!profileForm.email || !profileForm.phone) {
+      showToast('Please enter your original Email and Mobile number.', 'warning');
+      return;
+    }
+    updateSuperAdminProfile(
+      profileForm.name,
+      profileForm.email,
+      profileForm.phone,
+      profileForm.password
+    );
+    setProfileModalOpen(false);
+  };
 
   // Modals
   const [onboardModalOpen, setOnboardModalOpen] = useState(false);
@@ -341,10 +367,20 @@ export default function SuperAdminHub() {
             </div>
 
             <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 flex items-center justify-between">
-              <span className="text-slate-500 font-bold">Verification Target:</span>
-              <span className="font-mono font-black text-indigo-700 dark:text-indigo-300">
-                {selectedOtpMethod === 'email' ? superAdmin2FA.email : superAdmin2FA.phone}
-              </span>
+              <div className="space-y-0.5">
+                <span className="text-slate-500 font-bold block">Verification Target:</span>
+                <span className="font-mono font-black text-indigo-700 dark:text-indigo-300">
+                  {selectedOtpMethod === 'email' ? superAdmin2FA.email : superAdmin2FA.phone}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setProfileModalOpen(true)}
+                className="px-2.5 py-1.5 bg-amber-100 hover:bg-amber-200 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-[11px] font-black rounded-lg border border-amber-300 cursor-pointer"
+                title="Enter your real email and phone number for 2FA testing"
+              >
+                ⚙️ Set Real Contact
+              </button>
             </div>
 
             <div className="flex items-center justify-between pt-2">
@@ -1410,6 +1446,85 @@ export default function SuperAdminHub() {
                 </button>
                 <button type="submit" className="px-5 py-2 bg-purple-700 text-white font-black rounded-xl shadow cursor-pointer">
                   Apply Package
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 5: Super Admin Real Profile Configuration (Original Email & Mobile) */}
+      {profileModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border-2 border-slate-300 dark:border-slate-700 p-6 space-y-5 shadow-2xl animate-fadeIn text-slate-900 dark:text-slate-100 border-t-8 border-t-amber-500">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-tight flex items-center space-x-2">
+                <ShieldAlert className="h-5 w-5 text-amber-600" />
+                <span>Super Admin Real Contact Profile</span>
+              </h3>
+              <button onClick={() => setProfileModalOpen(false)} className="text-slate-400 font-black">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveSuperAdminProfile} className="space-y-4 text-xs">
+              <div>
+                <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Super Admin Official Name</label>
+                <input
+                  type="text"
+                  required
+                  value={profileForm.name}
+                  onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                  placeholder="e.g. Aumtara Master Admin"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Original Email Address (For 2FA Testing) *</label>
+                <input
+                  type="email"
+                  required
+                  value={profileForm.email}
+                  onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                  placeholder="your-real-email@gmail.com"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono text-indigo-700 dark:text-indigo-400"
+                />
+              </div>
+
+              <div>
+                <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Original Mobile Number (For 2FA SMS Testing) *</label>
+                <input
+                  type="text"
+                  required
+                  value={profileForm.phone}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                  placeholder="+91 98123 45678"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono text-indigo-700 dark:text-indigo-400"
+                />
+              </div>
+
+              <div>
+                <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Super Admin Login Password</label>
+                <input
+                  type="text"
+                  required
+                  value={profileForm.password}
+                  onChange={(e) => setProfileForm({ ...profileForm, password: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setProfileModalOpen(false)}
+                  className="px-4 py-2 bg-slate-200 text-slate-800 rounded-xl font-bold"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl shadow cursor-pointer">
+                  Save Real Profile
                 </button>
               </div>
             </form>
