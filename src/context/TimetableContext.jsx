@@ -13,6 +13,48 @@ import { generateTimetable, autoSolveAllConflicts } from '../utils/generatorAlgo
 const TimetableContext = createContext();
 
 export function TimetableProvider({ children }) {
+  // RBAC State
+  const [activeRole, setActiveRole] = useState('admin'); // superadmin, admin, hod, faculty
+  const [rolePermissions, setRolePermissions] = useState({
+    superadmin: {
+      name: "SaaS Super Administrator",
+      description: "Platform Control, Multi-Tenant Subscriptions, Module Toggles & Billing",
+      canEditData: true,
+      canRunAISolver: true,
+      canManageSubstitutes: true,
+      canExportReports: true,
+      canEditSettings: true,
+      isSuperAdmin: true
+    },
+    admin: {
+      name: "Academic Administrator",
+      description: "Full Edit, Master Data, AI Solver & System Configuration",
+      canEditData: true,
+      canRunAISolver: true,
+      canManageSubstitutes: true,
+      canExportReports: true,
+      canEditSettings: true
+    },
+    hod: {
+      name: "Department HOD",
+      description: "Department View, Substitute Requests & Limited Editing",
+      canEditData: false,
+      canRunAISolver: true,
+      canManageSubstitutes: true,
+      canExportReports: true,
+      canEditSettings: false
+    },
+    faculty: {
+      name: "Faculty Staff",
+      description: "Read-only Duty Schedule & Personal Timetable View",
+      canEditData: false,
+      canRunAISolver: false,
+      canManageSubstitutes: false,
+      canExportReports: true,
+      canEditSettings: false
+    }
+  });
+
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
@@ -379,48 +421,6 @@ export function TimetableProvider({ children }) {
     setIsLoginModalOpen(true);
     showToast('Signed out of Aumtara Samay.', 'info');
   };
-
-  // RBAC State
-  const [activeRole, setActiveRole] = useState('admin'); // superadmin, admin, hod, faculty
-  const [rolePermissions, setRolePermissions] = useState({
-    superadmin: {
-      name: "SaaS Super Administrator",
-      description: "Platform Control, Multi-Tenant Subscriptions, Module Toggles & Billing",
-      canEditData: true,
-      canRunAISolver: true,
-      canManageSubstitutes: true,
-      canExportReports: true,
-      canEditSettings: true,
-      isSuperAdmin: true
-    },
-    admin: {
-      name: "Academic Administrator",
-      description: "Full Edit, Master Data, AI Solver & System Configuration",
-      canEditData: true,
-      canRunAISolver: true,
-      canManageSubstitutes: true,
-      canExportReports: true,
-      canEditSettings: true
-    },
-    hod: {
-      name: "Department HOD",
-      description: "Department View, Substitute Requests & Limited Editing",
-      canEditData: false,
-      canRunAISolver: true,
-      canManageSubstitutes: true,
-      canExportReports: true,
-      canEditSettings: false
-    },
-    faculty: {
-      name: "Faculty Staff",
-      description: "Read-only Duty Schedule & Personal Timetable View",
-      canEditData: false,
-      canRunAISolver: false,
-      canManageSubstitutes: false,
-      canExportReports: true,
-      canEditSettings: false
-    }
-  });
 
   // SaaS Multi-Tenant Subscribed Institutions Master State
   const [subscribedSchools, setSubscribedSchools] = useState([
