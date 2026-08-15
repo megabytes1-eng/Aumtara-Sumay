@@ -122,6 +122,42 @@ export function TimetableProvider({ children }) {
     }
   ]);
 
+  // Customer Institution Usage & Feature Activity Logs State
+  const [customerUsageLogs, setCustomerUsageLogs] = useLocalStorage('aumtara_customer_usage_logs', [
+    {
+      id: 'USG-001',
+      timestamp: new Date().toLocaleString(),
+      schoolName: 'Apex State & International Public School',
+      feature: '🤖 AI Generator',
+      description: 'Generated 100% Zero-Clash Timetable (120 slots, 98% Optimization Score)',
+      user: 'Dr. Sarah Jenkins (Principal)'
+    },
+    {
+      id: 'USG-002',
+      timestamp: new Date(Date.now() - 3600000).toLocaleString(),
+      schoolName: 'St. Xavier Convent High School',
+      feature: '🔄 Substitute Cover',
+      description: 'Replaced Prof. Ramanujan Sharma with Dr. Vikram Sarabhai for Period 3 Afternoon Shift',
+      user: 'Fr. Joseph D\'Souza'
+    },
+    {
+      id: 'USG-003',
+      timestamp: new Date(Date.now() - 7200000).toLocaleString(),
+      schoolName: 'Delhi Public Senior Secondary Academy',
+      feature: '📄 PDF Export Suite',
+      description: 'Exported High-Res Master Grid & Faculty Period Distribution PDF Reports',
+      user: 'Dr. Rajesh Sharma'
+    },
+    {
+      id: 'USG-004',
+      timestamp: new Date(Date.now() - 14400000).toLocaleString(),
+      schoolName: 'Apex State & International Public School',
+      feature: '🏫 Class Setup',
+      description: 'Added new Class Section Grade 10B (Morning Shift, 35 Students limit)',
+      user: 'Dr. Sarah Jenkins'
+    }
+  ]);
+
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
@@ -872,6 +908,38 @@ export function TimetableProvider({ children }) {
     setPlatformAuditLogs((prev) => [newLog, ...prev]);
   };
 
+  const addCustomerUsageLog = (schoolName, feature, description, user) => {
+    const newLog = {
+      id: `USG-${Date.now().toString().slice(-4)}`,
+      timestamp: new Date().toLocaleString(),
+      schoolName: schoolName || institution?.name || 'Subscribed Institution',
+      feature: feature || 'System Feature',
+      description,
+      user: user || currentUser?.name || 'School Admin'
+    };
+    setCustomerUsageLogs((prev) => [newLog, ...prev]);
+  };
+
+  const deleteAuditLog = (logId) => {
+    setPlatformAuditLogs((prev) => prev.filter((log) => log.id !== logId));
+    showToast(`Deleted audit log entry [${logId}]`, 'info');
+  };
+
+  const clearAllAuditLogs = () => {
+    setPlatformAuditLogs([]);
+    showToast('Cleared all Super Admin platform audit logs!', 'warning');
+  };
+
+  const deleteCustomerUsageLog = (logId) => {
+    setCustomerUsageLogs((prev) => prev.filter((log) => log.id !== logId));
+    showToast(`Deleted customer usage log entry [${logId}]`, 'info');
+  };
+
+  const clearAllCustomerUsageLogs = () => {
+    setCustomerUsageLogs([]);
+    showToast('Cleared all customer institution usage & activity logs!', 'warning');
+  };
+
   const sendSuperAdminOTP = (method = 'email') => {
     const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
     setSuperAdmin2FA((prev) => ({
@@ -1285,7 +1353,13 @@ export function TimetableProvider({ children }) {
     superAdminProfile,
     updateSuperAdminProfile,
     platformAuditLogs,
-    addAuditLog
+    addAuditLog,
+    deleteAuditLog,
+    clearAllAuditLogs,
+    customerUsageLogs,
+    addCustomerUsageLog,
+    deleteCustomerUsageLog,
+    clearAllCustomerUsageLogs
   };
 
   return <TimetableContext.Provider value={value}>{children}</TimetableContext.Provider>;

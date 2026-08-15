@@ -13,6 +13,7 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Download,
   Key,
   CheckCircle2,
   AlertTriangle,
@@ -56,6 +57,12 @@ export default function SuperAdminHub() {
     updateSuperAdminProfile,
     platformAuditLogs,
     addAuditLog,
+    deleteAuditLog,
+    clearAllAuditLogs,
+    customerUsageLogs,
+    addCustomerUsageLog,
+    deleteCustomerUsageLog,
+    clearAllCustomerUsageLogs,
     showToast
   } = useTimetable();
 
@@ -65,6 +72,22 @@ export default function SuperAdminHub() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+
+  // Audit Logs & Customer Usage Center State
+  const [logViewMode, setLogViewMode] = useState('audit'); // 'audit' or 'usage'
+  const [logSearchQuery, setLogSearchQuery] = useState('');
+
+  const handleExportLogs = () => {
+    const logsToExport = logViewMode === 'audit' ? platformAuditLogs : customerUsageLogs;
+    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(logsToExport, null, 2))}`;
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', jsonString);
+    downloadAnchor.setAttribute('download', `aumtara_${logViewMode}_logs_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast(`Exported ${logsToExport.length} ${logViewMode} log entries to JSON!`, 'success');
+  };
 
   // 2FA Security OTP Challenge State
   const [otpInput, setOtpInput] = useState('');
@@ -1498,45 +1521,258 @@ export default function SuperAdminHub() {
         </div>
       )}
 
-      {/* TAB 6: Platform Audit Logs & Live Activity Stream */}
+      {/* TAB 7: Platform Audit Logs & Customer Usage Activity Center */}
       {activeTab === 'logs' && (
-        <div className="glass-panel p-6 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-6">
-          <div>
-            <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-emerald-600" />
-              <span>SaaS Platform Audit Trail & System Activity Stream</span>
-            </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-1">
-              Real-time security log of all Super Admin operations, school status toggles, 2FA OTP authentications, and pricing updates.
-            </p>
+        <div className="glass-panel p-6 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-6 animate-fadeIn">
+          {/* Header Title */}
+          <div className="flex items-center justify-between flex-wrap gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+            <div>
+              <span className="px-3 py-1 bg-emerald-100 text-emerald-950 dark:bg-emerald-950 dark:text-emerald-200 font-black text-[10px] uppercase rounded-full tracking-wider border border-emerald-300 dark:border-emerald-800">
+                📜 Master Audit & Usage Center
+              </span>
+              <h3 className="text-xl font-black text-slate-950 dark:text-white uppercase tracking-tight mt-2 flex items-center space-x-2">
+                <Clock className="h-6 w-6 text-emerald-600" />
+                <span>SaaS Platform Audit Trail & Customer Usage Logs</span>
+              </h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-1">
+                Monitor Super Admin security operations and track customer school AI solver runs, substitute covers, & PDF exports.
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleExportLogs}
+                className="px-4 py-2 bg-indigo-700 hover:bg-indigo-800 text-white font-black text-xs rounded-xl shadow cursor-pointer transition-all flex items-center space-x-1.5 border border-indigo-900"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export Logs (JSON)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  if (logViewMode === 'audit') {
+                    if (platformAuditLogs.length === 0) {
+                      showToast('Audit log history is already empty!', 'info');
+                      return;
+                    }
+                    if (window.confirm('Are you sure you want to clear ALL Super Admin audit logs? This action cannot be undone.')) {
+                      clearAllAuditLogs();
+                    }
+                  } else {
+                    if (customerUsageLogs.length === 0) {
+                      showToast('Customer usage log history is already empty!', 'info');
+                      return;
+                    }
+                    if (window.confirm('Are you sure you want to clear ALL customer institution usage logs? This action cannot be undone.')) {
+                      clearAllCustomerUsageLogs();
+                    }
+                  }
+                }}
+                className="px-4 py-2 bg-rose-700 hover:bg-rose-800 text-white font-black text-xs rounded-xl shadow cursor-pointer transition-all flex items-center space-x-1.5 border border-rose-900"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Clear All {logViewMode === 'audit' ? 'Audit' : 'Usage'} Logs</span>
+              </button>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
-                <tr>
-                  <th className="p-4">Timestamp</th>
-                  <th className="p-4">Action Type</th>
-                  <th className="p-4">Description</th>
-                  <th className="p-4">Performed By</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
-                {platformAuditLogs.map((log) => (
-                  <tr key={log.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/50">
-                    <td className="p-4 font-mono text-[11px] text-slate-500">{log.timestamp}</td>
-                    <td className="p-4">
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-950 dark:bg-emerald-950 dark:text-emerald-200 text-[10px] font-black border border-emerald-300 dark:border-emerald-800">
-                        {log.action}
-                      </span>
-                    </td>
-                    <td className="p-4 font-black text-slate-900 dark:text-white">{log.description}</td>
-                    <td className="p-4 font-mono text-indigo-700 dark:text-indigo-300">{log.user}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* KPI Summary Grid for Logs */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button
+              onClick={() => setLogViewMode('audit')}
+              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                logViewMode === 'audit'
+                  ? 'border-indigo-500 bg-indigo-50/60 dark:bg-indigo-950/40 shadow-md'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-400'
+              }`}
+            >
+              <span className="text-[10px] font-black uppercase text-indigo-700 dark:text-indigo-400 tracking-wider">Super Admin Audit Logs</span>
+              <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{platformAuditLogs.length} Entries</p>
+              <p className="text-[11px] font-bold text-slate-500 mt-0.5">Security, 2FA, & Pricing Events</p>
+            </button>
+
+            <button
+              onClick={() => setLogViewMode('usage')}
+              className={`p-4 rounded-2xl border-2 text-left transition-all cursor-pointer ${
+                logViewMode === 'usage'
+                  ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40 shadow-md'
+                  : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-400'
+              }`}
+            >
+              <span className="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 tracking-wider">Customer Usage Logs</span>
+              <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">{customerUsageLogs.length} Entries</p>
+              <p className="text-[11px] font-bold text-slate-500 mt-0.5">School AI Runs, Substitutes & PDF Exports</p>
+            </button>
+
+            <div className="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+              <span className="text-[10px] font-black uppercase text-purple-700 dark:text-purple-400 tracking-wider">AI Generator Operations</span>
+              <p className="text-2xl font-black text-purple-950 dark:text-purple-200 mt-1">
+                {customerUsageLogs.filter((l) => l.feature?.includes('AI Generator')).length} Solved
+              </p>
+              <p className="text-[11px] font-bold text-slate-500 mt-0.5">Automated AI Solver executions</p>
+            </div>
+
+            <div className="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+              <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400 tracking-wider">Active Logging Schools</span>
+              <p className="text-2xl font-black text-amber-950 dark:text-amber-200 mt-1">
+                {new Set(customerUsageLogs.map((l) => l.schoolName)).size} Institutions
+              </p>
+              <p className="text-[11px] font-bold text-slate-500 mt-0.5">Active customer tenant accounts</p>
+            </div>
           </div>
+
+          {/* Sub-Tab Filter & Search Bar */}
+          <div className="flex items-center justify-between gap-4 flex-wrap border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex space-x-2">
+              <button
+                onClick={() => setLogViewMode('audit')}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  logViewMode === 'audit'
+                    ? 'bg-amber-400 text-slate-950 shadow border border-amber-500 scale-105'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                🛡️ Super Admin Audit Logs ({platformAuditLogs.length})
+              </button>
+
+              <button
+                onClick={() => setLogViewMode('usage')}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  logViewMode === 'usage'
+                    ? 'bg-amber-400 text-slate-950 shadow border border-amber-500 scale-105'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                📊 Customer Institution Usage Logs ({customerUsageLogs.length})
+              </button>
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
+              <input
+                type="text"
+                value={logSearchQuery}
+                onChange={(e) => setLogSearchQuery(e.target.value)}
+                placeholder="Search logs by keyword..."
+                className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl text-xs font-bold text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+
+          {/* Table View 1: Super Admin Audit Logs */}
+          {logViewMode === 'audit' && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+                  <tr>
+                    <th className="p-4">Timestamp</th>
+                    <th className="p-4">Action Type</th>
+                    <th className="p-4">Description</th>
+                    <th className="p-4">Performed By</th>
+                    <th className="p-4 text-right">Delete Log</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
+                  {platformAuditLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="p-8 text-center text-slate-500">
+                        No audit logs currently recorded. Log history is empty.
+                      </td>
+                    </tr>
+                  ) : (
+                    platformAuditLogs
+                      .filter(
+                        (log) =>
+                          log.description.toLowerCase().includes(logSearchQuery.toLowerCase()) ||
+                          log.action.toLowerCase().includes(logSearchQuery.toLowerCase()) ||
+                          log.user.toLowerCase().includes(logSearchQuery.toLowerCase())
+                      )
+                      .map((log) => (
+                        <tr key={log.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/50">
+                          <td className="p-4 font-mono text-[11px] text-slate-500">{log.timestamp}</td>
+                          <td className="p-4">
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-950 dark:bg-emerald-950 dark:text-emerald-200 text-[10px] font-black border border-emerald-300 dark:border-emerald-800 font-mono">
+                              {log.action}
+                            </span>
+                          </td>
+                          <td className="p-4 font-black text-slate-900 dark:text-white">{log.description}</td>
+                          <td className="p-4 font-mono text-indigo-700 dark:text-indigo-300">{log.user}</td>
+                          <td className="p-4 text-right">
+                            <button
+                              onClick={() => deleteAuditLog(log.id)}
+                              className="px-2.5 py-1 bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white text-[11px] font-black rounded-lg transition-colors cursor-pointer border border-rose-300 dark:border-rose-800 inline-flex items-center space-x-1"
+                              title="Delete this audit log row"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Remove</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Table View 2: Customer Usage Logs */}
+          {logViewMode === 'usage' && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+                  <tr>
+                    <th className="p-4">Timestamp</th>
+                    <th className="p-4">Customer Institution</th>
+                    <th className="p-4">Feature Used</th>
+                    <th className="p-4">Activity Description</th>
+                    <th className="p-4">School User</th>
+                    <th className="p-4 text-right">Delete Log</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
+                  {customerUsageLogs.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="p-8 text-center text-slate-500">
+                        No customer usage logs recorded. Log history is empty.
+                      </td>
+                    </tr>
+                  ) : (
+                    customerUsageLogs
+                      .filter(
+                        (log) =>
+                          log.schoolName.toLowerCase().includes(logSearchQuery.toLowerCase()) ||
+                          log.description.toLowerCase().includes(logSearchQuery.toLowerCase()) ||
+                          log.feature.toLowerCase().includes(logSearchQuery.toLowerCase()) ||
+                          log.user.toLowerCase().includes(logSearchQuery.toLowerCase())
+                      )
+                      .map((log) => (
+                        <tr key={log.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/50">
+                          <td className="p-4 font-mono text-[11px] text-slate-500">{log.timestamp}</td>
+                          <td className="p-4 font-black text-indigo-950 dark:text-white">{log.schoolName}</td>
+                          <td className="p-4">
+                            <span className="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-950 dark:bg-purple-950 dark:text-purple-200 text-[10px] font-black border border-purple-300 dark:border-purple-800">
+                              {log.feature}
+                            </span>
+                          </td>
+                          <td className="p-4 font-bold text-slate-800 dark:text-slate-200">{log.description}</td>
+                          <td className="p-4 font-mono text-indigo-700 dark:text-indigo-300">{log.user}</td>
+                          <td className="p-4 text-right">
+                            <button
+                              onClick={() => deleteCustomerUsageLog(log.id)}
+                              className="px-2.5 py-1 bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 hover:bg-rose-600 hover:text-white text-[11px] font-black rounded-lg transition-colors cursor-pointer border border-rose-300 dark:border-rose-800 inline-flex items-center space-x-1"
+                              title="Delete this customer usage log row"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              <span>Remove</span>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
 
