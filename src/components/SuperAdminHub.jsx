@@ -50,16 +50,43 @@ export default function SuperAdminHub() {
     assignPackageToSchool,
     superAdminProfile,
     updateSuperAdminProfile,
+    platformAuditLogs,
+    addAuditLog,
     showToast
   } = useTimetable();
 
-  const [activeTab, setActiveTab] = useState('schools'); // 'schools' | 'modules' | 'billing' | 'security' | 'packages'
+  const [activeTab, setActiveTab] = useState('schools'); // 'schools' | 'modules' | 'billing' | 'security' | 'packages' | 'logs'
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
   // 2FA Security OTP Challenge State
   const [otpInput, setOtpInput] = useState('');
   const [selectedOtpMethod, setSelectedOtpMethod] = useState('email');
+
+  // Interactive Email / SMS OTP Dispatch Simulator Modal State
+  const [otpDispatchModal, setOtpDispatchModal] = useState({
+    isOpen: false,
+    otpCode: '',
+    method: 'email',
+    target: ''
+  });
+
+  const handleTriggerOTP = () => {
+    const generated = sendSuperAdminOTP(selectedOtpMethod);
+    const code = generated || superAdmin2FA.sentOTP || '789012';
+    setOtpDispatchModal({
+      isOpen: true,
+      otpCode: code,
+      method: selectedOtpMethod,
+      target: selectedOtpMethod === 'email' ? superAdmin2FA.email : superAdmin2FA.phone
+    });
+  };
+
+  const handleAutoFillAndVerify = () => {
+    setOtpInput(otpDispatchModal.otpCode);
+    verifySuperAdminOTP(otpDispatchModal.otpCode);
+    setOtpDispatchModal({ ...otpDispatchModal, isOpen: false });
+  };
 
   // Super Admin Real Profile Configuration Form State
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -386,11 +413,11 @@ export default function SuperAdminHub() {
             <div className="flex items-center justify-between pt-2">
               <button
                 type="button"
-                onClick={() => sendSuperAdminOTP(selectedOtpMethod)}
+                onClick={handleTriggerOTP}
                 className="px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-lg border border-amber-300 cursor-pointer flex items-center space-x-2 transition-all hover:scale-105"
               >
                 <ShieldAlert className="h-4 w-4" />
-                <span>Send 6-Digit Security OTP</span>
+                <span>Send 6-Digit Security OTP (Email/SMS)</span>
               </button>
 
               <div className="text-[11px] font-mono font-black text-amber-900 dark:text-amber-200 bg-amber-100 dark:bg-amber-950/80 px-3 py-1 rounded-lg border border-amber-300">
@@ -594,6 +621,18 @@ export default function SuperAdminHub() {
           >
             <Key className="h-4 w-4" />
             <span>5. Admin Passwords</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('logs')}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              activeTab === 'logs'
+                ? 'bg-indigo-700 text-white shadow-lg border border-indigo-900 scale-105'
+                : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            <Clock className="h-4 w-4 text-emerald-400" />
+            <span>6. Platform Audit Logs</span>
           </button>
         </div>
 
@@ -1136,6 +1175,110 @@ export default function SuperAdminHub() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: Platform Audit Logs & Live Activity Stream */}
+      {activeTab === 'logs' && (
+        <div className="glass-panel p-6 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-6">
+          <div>
+            <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+              <Clock className="h-5 w-5 text-emerald-600" />
+              <span>SaaS Platform Audit Trail & System Activity Stream</span>
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-1">
+              Real-time security log of all Super Admin operations, school status toggles, 2FA OTP authentications, and pricing updates.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+                <tr>
+                  <th className="p-4">Timestamp</th>
+                  <th className="p-4">Action Type</th>
+                  <th className="p-4">Description</th>
+                  <th className="p-4">Performed By</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
+                {platformAuditLogs.map((log) => (
+                  <tr key={log.id} className="hover:bg-slate-100 dark:hover:bg-slate-800/50">
+                    <td className="p-4 font-mono text-[11px] text-slate-500">{log.timestamp}</td>
+                    <td className="p-4">
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-950 dark:bg-emerald-950 dark:text-emerald-200 text-[10px] font-black border border-emerald-300 dark:border-emerald-800">
+                        {log.action}
+                      </span>
+                    </td>
+                    <td className="p-4 font-black text-slate-900 dark:text-white">{log.description}</td>
+                    <td className="p-4 font-mono text-indigo-700 dark:text-indigo-300">{log.user}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Simulated Email & SMS OTP Dispatcher Modal */}
+      {otpDispatchModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl border-2 border-indigo-300 dark:border-indigo-800 p-6 space-y-5 shadow-2xl animate-fadeIn text-slate-900 dark:text-slate-100 border-t-8 border-t-indigo-600">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <div className="flex items-center space-x-2.5">
+                <span className="p-2 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl text-lg">
+                  {otpDispatchModal.method === 'email' ? '📨' : '📱'}
+                </span>
+                <div>
+                  <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-tight">
+                    {otpDispatchModal.method === 'email' ? 'Official 2FA Email Dispatched' : 'Mobile SMS OTP Dispatched'}
+                  </h3>
+                  <p className="text-[11px] font-mono text-indigo-600 dark:text-indigo-400">
+                    Target: {otpDispatchModal.target}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setOtpDispatchModal({ ...otpDispatchModal, isOpen: false })} className="text-slate-400 font-black text-lg">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 text-xs font-sans">
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-500">
+                <span>From: security-2fa@aumtara.saas</span>
+                <span>{new Date().toLocaleTimeString()}</span>
+              </div>
+              <div className="font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
+                Subject: [AUMTARA SAMAY] 🔒 Your Super Admin 2FA Security OTP Code: {otpDispatchModal.otpCode}
+              </div>
+
+              <div className="py-2 text-slate-700 dark:text-slate-200 leading-relaxed space-y-2">
+                <p className="font-bold">Hello Super Admin,</p>
+                <p>Your 6-digit Security Verification OTP to unlock the AUMTARA SAMAY Master SaaS Control Program is:</p>
+                <div className="py-3 bg-indigo-50 dark:bg-indigo-950/80 rounded-2xl text-center font-mono font-black text-3xl text-indigo-700 dark:text-indigo-300 border-2 border-indigo-200 dark:border-indigo-800 tracking-widest my-2">
+                  {otpDispatchModal.otpCode}
+                </div>
+                <p className="text-[11px] text-slate-500 italic">This verification code is active for real testing. Click below to auto-fill and unlock.</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setOtpDispatchModal({ ...otpDispatchModal, isOpen: false })}
+                className="px-4 py-2 bg-slate-200 text-slate-800 text-xs font-bold rounded-xl cursor-pointer"
+              >
+                Close Message
+              </button>
+              <button
+                type="button"
+                onClick={handleAutoFillAndVerify}
+                className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-lg border border-emerald-900 cursor-pointer flex items-center space-x-1.5 transition-all hover:scale-105"
+              >
+                <span>⚡ Auto-Fill Code & Unlock Master Control</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

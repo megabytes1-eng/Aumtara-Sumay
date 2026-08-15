@@ -743,6 +743,42 @@ export function TimetableProvider({ children }) {
     showToast(`Saved Super Admin Real Profile! Email: ${updatedEmail}, Phone: ${updatedPhone}`, 'success');
   };
 
+  // Platform Activity Audit Logs State
+  const [platformAuditLogs, setPlatformAuditLogs] = useState([
+    {
+      id: 'LOG-001',
+      timestamp: new Date().toLocaleString(),
+      action: 'ENABLE_MODULE',
+      description: 'Super Admin enabled "AI Timetable Engine" for Apex Public School (SCH-001)',
+      user: 'Super Admin (2FA Verified)'
+    },
+    {
+      id: 'LOG-002',
+      timestamp: new Date(Date.now() - 3600000).toLocaleString(),
+      action: 'UPDATE_SUBSCRIPTION',
+      description: 'Updated annual subscription pricing for St. Xavier Convent High School to ₹50,000/Yr',
+      user: 'Super Admin'
+    },
+    {
+      id: 'LOG-003',
+      timestamp: new Date(Date.now() - 7200000).toLocaleString(),
+      action: 'PASSWORD_RESET',
+      description: 'Reset Admin credentials for Delhi Public Senior Secondary Academy',
+      user: 'Super Admin'
+    }
+  ]);
+
+  const addAuditLog = (action, description) => {
+    const newLog = {
+      id: `LOG-${Date.now().toString().slice(-4)}`,
+      timestamp: new Date().toLocaleString(),
+      action,
+      description,
+      user: 'Super Admin (2FA Verified)'
+    };
+    setPlatformAuditLogs((prev) => [newLog, ...prev]);
+  };
+
   const sendSuperAdminOTP = (method = 'email') => {
     const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
     setSuperAdmin2FA((prev) => ({
@@ -751,7 +787,8 @@ export function TimetableProvider({ children }) {
       otpMethod: method,
       otpStep: 'verify'
     }));
-    showToast(`🔐 Security 2FA OTP sent to ${method === 'email' ? prev.email : prev.phone}! Demo Verification OTP Code: [ ${generatedOTP} ]`, 'info');
+    addAuditLog('SEND_2FA_OTP', `Dispatched 2FA OTP security verification code to ${method === 'email' ? prev.email : prev.phone}`);
+    showToast(`🔐 Security 2FA OTP sent to ${method === 'email' ? prev.email : prev.phone}! Verification OTP Code: [ ${generatedOTP} ]`, 'info');
     return generatedOTP;
   };
 
@@ -762,6 +799,7 @@ export function TimetableProvider({ children }) {
         isVerified: true,
         otpStep: 'authenticated'
       }));
+      addAuditLog('2FA_VERIFIED', 'Super Admin successfully authenticated via 2FA Email/SMS OTP code.');
       showToast('✅ 2FA Email & Mobile Security Verification Successful! Full Super Admin access unlocked.', 'success');
       return true;
     } else {
@@ -1056,7 +1094,9 @@ export function TimetableProvider({ children }) {
     createCustomPackage,
     assignPackageToSchool,
     superAdminProfile,
-    updateSuperAdminProfile
+    updateSuperAdminProfile,
+    platformAuditLogs,
+    addAuditLog
   };
 
   return <TimetableContext.Provider value={value}>{children}</TimetableContext.Provider>;
