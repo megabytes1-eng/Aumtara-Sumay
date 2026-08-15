@@ -67,7 +67,7 @@ export default function Sidebar() {
 
   if (!isSidebarOpen) return null;
 
-  // DEDICATED SUPER ADMIN SAAS CONTROL PANEL SIDEBAR (FHMIS Pharmacy Style)
+  // DEDICATED SUPER ADMIN SAAS CONTROL PANEL SIDEBAR (Aumtara Samay SaaS Mode)
   const isSuperAdminMode = activeTab === 'superadmin' || currentUser?.role === 'superadmin';
 
   if (isSuperAdminMode) {

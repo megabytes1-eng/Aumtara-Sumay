@@ -763,7 +763,7 @@ export default function SuperAdminHub() {
                 📊 SA Executive Command Dashboard
               </span>
               <h2 className="text-xl font-black text-slate-950 dark:text-white uppercase tracking-tight">
-                FHMIS Platform Command Overview
+                Aumtara Samay SaaS Platform Command Overview
               </h2>
               <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">
                 Platform status is 100% operational across all {totalSchools} subscribing school tenants.
