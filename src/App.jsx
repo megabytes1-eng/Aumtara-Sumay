@@ -12,6 +12,7 @@ import FreeTools from './components/FreeTools';
 import ReportsExport from './components/ReportsExport';
 import Settings from './components/Settings';
 import VersionHistoryView from './components/VersionHistoryView';
+import SuperAdminHub from './components/SuperAdminHub';
 
 import GlobalHelpFloatingButton from './components/GlobalHelpFloatingButton';
 import LoginModal from './components/LoginModal';
@@ -35,7 +36,8 @@ function AppContent() {
           {activeTab === 'reports' && <ReportsExport />}
           {activeTab === 'settings' && <Settings />}
           {activeTab === 'history' && <VersionHistoryView />}
-          {!['dashboard', 'setup', 'data', 'constraints', 'generator', 'substitute', 'tools', 'reports', 'settings', 'history'].includes(activeTab) && <Dashboard />}
+          {activeTab === 'superadmin' && <SuperAdminHub />}
+          {!['dashboard', 'setup', 'data', 'constraints', 'generator', 'substitute', 'tools', 'reports', 'settings', 'history', 'superadmin'].includes(activeTab) && <Dashboard />}
         </main>
       </div>
 

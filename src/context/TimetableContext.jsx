@@ -250,6 +250,7 @@ export function TimetableProvider({ children }) {
 
   // Authentication & Dynamic Users Management State
   const [userAccounts, setUserAccounts] = useState([
+    { username: 'superadmin', password: 'superadmin123', name: 'Aumtara SaaS Super Admin', role: 'superadmin' },
     { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
     { username: 'hod', password: 'hod123', name: 'Prof. Ramanujan Sharma (HOD)', role: 'hod' },
     { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' }
@@ -360,8 +361,18 @@ export function TimetableProvider({ children }) {
   };
 
   // RBAC State
-  const [activeRole, setActiveRole] = useState('admin'); // admin, hod, faculty
+  const [activeRole, setActiveRole] = useState('admin'); // superadmin, admin, hod, faculty
   const [rolePermissions, setRolePermissions] = useState({
+    superadmin: {
+      name: "SaaS Super Administrator",
+      description: "Platform Control, Multi-Tenant Subscriptions, Module Toggles & Billing",
+      canEditData: true,
+      canRunAISolver: true,
+      canManageSubstitutes: true,
+      canExportReports: true,
+      canEditSettings: true,
+      isSuperAdmin: true
+    },
     admin: {
       name: "Academic Administrator",
       description: "Full Edit, Master Data, AI Solver & System Configuration",
@@ -390,6 +401,203 @@ export function TimetableProvider({ children }) {
       canEditSettings: false
     }
   });
+
+  // SaaS Multi-Tenant Subscribed Institutions Master State
+  const [subscribedSchools, setSubscribedSchools] = useState([
+    {
+      id: 'SCH-001',
+      code: 'APEX-CBSE-001',
+      name: 'Apex State & International Public School',
+      address: 'Sector 14, Main Institutional Area, New Delhi',
+      principalName: 'Dr. Sarah Jenkins',
+      adminEmail: 'admin@apexschool.edu.in',
+      adminPassword: 'admin123',
+      phone: '+91 98765 43210',
+      status: 'Active',
+      planTier: 'Enterprise Dual-Shift',
+      annualPriceINR: 75000,
+      currency: 'INR',
+      billingCycle: 'Annual',
+      subscriptionStartDate: '2026-01-01',
+      renewalDate: '2027-01-01',
+      paymentStatus: 'Paid (Current)',
+      maxClassesLimit: 30,
+      maxTeachersLimit: 100,
+      enabledModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: true,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    },
+    {
+      id: 'SCH-002',
+      code: 'STXAV-ENG-002',
+      name: 'St. Xavier Convent High School',
+      address: 'M.G. Road Campus, Mumbai, Maharashtra',
+      principalName: 'Fr. Joseph D\'Souza',
+      adminEmail: 'principal@stxaviersmumbai.org',
+      adminPassword: 'xaviers2026',
+      phone: '+91 91234 56789',
+      status: 'Active',
+      planTier: 'Standard Dual-Shift',
+      annualPriceINR: 50000,
+      currency: 'INR',
+      billingCycle: 'Annual',
+      subscriptionStartDate: '2026-03-15',
+      renewalDate: '2027-03-15',
+      paymentStatus: 'Paid (Current)',
+      maxClassesLimit: 20,
+      maxTeachersLimit: 50,
+      enabledModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: false,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    },
+    {
+      id: 'SCH-003',
+      code: 'DPS-ACAD-003',
+      name: 'Delhi Public Senior Secondary Academy',
+      address: 'Ring Road, Civil Lines, Jaipur, Rajasthan',
+      principalName: 'Mrs. Sunita Agarwal',
+      adminEmail: 'contact@dpsjaipur.ac.in',
+      adminPassword: 'dpsjaipurpass',
+      phone: '+91 99887 76655',
+      status: 'Trialing',
+      planTier: 'Enterprise Dual-Shift',
+      annualPriceINR: 75000,
+      currency: 'INR',
+      billingCycle: 'Annual',
+      subscriptionStartDate: '2026-08-01',
+      renewalDate: '2026-08-31',
+      paymentStatus: 'Trial Active (14 Days Remaining)',
+      maxClassesLimit: 50,
+      maxTeachersLimit: 150,
+      enabledModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: true,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    },
+    {
+      id: 'SCH-004',
+      code: 'KVS-ZONE-004',
+      name: 'Kendriya Vidyalaya Command Branch',
+      address: 'Air Force Station Area, Chandigarh',
+      principalName: 'Shri R.K. Varma',
+      adminEmail: 'admin@kvschandigarh.nic.in',
+      adminPassword: 'kvspassword123',
+      phone: '+91 97766 55443',
+      status: 'Suspended',
+      planTier: 'Basic Single Shift',
+      annualPriceINR: 35000,
+      currency: 'INR',
+      billingCycle: 'Annual',
+      subscriptionStartDate: '2025-06-01',
+      renewalDate: '2026-06-01',
+      paymentStatus: 'Past Due (Renewal Required)',
+      maxClassesLimit: 15,
+      maxTeachersLimit: 40,
+      enabledModules: {
+        aiGenerator: false,
+        substituteFinder: true,
+        loadAnalyzer: false,
+        reportsExport: true,
+        multiShiftMatrix: false,
+        customLogo: false
+      }
+    }
+  ]);
+
+  const toggleSchoolStatus = (schoolId, newStatus) => {
+    setSubscribedSchools((prev) =>
+      prev.map((sch) => (sch.id === schoolId ? { ...sch, status: newStatus } : sch))
+    );
+    showToast(`Updated institution status to "${newStatus}".`, 'info');
+  };
+
+  const toggleSchoolModule = (schoolId, moduleKey) => {
+    setSubscribedSchools((prev) =>
+      prev.map((sch) =>
+        sch.id === schoolId
+          ? {
+              ...sch,
+              enabledModules: {
+                ...sch.enabledModules,
+                [moduleKey]: !sch.enabledModules?.[moduleKey]
+              }
+            }
+          : sch
+      )
+    );
+    showToast('Updated school module permission setting.', 'success');
+  };
+
+  const updateSchoolAdminCredentials = (schoolId, newEmail, newPassword, newPrincipal) => {
+    setSubscribedSchools((prev) =>
+      prev.map((sch) =>
+        sch.id === schoolId
+          ? {
+              ...sch,
+              adminEmail: newEmail || sch.adminEmail,
+              adminPassword: newPassword || sch.adminPassword,
+              principalName: newPrincipal || sch.principalName
+            }
+          : sch
+      )
+    );
+    showToast('School Admin account details & password updated successfully!', 'success');
+  };
+
+  const updateSchoolSubscription = (schoolId, newPlan, newPriceINR, newRenewalDate, newPaymentStatus) => {
+    setSubscribedSchools((prev) =>
+      prev.map((sch) =>
+        sch.id === schoolId
+          ? {
+              ...sch,
+              planTier: newPlan || sch.planTier,
+              annualPriceINR: Number(newPriceINR) || sch.annualPriceINR,
+              renewalDate: newRenewalDate || sch.renewalDate,
+              paymentStatus: newPaymentStatus || sch.paymentStatus
+            }
+          : sch
+      )
+    );
+    showToast('School annual subscription pricing & renewal date updated!', 'success');
+  };
+
+  const addSubscribedSchool = (newSchoolObj) => {
+    const newSch = {
+      ...newSchoolObj,
+      id: `SCH-${Date.now().toString().slice(-4)}`,
+      status: 'Active',
+      subscriptionStartDate: new Date().toISOString().split('T')[0],
+      enabledModules: newSchoolObj.enabledModules || {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: true,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    };
+    setSubscribedSchools((prev) => [newSch, ...prev]);
+    showToast(`New institution "${newSch.name}" onboarded into SaaS platform!`, 'success');
+  };
+
+  const deleteSubscribedSchool = (schoolId) => {
+    setSubscribedSchools((prev) => prev.filter((sch) => sch.id !== schoolId));
+    showToast('School subscription account deleted from platform.', 'warning');
+  };
 
   const updateRolePermission = (roleKey, permKey, boolValue) => {
     setRolePermissions((prev) => ({
@@ -625,7 +833,14 @@ export function TimetableProvider({ children }) {
     deleteUserAccount,
     logout,
     toast,
-    showToast
+    showToast,
+    subscribedSchools,
+    toggleSchoolStatus,
+    toggleSchoolModule,
+    updateSchoolAdminCredentials,
+    updateSchoolSubscription,
+    addSubscribedSchool,
+    deleteSubscribedSchool
   };
 
   return <TimetableContext.Provider value={value}>{children}</TimetableContext.Provider>;

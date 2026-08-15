@@ -25,7 +25,8 @@ import {
   BarChart3,
   HelpCircle,
   History,
-  PanelLeftClose
+  PanelLeftClose,
+  ShieldAlert
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
@@ -445,6 +446,26 @@ export default function Sidebar() {
           >
             <Settings className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             <span>System Settings</span>
+          </button>
+        </div>
+
+        {/* SaaS Super Admin Platform Control */}
+        <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
+          <button
+            onClick={() => handleNavClick('superadmin')}
+            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-black transition-all border ${
+              activeTab === 'superadmin'
+                ? 'bg-gradient-to-r from-amber-500 to-purple-700 text-white shadow-lg border-amber-300 scale-105'
+                : 'bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 text-amber-950 dark:text-amber-200 border-amber-300 dark:border-amber-800'
+            }`}
+          >
+            <div className="flex items-center space-x-2.5">
+              <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-300 shrink-0" />
+              <span>Super Admin Hub</span>
+            </div>
+            <span className="px-1.5 py-0.5 bg-amber-400 text-slate-950 text-[9px] font-black rounded uppercase">
+              SaaS
+            </span>
           </button>
         </div>
       </div>
