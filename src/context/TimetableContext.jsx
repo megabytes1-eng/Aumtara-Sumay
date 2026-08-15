@@ -55,6 +55,50 @@ export function TimetableProvider({ children }) {
     }
   });
 
+  // Super Admin Real Profile Credentials State
+  const [superAdminProfile, setSuperAdminProfile] = useState({
+    name: 'Aumtara SaaS Master Admin',
+    email: 'admin@aumtara.com',
+    phone: '+91 98765 43210',
+    password: 'superadmin123',
+    isProfileConfigured: false
+  });
+
+  // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
+  const [superAdmin2FA, setSuperAdmin2FA] = useState({
+    isVerified: false,
+    email: 'admin@aumtara.com',
+    phone: '+91 98765 43210',
+    sentOTP: '789012',
+    otpMethod: 'email', // 'email' | 'mobile'
+    otpStep: 'request' // 'request' | 'verify' | 'authenticated'
+  });
+
+  // Platform Activity Audit Logs State
+  const [platformAuditLogs, setPlatformAuditLogs] = useState([
+    {
+      id: 'LOG-001',
+      timestamp: new Date().toLocaleString(),
+      action: 'ENABLE_MODULE',
+      description: 'Super Admin enabled "AI Timetable Engine" for Apex Public School (SCH-001)',
+      user: 'Super Admin (2FA Verified)'
+    },
+    {
+      id: 'LOG-002',
+      timestamp: new Date(Date.now() - 3600000).toLocaleString(),
+      action: 'UPDATE_SUBSCRIPTION',
+      description: 'Updated annual subscription pricing for St. Xavier Convent High School to ₹50,000/Yr',
+      user: 'Super Admin'
+    },
+    {
+      id: 'LOG-003',
+      timestamp: new Date(Date.now() - 7200000).toLocaleString(),
+      action: 'PASSWORD_RESET',
+      description: 'Reset Admin credentials for Delhi Public Senior Secondary Academy',
+      user: 'Super Admin'
+    }
+  ]);
+
   // Navigation State
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
@@ -711,25 +755,6 @@ export function TimetableProvider({ children }) {
     }
   ]);
 
-  // Super Admin Real Profile Credentials State
-  const [superAdminProfile, setSuperAdminProfile] = useState({
-    name: 'Aumtara SaaS Master Admin',
-    email: 'admin@aumtara.com',
-    phone: '+91 98765 43210',
-    password: 'superadmin123',
-    isProfileConfigured: false
-  });
-
-  // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
-  const [superAdmin2FA, setSuperAdmin2FA] = useState({
-    isVerified: false,
-    email: 'admin@aumtara.com',
-    phone: '+91 98765 43210',
-    sentOTP: '789012',
-    otpMethod: 'email', // 'email' | 'mobile'
-    otpStep: 'request' // 'request' | 'verify' | 'authenticated'
-  });
-
   const updateSuperAdminProfile = (name, email, phone, password) => {
     const updatedName = name || superAdminProfile.name;
     const updatedEmail = email || superAdminProfile.email;
@@ -762,31 +787,6 @@ export function TimetableProvider({ children }) {
     );
     showToast(`Saved Super Admin Real Profile! Email: ${updatedEmail}, Phone: ${updatedPhone}`, 'success');
   };
-
-  // Platform Activity Audit Logs State
-  const [platformAuditLogs, setPlatformAuditLogs] = useState([
-    {
-      id: 'LOG-001',
-      timestamp: new Date().toLocaleString(),
-      action: 'ENABLE_MODULE',
-      description: 'Super Admin enabled "AI Timetable Engine" for Apex Public School (SCH-001)',
-      user: 'Super Admin (2FA Verified)'
-    },
-    {
-      id: 'LOG-002',
-      timestamp: new Date(Date.now() - 3600000).toLocaleString(),
-      action: 'UPDATE_SUBSCRIPTION',
-      description: 'Updated annual subscription pricing for St. Xavier Convent High School to ₹50,000/Yr',
-      user: 'Super Admin'
-    },
-    {
-      id: 'LOG-003',
-      timestamp: new Date(Date.now() - 7200000).toLocaleString(),
-      action: 'PASSWORD_RESET',
-      description: 'Reset Admin credentials for Delhi Public Senior Secondary Academy',
-      user: 'Super Admin'
-    }
-  ]);
 
   const addAuditLog = (action, description) => {
     const newLog = {
