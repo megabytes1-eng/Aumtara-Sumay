@@ -33,6 +33,8 @@ import {
 
 export default function SuperAdminHub() {
   const {
+    activeSubTab,
+    setActiveSubTab,
     subscribedSchools,
     toggleSchoolStatus,
     toggleSchoolModule,
@@ -55,7 +57,10 @@ export default function SuperAdminHub() {
     showToast
   } = useTimetable();
 
-  const [activeTab, setActiveTab] = useState('schools'); // 'schools' | 'modules' | 'billing' | 'security' | 'packages' | 'logs'
+  // Sync active sub-tab from sidebar (defaulting to 'dashboard')
+  const activeTab = activeSubTab || 'dashboard';
+  const setActiveTab = (tabKey) => setActiveSubTab(tabKey);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
@@ -564,6 +569,18 @@ export default function SuperAdminHub() {
       <div className="flex items-center justify-between border-b-2 border-slate-200 dark:border-slate-800 pb-3 flex-wrap gap-3">
         <div className="flex items-center space-x-2 overflow-x-auto pb-1">
           <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              activeTab === 'dashboard' || !activeTab
+                ? 'bg-amber-500 text-slate-950 shadow-lg border border-amber-300 scale-105'
+                : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            <Sparkles className="h-4 w-4 text-amber-950 dark:text-amber-300" />
+            <span>1. SA Executive Dashboard</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('schools')}
             className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
               activeTab === 'schools'
@@ -572,7 +589,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Building2 className="h-4 w-4" />
-            <span>1. Subscribed Institutions ({totalSchools})</span>
+            <span>2. Subscribed Institutions ({totalSchools})</span>
           </button>
 
           <button
@@ -664,7 +681,134 @@ export default function SuperAdminHub() {
         )}
       </div>
 
-      {/* TAB 1: Subscribed Schools Directory */}
+      {/* TAB 1: SA Executive Command Dashboard Overview */}
+      {(activeTab === 'dashboard' || !activeTab) && (
+        <div className="space-y-6 animate-fadeIn">
+          {/* Executive Hero Banner */}
+          <div className="glass-panel p-6 rounded-3xl border-2 border-amber-300 dark:border-amber-900/50 bg-gradient-to-r from-amber-500/10 via-purple-500/10 to-indigo-500/10 shadow-xl flex items-center justify-between flex-wrap gap-4">
+            <div className="space-y-1">
+              <span className="px-3 py-1 bg-amber-400 text-slate-950 font-black text-[10px] uppercase rounded-full tracking-wider">
+                📊 SA Executive Command Dashboard
+              </span>
+              <h2 className="text-xl font-black text-slate-950 dark:text-white uppercase tracking-tight">
+                FHMIS Platform Command Overview
+              </h2>
+              <p className="text-xs text-slate-600 dark:text-slate-300 font-bold">
+                Platform status is 100% operational across all {totalSchools} subscribing school tenants.
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setOnboardModalOpen(true)}
+                className="px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all hover:scale-105"
+              >
+                + Onboard New Subscribed School
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <button
+              onClick={() => setActiveTab('schools')}
+              className="p-5 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900/50 bg-white dark:bg-slate-900 hover:border-indigo-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <Building2 className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-indigo-600">{activeSchools} / {totalSchools} Active</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Subscribed Institutions Directory</h4>
+              <p className="text-xs text-slate-500 font-bold">Enable, disable, or suspend tenant institution accounts.</p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('modules')}
+              className="p-5 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/50 bg-white dark:bg-slate-900 hover:border-emerald-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <Sliders className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-emerald-600">6 Core Modules</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Module Feature Permission Matrix</h4>
+              <p className="text-xs text-slate-500 font-bold">Turn AI Generator, Substitute Finder, & Exports on/off per school.</p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('packages')}
+              className="p-5 rounded-2xl border-2 border-purple-200 dark:border-purple-900/50 bg-white dark:bg-slate-900 hover:border-purple-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <Package className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-purple-600">{customPackages.length} Packages</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Custom Package & Pricing Studio</h4>
+              <p className="text-xs text-slate-500 font-bold">Define per-year module pricing & build custom subscription packages.</p>
+            </button>
+          </div>
+
+          {/* Subscribed Schools Table Snapshot */}
+          <div className="glass-panel p-6 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-wider">
+                Recent Institutional Subscriptions Overview
+              </h3>
+              <button
+                onClick={() => setActiveTab('schools')}
+                className="text-xs font-black text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                View Full Directory ({totalSchools} Schools) →
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
+                  <tr>
+                    <th className="p-3">School Name</th>
+                    <th className="p-3">Plan Tier</th>
+                    <th className="p-3">ARR Charge</th>
+                    <th className="p-3">Access Status</th>
+                    <th className="p-3 text-right">Quick Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
+                  {subscribedSchools.slice(0, 3).map((sch) => (
+                    <tr key={sch.id}>
+                      <td className="p-3 font-black text-indigo-950 dark:text-white">{sch.name}</td>
+                      <td className="p-3">{sch.planTier}</td>
+                      <td className="p-3 font-mono text-emerald-700 dark:text-emerald-400">₹ {sch.annualPriceINR.toLocaleString('en-IN')}/Yr</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                          sch.status === 'Active' ? 'bg-emerald-100 text-emerald-950' : 'bg-rose-100 text-rose-950'
+                        }`}>
+                          {sch.status}
+                        </span>
+                      </td>
+                      <td className="p-3 text-right">
+                        <button
+                          onClick={() => toggleSchoolStatus(sch.id, sch.status === 'Active' ? 'Suspended' : 'Active')}
+                          className="px-2.5 py-1 bg-slate-200 dark:bg-slate-800 text-xs font-black rounded-lg hover:bg-slate-300 cursor-pointer"
+                        >
+                          Toggle Access
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: Subscribed Schools Directory */}
       {activeTab === 'schools' && (
         <div className="glass-panel rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">

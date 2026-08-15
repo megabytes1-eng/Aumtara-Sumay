@@ -31,7 +31,18 @@ import {
 import HelpGuideModal from './HelpGuideModal';
 
 export default function Sidebar() {
-  const { activeTab, setActiveTab, activeSubTab, setActiveSubTab, conflicts, timetableVersions, isSidebarOpen, toggleSidebar } = useTimetable();
+  const {
+    activeTab,
+    setActiveTab,
+    activeSubTab,
+    setActiveSubTab,
+    conflicts,
+    timetableVersions,
+    isSidebarOpen,
+    toggleSidebar,
+    currentUser,
+    subscribedSchools
+  } = useTimetable();
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
@@ -55,6 +66,136 @@ export default function Sidebar() {
   };
 
   if (!isSidebarOpen) return null;
+
+  // DEDICATED SUPER ADMIN SAAS CONTROL PANEL SIDEBAR (FHMIS Pharmacy Style)
+  const isSuperAdminMode = activeTab === 'superadmin' || currentUser?.role === 'superadmin';
+
+  if (isSuperAdminMode) {
+    return (
+      <aside className="w-64 bg-slate-950 text-slate-100 border-r-2 border-amber-500/30 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-2xl">
+        <div className="p-4 space-y-4">
+          {/* Header Badge */}
+          <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-indigo-500/20 to-purple-500/20 border border-amber-400/40 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[9px] uppercase rounded-full tracking-widest shadow">
+                👑 Super Admin
+              </span>
+              <button onClick={toggleSidebar} className="text-slate-400 hover:text-white">
+                <PanelLeftClose className="h-4 w-4" />
+              </button>
+            </div>
+            <h3 className="font-black text-xs text-white uppercase tracking-tight">SaaS Master Control</h3>
+            <p className="text-[10px] text-amber-200/80 font-mono">FHMIS Platform Command</p>
+          </div>
+
+          {/* Navigation Items */}
+          <div className="space-y-1 text-xs font-black">
+            <p className="px-3 text-[10px] font-black tracking-widest text-amber-400 uppercase mb-2">
+              ⚡ SAAS MODULE CONTROL
+            </p>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('dashboard'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && (activeSubTab === 'dashboard' || !activeSubTab)
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <LayoutDashboard className="h-4 w-4 text-amber-400" />
+              <span>1. SA Executive Dashboard</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('schools'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'schools'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <Building className="h-4 w-4 text-indigo-400" />
+              <span>2. Subscribed Institutions ({subscribedSchools ? subscribedSchools.length : 0})</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('modules'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'modules'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <Sliders className="h-4 w-4 text-emerald-400" />
+              <span>3. Module Access Matrix</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('packages'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'packages'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <Layers className="h-4 w-4 text-purple-400" />
+              <span>4. Package & Pricing Studio</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('billing'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'billing'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <BarChart3 className="h-4 w-4 text-emerald-400" />
+              <span>5. Annual Revenue & Billing</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('security'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'security'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <Users className="h-4 w-4 text-rose-400" />
+              <span>6. School Admin Passwords</span>
+            </button>
+
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('logs'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'logs'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <History className="h-4 w-4 text-indigo-400" />
+              <span>7. Platform Audit Logs</span>
+            </button>
+          </div>
+
+          {/* Switch View Button */}
+          <div className="pt-4 border-t border-slate-800 space-y-2">
+            <p className="px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+              WORKSPACE MODE
+            </p>
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2 cursor-pointer transition-all"
+            >
+              <School className="h-4 w-4" />
+              <span>Switch to School Timetable</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-800 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-sm">
