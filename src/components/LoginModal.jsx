@@ -377,7 +377,7 @@ export default function LoginModal({ isOpen, onClose }) {
                   type="button"
                   onClick={() => {
                     setSuperAdminLoginType('email');
-                    setUsernameInput('admin@fhmis.com');
+                    setUsernameInput('megabytes1@gmail.com');
                   }}
                   className={`py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center space-x-1 cursor-pointer ${
                     superAdminLoginType === 'email'
@@ -393,7 +393,7 @@ export default function LoginModal({ isOpen, onClose }) {
                   type="button"
                   onClick={() => {
                     setSuperAdminLoginType('mobile');
-                    setUsernameInput('+91 98765 43210');
+                    setUsernameInput('+91 99241 00585');
                   }}
                   className={`py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center space-x-1 cursor-pointer ${
                     superAdminLoginType === 'mobile'
@@ -423,7 +423,7 @@ export default function LoginModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); handleQuickLogin(usernameInput || 'admin@fhmis.com', passwordInput || 'admin123'); }} className="space-y-3.5">
+            <form onSubmit={(e) => { e.preventDefault(); handleQuickLogin(usernameInput || 'megabytes1@gmail.com', passwordInput || 'admin123'); }} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
                   {superAdminLoginType === 'email' && 'Option 1: Master Email Address *'}
@@ -441,9 +441,9 @@ export default function LoginModal({ isOpen, onClose }) {
                     onChange={(e) => setUsernameInput(e.target.value)}
                     placeholder={
                       superAdminLoginType === 'email'
-                        ? 'e.g. admin@fhmis.com'
+                        ? 'e.g. megabytes1@gmail.com'
                         : superAdminLoginType === 'mobile'
-                        ? 'e.g. +91 98765 43210'
+                        ? 'e.g. +91 99241 00585'
                         : 'e.g. superadmin'
                     }
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-amber-400/50 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono"
@@ -492,18 +492,18 @@ export default function LoginModal({ isOpen, onClose }) {
               <div className="grid grid-cols-3 gap-1">
                 <button
                   type="button"
-                  onClick={() => handleQuickLogin('admin@fhmis.com', 'admin123')}
+                  onClick={() => handleQuickLogin('megabytes1@gmail.com', 'admin123')}
                   className="py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-[10px] rounded-lg border border-amber-500/30 truncate cursor-pointer"
-                  title="Login with Email: admin@fhmis.com"
+                  title="Login with Email: megabytes1@gmail.com"
                 >
                   📧 Email Login
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => handleQuickLogin('+91 98765 43210', 'admin123')}
+                  onClick={() => handleQuickLogin('+91 99241 00585', 'admin123')}
                   className="py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-[10px] rounded-lg border border-amber-500/30 truncate cursor-pointer"
-                  title="Login with Mobile: +91 98765 43210"
+                  title="Login with Mobile: +91 99241 00585"
                 >
                   📱 Mobile Login
                 </button>

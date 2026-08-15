@@ -81,17 +81,17 @@ export function TimetableProvider({ children }) {
   // Super Admin Real Profile Credentials State
   const [superAdminProfile, setSuperAdminProfile] = useLocalStorage('aumtara_superadmin_profile', {
     name: 'Aumtara SaaS Master Admin',
-    email: 'admin@aumtara.com',
-    phone: '+91 98765 43210',
-    password: 'superadmin123',
-    isProfileConfigured: false
+    email: 'megabytes1@gmail.com',
+    phone: '+91 99241 00585',
+    password: 'admin123',
+    isProfileConfigured: true
   });
 
   // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
   const [superAdmin2FA, setSuperAdmin2FA] = useLocalStorage('aumtara_superadmin_2fa', {
     isVerified: true,
-    email: 'admin@aumtara.com',
-    phone: '+91 98765 43210',
+    email: 'megabytes1@gmail.com',
+    phone: '+91 99241 00585',
     sentOTP: '789012',
     otpMethod: 'email', // 'email' | 'mobile'
     otpStep: 'authenticated'
@@ -359,8 +359,10 @@ export function TimetableProvider({ children }) {
 
   // Authentication & Dynamic Users Management State
   const [userAccounts, setUserAccounts] = useLocalStorage('aumtara_user_accounts', [
-    { username: 'superadmin', email: 'admin@fhmis.com', password: 'admin123', name: 'Aumtara SaaS Super Admin', role: 'superadmin' },
-    { username: 'admin@fhmis.com', email: 'admin@fhmis.com', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
+    { username: 'superadmin', email: 'megabytes1@gmail.com', phone: '9924100585', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
+    { username: 'megabytes1@gmail.com', email: 'megabytes1@gmail.com', phone: '9924100585', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
+    { username: '9924100585', email: 'megabytes1@gmail.com', phone: '9924100585', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
+    { username: 'admin@fhmis.com', email: 'megabytes1@gmail.com', phone: '9924100585', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
     { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
     { username: 'hod', password: 'hod123', name: 'Prof. Ramanujan Sharma (HOD)', role: 'hod' },
     { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' }
@@ -384,8 +386,11 @@ export function TimetableProvider({ children }) {
     const isSuperAdminMatch =
       cleanInput === 'superadmin' ||
       cleanInput === 'admin' ||
+      cleanInput === 'megabytes1@gmail.com' ||
       cleanInput === 'admin@fhmis.com' ||
       cleanInput === 'admin@aumtara.com' ||
+      cleanDigits === '9924100585' ||
+      cleanDigits.includes('9924100585') ||
       (superAdminProfile.email && cleanInput === superAdminProfile.email.toLowerCase()) ||
       (superAdminProfile.phone && cleanInput === superAdminProfile.phone.toLowerCase()) ||
       (superAdminProfile.phone && cleanDigits.length >= 7 && superAdminProfile.phone.replace(/\D/g, '').includes(cleanDigits)) ||
@@ -405,8 +410,8 @@ export function TimetableProvider({ children }) {
     if (found || isSuperAdminMatch) {
       const loggedUser = found || {
         username: 'superadmin',
-        email: superAdminProfile.email || 'admin@fhmis.com',
-        phone: superAdminProfile.phone || '+91 98765 43210',
+        email: superAdminProfile.email || 'megabytes1@gmail.com',
+        phone: superAdminProfile.phone || '+91 99241 00585',
         name: superAdminProfile.name || 'Aumtara SaaS Master Admin',
         role: 'superadmin'
       };
@@ -414,8 +419,8 @@ export function TimetableProvider({ children }) {
       setCurrentUser({
         username: loggedUser.username,
         name: loggedUser.name,
-        email: loggedUser.email || 'admin@fhmis.com',
-        phone: loggedUser.phone || '+91 98765 43210',
+        email: loggedUser.email || 'megabytes1@gmail.com',
+        phone: loggedUser.phone || '+91 99241 00585',
         role: loggedUser.role,
         isLoggedIn: true
       });
