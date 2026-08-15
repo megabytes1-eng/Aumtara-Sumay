@@ -21,6 +21,7 @@ import HelpGuideModal from './HelpGuideModal';
 
 export default function Navbar() {
   const {
+    activeTab,
     institution,
     loadSampleData,
     runGenerator,
