@@ -20,7 +20,7 @@ import LoginModal from './components/LoginModal';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
   static getDerivedStateFromError(error) {
@@ -29,34 +29,59 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('React ErrorBoundary caught an error:', error, errorInfo);
+    this.setState({ errorInfo });
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6 font-sans select-none">
-          <div className="max-w-md w-full bg-slate-800 border-2 border-amber-400/50 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
+        <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-6 font-sans">
+          <div className="max-w-2xl w-full bg-slate-800 border-2 border-amber-400/50 rounded-3xl p-8 space-y-5 text-center shadow-2xl">
             <div className="h-16 w-16 bg-amber-500/20 text-amber-400 rounded-2xl mx-auto flex items-center justify-center text-3xl font-black">
               🛡️
             </div>
             <h2 className="text-xl font-black text-white uppercase tracking-tight">
-              AUMTARA SAMAY — Master Recovery
+              AUMTARA SAMAY — Diagnostic Intercept Mode
             </h2>
             <p className="text-xs text-slate-300 font-bold leading-relaxed">
-              An unexpected render state was intercepted. Click below to refresh and load the active command workspace.
+              An unexpected render exception was caught. Below is the exact diagnostic traceback:
             </p>
-            <div className="p-3 bg-slate-950 rounded-xl border border-slate-700 text-left text-[11px] font-mono text-amber-300 overflow-x-auto max-h-32">
-              {this.state.error ? this.state.error.toString() : 'Render Exception Intercepted'}
+            <div className="p-4 bg-slate-950 rounded-2xl border-2 border-rose-500/50 text-left text-xs font-mono text-rose-300 overflow-x-auto max-h-64 space-y-2 select-text">
+              <div className="font-black text-rose-400 border-b border-rose-900/50 pb-1">
+                {this.state.error ? this.state.error.toString() : 'Render Exception Intercepted'}
+              </div>
+              <pre className="text-[11px] text-rose-300/90 whitespace-pre-wrap font-mono leading-tight">
+                {this.state.error?.stack || 'No stack trace available.'}
+              </pre>
+              {this.state.errorInfo && (
+                <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-400">
+                  <span className="font-bold text-slate-300">Component Stack:</span>
+                  <pre className="text-[10px] text-slate-400 whitespace-pre-wrap font-mono">
+                    {this.state.errorInfo.componentStack}
+                  </pre>
+                </div>
+              )}
             </div>
-            <button
-              onClick={() => {
-                this.setState({ hasError: false, error: null });
-                window.location.reload();
-              }}
-              className="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg cursor-pointer transition-all hover:scale-105"
-            >
-              🔄 Reload AUMTARA SAMAY Workspace
-            </button>
+            <div className="flex items-center space-x-3 pt-2">
+              <button
+                onClick={() => {
+                  this.setState({ hasError: false, error: null, errorInfo: null });
+                  window.location.reload();
+                }}
+                className="flex-1 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg cursor-pointer transition-all hover:scale-105"
+              >
+                🔄 Reload Workspace
+              </button>
+              <button
+                onClick={() => {
+                  try { localStorage.clear(); sessionStorage.clear(); } catch(e){}
+                  window.location.href = '/';
+                }}
+                className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-amber-300 font-black text-xs rounded-xl shadow border border-slate-600 cursor-pointer"
+              >
+                🧹 Reset Browser Cache & Restart
+              </button>
+            </div>
           </div>
         </div>
       );
