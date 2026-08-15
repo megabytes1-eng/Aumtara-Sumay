@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, UserPlus, AlertCircle, Calendar, Eye, EyeOff, Mail, Building2 } from 'lucide-react';
+import { LogIn, KeyRound, UserCheck, Shield, GraduationCap, Users, UserPlus, AlertCircle, Calendar, Eye, EyeOff, Mail, Building2, Phone } from 'lucide-react';
 
 export default function LoginModal({ isOpen, onClose }) {
   const { login, registerUser, currentUser } = useTimetable();
 
   const [authMode, setAuthMode] = useState('signin'); // 'signin' or 'signup'
   const [showPassword, setShowPassword] = useState(false);
+  const [superAdminLoginType, setSuperAdminLoginType] = useState('email'); // 'email' | 'mobile' | 'username'
 
   // Sign In State
   const [usernameInput, setUsernameInput] = useState('');
@@ -366,18 +367,85 @@ export default function LoginModal({ isOpen, onClose }) {
               </p>
             </div>
 
+            {/* 3 Login Type Option Selector */}
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Choose Login Credential Type (3 Options):
+              </label>
+              <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSuperAdminLoginType('email');
+                    setUsernameInput('admin@fhmis.com');
+                  }}
+                  className={`py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center space-x-1 cursor-pointer ${
+                    superAdminLoginType === 'email'
+                      ? 'bg-amber-400 text-slate-950 shadow border border-amber-500 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Mail className="h-3.5 w-3.5 text-indigo-800 dark:text-amber-900" />
+                  <span>1. Email ID</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSuperAdminLoginType('mobile');
+                    setUsernameInput('+91 98765 43210');
+                  }}
+                  className={`py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center space-x-1 cursor-pointer ${
+                    superAdminLoginType === 'mobile'
+                      ? 'bg-amber-400 text-slate-950 shadow border border-amber-500 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <Phone className="h-3.5 w-3.5 text-emerald-800 dark:text-amber-900" />
+                  <span>2. Mobile No</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSuperAdminLoginType('username');
+                    setUsernameInput('superadmin');
+                  }}
+                  className={`py-2 text-[10px] font-black rounded-lg transition-all flex items-center justify-center space-x-1 cursor-pointer ${
+                    superAdminLoginType === 'username'
+                      ? 'bg-amber-400 text-slate-950 shadow border border-amber-500 scale-[1.02]'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                >
+                  <UserCheck className="h-3.5 w-3.5 text-purple-800 dark:text-amber-900" />
+                  <span>3. Username</span>
+                </button>
+              </div>
+            </div>
+
             <form onSubmit={(e) => { e.preventDefault(); handleQuickLogin(usernameInput || 'admin@fhmis.com', passwordInput || 'admin123'); }} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                  Master Email / Username
+                  {superAdminLoginType === 'email' && 'Option 1: Master Email Address *'}
+                  {superAdminLoginType === 'mobile' && 'Option 2: Registered Mobile Phone Number *'}
+                  {superAdminLoginType === 'username' && 'Option 3: Master Admin Username *'}
                 </label>
                 <div className="relative">
-                  <Mail className="h-4 w-4 absolute left-3.5 top-3 text-amber-500" />
+                  {superAdminLoginType === 'email' && <Mail className="h-4 w-4 absolute left-3.5 top-3 text-amber-500" />}
+                  {superAdminLoginType === 'mobile' && <Phone className="h-4 w-4 absolute left-3.5 top-3 text-amber-500" />}
+                  {superAdminLoginType === 'username' && <UserCheck className="h-4 w-4 absolute left-3.5 top-3 text-amber-500" />}
+                  
                   <input
                     type="text"
-                    value={usernameInput || 'admin@fhmis.com'}
+                    value={usernameInput}
                     onChange={(e) => setUsernameInput(e.target.value)}
-                    placeholder="admin@fhmis.com"
+                    placeholder={
+                      superAdminLoginType === 'email'
+                        ? 'e.g. admin@fhmis.com'
+                        : superAdminLoginType === 'mobile'
+                        ? 'e.g. +91 98765 43210'
+                        : 'e.g. superadmin'
+                    }
                     className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-amber-400/50 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono"
                     required
                   />
@@ -386,13 +454,13 @@ export default function LoginModal({ isOpen, onClose }) {
 
               <div>
                 <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1">
-                  Master Security Password
+                  Master Security Password *
                 </label>
                 <div className="relative">
                   <KeyRound className="h-4 w-4 absolute left-3.5 top-3 text-amber-500" />
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    value={passwordInput || 'admin123'}
+                    value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
                     placeholder="••••••••"
                     className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-amber-400/50 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-mono"
@@ -417,14 +485,38 @@ export default function LoginModal({ isOpen, onClose }) {
               </button>
             </form>
 
-            <div className="pt-2 text-center">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin('admin@fhmis.com', 'admin123')}
-                className="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2 cursor-pointer transition-all"
-              >
-                <span>⚡ Instant 1-Click Master Super Admin Login</span>
-              </button>
+            <div className="pt-2 space-y-1.5 text-center">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider block">
+                ⚡ 1-Click Fast Login Shortcuts
+              </span>
+              <div className="grid grid-cols-3 gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin('admin@fhmis.com', 'admin123')}
+                  className="py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-[10px] rounded-lg border border-amber-500/30 truncate cursor-pointer"
+                  title="Login with Email: admin@fhmis.com"
+                >
+                  📧 Email Login
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin('+91 98765 43210', 'admin123')}
+                  className="py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-[10px] rounded-lg border border-amber-500/30 truncate cursor-pointer"
+                  title="Login with Mobile: +91 98765 43210"
+                >
+                  📱 Mobile Login
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQuickLogin('superadmin', 'admin123')}
+                  className="py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-[10px] rounded-lg border border-amber-500/30 truncate cursor-pointer"
+                  title="Login with Username: superadmin"
+                >
+                  👤 User Login
+                </button>
+              </div>
             </div>
           </div>
         )}

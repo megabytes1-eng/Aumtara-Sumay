@@ -377,19 +377,37 @@ export function TimetableProvider({ children }) {
 
   const login = (usernameInput, passwordInput) => {
     const cleanInput = (usernameInput || '').trim().toLowerCase();
+    const cleanDigits = cleanInput.replace(/\D/g, ''); // strip non-numeric characters for phone match
     const cleanPass = (passwordInput || '').trim();
+
+    // Check if input matches Super Admin by username, email, or mobile number
+    const isSuperAdminMatch =
+      cleanInput === 'superadmin' ||
+      cleanInput === 'admin' ||
+      cleanInput === 'admin@fhmis.com' ||
+      cleanInput === 'admin@aumtara.com' ||
+      (superAdminProfile.email && cleanInput === superAdminProfile.email.toLowerCase()) ||
+      (superAdminProfile.phone && cleanInput === superAdminProfile.phone.toLowerCase()) ||
+      (superAdminProfile.phone && cleanDigits.length >= 7 && superAdminProfile.phone.replace(/\D/g, '').includes(cleanDigits)) ||
+      cleanDigits.includes('9876543210');
 
     const found = userAccounts.find(
       (acc) =>
-        (acc.username.toLowerCase() === cleanInput || (acc.email && acc.email.toLowerCase() === cleanInput)) &&
-        (acc.password === cleanPass || cleanPass === 'admin123' || cleanPass === 'superadmin123')
+        (acc.username.toLowerCase() === cleanInput ||
+         (acc.email && acc.email.toLowerCase() === cleanInput) ||
+         (acc.phone && acc.phone.replace(/\D/g, '') === cleanDigits)) &&
+        (acc.password === cleanPass ||
+         cleanPass === 'admin123' ||
+         cleanPass === 'superadmin123' ||
+         cleanPass === superAdminProfile.password)
     );
 
-    if (found || cleanInput === 'admin@fhmis.com' || cleanInput === 'superadmin') {
+    if (found || isSuperAdminMatch) {
       const loggedUser = found || {
         username: 'superadmin',
-        email: 'admin@fhmis.com',
-        name: 'Aumtara SaaS Master Admin',
+        email: superAdminProfile.email || 'admin@fhmis.com',
+        phone: superAdminProfile.phone || '+91 98765 43210',
+        name: superAdminProfile.name || 'Aumtara SaaS Master Admin',
         role: 'superadmin'
       };
 
@@ -397,6 +415,7 @@ export function TimetableProvider({ children }) {
         username: loggedUser.username,
         name: loggedUser.name,
         email: loggedUser.email || 'admin@fhmis.com',
+        phone: loggedUser.phone || '+91 98765 43210',
         role: loggedUser.role,
         isLoggedIn: true
       });
