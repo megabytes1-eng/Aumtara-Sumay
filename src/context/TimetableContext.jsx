@@ -599,6 +599,170 @@ export function TimetableProvider({ children }) {
     showToast('School subscription account deleted from platform.', 'warning');
   };
 
+  // SaaS Module-Wise Pricing Studio Catalog State
+  const [modulePricingCatalog, setModulePricingCatalog] = useState([
+    {
+      key: 'aiGenerator',
+      name: '🤖 AI Timetable Engine & Conflict Solver',
+      description: 'Automated 100% zero-clash schedule generation using AI solver logic.',
+      annualPriceINR: 25000,
+      isCore: true
+    },
+    {
+      key: 'substituteFinder',
+      name: '🔄 Smart Substitute Teacher Cover Finder',
+      description: 'Instant absent teacher replacement with zero-overlap logic.',
+      annualPriceINR: 15000,
+      isCore: false
+    },
+    {
+      key: 'loadAnalyzer',
+      name: '📊 Faculty Workload & Period Analytics',
+      description: 'Teacher weekly period distribution charts and workload balance.',
+      annualPriceINR: 10000,
+      isCore: false
+    },
+    {
+      key: 'reportsExport',
+      name: '📄 High-Res PDF & Excel Master Suite',
+      description: 'Export class timetables, teacher schedules & room charts in PDF/Excel.',
+      annualPriceINR: 5000,
+      isCore: false
+    },
+    {
+      key: 'multiShiftMatrix',
+      name: '🌅 Multi-Shift Dual-Matrix (CBSE + State Board)',
+      description: 'Independent morning CBSE shift and afternoon State Board matrix.',
+      annualPriceINR: 15000,
+      isCore: false
+    },
+    {
+      key: 'customLogo',
+      name: '🎨 Custom School Branding & Logo Header',
+      description: 'Display school logo, address, and board header on all printable charts.',
+      annualPriceINR: 5000,
+      isCore: false
+    }
+  ]);
+
+  // SaaS Custom Packages Master State
+  const [customPackages, setCustomPackages] = useState([
+    {
+      id: 'PKG-001',
+      name: 'Starter Single-Shift Package',
+      description: 'Essential timetable generator with PDF exports for small schools.',
+      annualPriceINR: 35000,
+      includedModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: false,
+        reportsExport: true,
+        multiShiftMatrix: false,
+        customLogo: false
+      }
+    },
+    {
+      id: 'PKG-002',
+      name: 'Standard Dual-Shift Package',
+      description: 'Comprehensive dual-shift matrix with substitute finder & custom logo.',
+      annualPriceINR: 55000,
+      includedModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: false,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    },
+    {
+      id: 'PKG-003',
+      name: 'Enterprise All-Access Suite',
+      description: 'Complete suite with AI solver, substitute finder, analytics & multi-shift.',
+      annualPriceINR: 75000,
+      includedModules: {
+        aiGenerator: true,
+        substituteFinder: true,
+        loadAnalyzer: true,
+        reportsExport: true,
+        multiShiftMatrix: true,
+        customLogo: true
+      }
+    }
+  ]);
+
+  // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
+  const [superAdmin2FA, setSuperAdmin2FA] = useState({
+    isVerified: false,
+    email: 'superadmin@aumtara.saas',
+    phone: '+91 98765 43210',
+    sentOTP: '789012',
+    otpMethod: 'email', // 'email' | 'mobile'
+    otpStep: 'request' // 'request' | 'verify' | 'authenticated'
+  });
+
+  const sendSuperAdminOTP = (method = 'email') => {
+    const generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+    setSuperAdmin2FA((prev) => ({
+      ...prev,
+      sentOTP: generatedOTP,
+      otpMethod: method,
+      otpStep: 'verify'
+    }));
+    showToast(`🔐 Security 2FA OTP sent to ${method === 'email' ? prev.email : prev.phone}! Demo Verification OTP Code: [ ${generatedOTP} ]`, 'info');
+    return generatedOTP;
+  };
+
+  const verifySuperAdminOTP = (inputOTP) => {
+    if (inputOTP.trim() === superAdmin2FA.sentOTP) {
+      setSuperAdmin2FA((prev) => ({
+        ...prev,
+        isVerified: true,
+        otpStep: 'authenticated'
+      }));
+      showToast('✅ 2FA Email & Mobile Security Verification Successful! Full Super Admin access unlocked.', 'success');
+      return true;
+    } else {
+      showToast('❌ Invalid 2FA Security OTP Code. Please re-enter the 6-digit code.', 'danger');
+      return false;
+    }
+  };
+
+  const updateModulePrice = (moduleKey, newPrice) => {
+    setModulePricingCatalog((prev) =>
+      prev.map((mod) => (mod.key === moduleKey ? { ...mod, annualPriceINR: Number(newPrice) || mod.annualPriceINR } : mod))
+    );
+    showToast('Updated module annual price definition!', 'success');
+  };
+
+  const createCustomPackage = (pkgName, pkgDesc, selectedModulesMap, customCalculatedPrice) => {
+    const newPkg = {
+      id: `PKG-${Date.now().toString().slice(-4)}`,
+      name: pkgName,
+      description: pkgDesc,
+      annualPriceINR: Number(customCalculatedPrice),
+      includedModules: selectedModulesMap
+    };
+    setCustomPackages((prev) => [newPkg, ...prev]);
+    showToast(`Created custom package "${pkgName}" (₹ ${customCalculatedPrice.toLocaleString('en-IN')}/yr)!`, 'success');
+  };
+
+  const assignPackageToSchool = (schoolId, packageObj) => {
+    setSubscribedSchools((prev) =>
+      prev.map((sch) =>
+        sch.id === schoolId
+          ? {
+              ...sch,
+              planTier: packageObj.name,
+              annualPriceINR: packageObj.annualPriceINR,
+              enabledModules: { ...packageObj.includedModules }
+            }
+          : sch
+      )
+    );
+    showToast(`Assigned package "${packageObj.name}" to school!`, 'success');
+  };
+
   const updateRolePermission = (roleKey, permKey, boolValue) => {
     setRolePermissions((prev) => ({
       ...prev,
@@ -840,7 +1004,15 @@ export function TimetableProvider({ children }) {
     updateSchoolAdminCredentials,
     updateSchoolSubscription,
     addSubscribedSchool,
-    deleteSubscribedSchool
+    deleteSubscribedSchool,
+    modulePricingCatalog,
+    customPackages,
+    superAdmin2FA,
+    sendSuperAdminOTP,
+    verifySuperAdminOTP,
+    updateModulePrice,
+    createCustomPackage,
+    assignPackageToSchool
   };
 
   return <TimetableContext.Provider value={value}>{children}</TimetableContext.Provider>;
