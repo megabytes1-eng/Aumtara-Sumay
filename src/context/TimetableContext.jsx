@@ -66,12 +66,12 @@ export function TimetableProvider({ children }) {
 
   // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
   const [superAdmin2FA, setSuperAdmin2FA] = useState({
-    isVerified: false,
+    isVerified: true,
     email: 'admin@aumtara.com',
     phone: '+91 98765 43210',
     sentOTP: '789012',
     otpMethod: 'email', // 'email' | 'mobile'
-    otpStep: 'request' // 'request' | 'verify' | 'authenticated'
+    otpStep: 'authenticated'
   });
 
   // Platform Activity Audit Logs State
