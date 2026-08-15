@@ -829,19 +829,73 @@ export function TimetableProvider({ children }) {
   };
 
   const updateModulePrice = (moduleKey, newPrice) => {
-    setModulePricingCatalog((prev) =>
-      prev.map((mod) => (mod.key === moduleKey ? { ...mod, annualPriceINR: Number(newPrice) || mod.annualPriceINR } : mod))
+    const numPrice = Number(newPrice);
+    if (isNaN(numPrice) || numPrice < 0) return;
+
+    // 1. Update module catalog price
+    let updatedCatalog = [];
+    setModulePricingCatalog((prev) => {
+      updatedCatalog = prev.map((mod) =>
+        mod.key === moduleKey ? { ...mod, annualPriceINR: numPrice } : mod
+      );
+      return updatedCatalog;
+    });
+
+    // 2. Automatically update & recalculate prices for all packages in customPackages catalog
+    setCustomPackages((prevPackages) =>
+      prevPackages.map((pkg) => {
+        if (pkg.isCustomOverride) {
+          return pkg; // preserve manual custom price override if explicitly set
+        }
+        let reCalculatedTotal = 0;
+        Object.keys(pkg.includedModules || {}).forEach((mKey) => {
+          if (pkg.includedModules[mKey]) {
+            const catalogItem = updatedCatalog.find((m) => m.key === mKey);
+            const mPrice = mKey === moduleKey ? numPrice : (catalogItem ? catalogItem.annualPriceINR : 0);
+            reCalculatedTotal += mPrice;
+          }
+        });
+        return {
+          ...pkg,
+          annualPriceINR: reCalculatedTotal > 0 ? reCalculatedTotal : pkg.annualPriceINR
+        };
+      })
     );
-    showToast('Updated module annual price definition!', 'success');
+
+    addAuditLog('UPDATE_MODULE_PRICE', `Updated annual price for module "${moduleKey}" to ₹${numPrice.toLocaleString('en-IN')}/Yr`);
+    showToast(`Updated module price to ₹${numPrice.toLocaleString('en-IN')}/Yr & synced Saved Custom Packages Catalog!`, 'success');
   };
 
-  const createCustomPackage = (pkgName, pkgDesc, selectedModulesMap, customCalculatedPrice) => {
+  const updateCustomPackagePrice = (pkgId, newPrice) => {
+    const numPrice = Number(newPrice);
+    if (isNaN(numPrice) || numPrice < 0) return;
+
+    setCustomPackages((prev) =>
+      prev.map((pkg) =>
+        pkg.id === pkgId
+          ? { ...pkg, annualPriceINR: numPrice, isCustomOverride: true }
+          : pkg
+      )
+    );
+
+    addAuditLog('UPDATE_PACKAGE_PRICE', `Updated price for custom package "${pkgId}" to ₹${numPrice.toLocaleString('en-IN')}/Yr`);
+    showToast(`Updated custom package price to ₹${numPrice.toLocaleString('en-IN')}/Yr!`, 'success');
+  };
+
+  const deleteCustomPackage = (pkgId) => {
+    setCustomPackages((prev) => prev.filter((p) => p.id !== pkgId));
+    addAuditLog('DELETE_PACKAGE', `Deleted custom package ${pkgId} from catalog`);
+    showToast('Deleted custom package from catalog!', 'warning');
+  };
+
+  const createCustomPackage = (pkgName, pkgDesc, selectedModulesMap, customCalculatedPrice, isCustomOverride = false) => {
     const newPkg = {
       id: `PKG-${Date.now().toString().slice(-4)}`,
       name: pkgName,
       description: pkgDesc,
       annualPriceINR: Number(customCalculatedPrice),
-      includedModules: selectedModulesMap
+      includedModules: selectedModulesMap,
+      isCustomOverride: Boolean(isCustomOverride)
     };
     setCustomPackages((prev) => [newPkg, ...prev]);
     showToast(`Created custom package "${pkgName}" (₹ ${customCalculatedPrice.toLocaleString('en-IN')}/yr)!`, 'success');
@@ -1111,6 +1165,8 @@ export function TimetableProvider({ children }) {
     sendSuperAdminOTP,
     verifySuperAdminOTP,
     updateModulePrice,
+    updateCustomPackagePrice,
+    deleteCustomPackage,
     createCustomPackage,
     assignPackageToSchool,
     superAdminProfile,

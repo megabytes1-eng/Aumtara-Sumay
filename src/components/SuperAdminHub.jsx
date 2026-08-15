@@ -48,6 +48,8 @@ export default function SuperAdminHub() {
     sendSuperAdminOTP,
     verifySuperAdminOTP,
     updateModulePrice,
+    updateCustomPackagePrice,
+    deleteCustomPackage,
     createCustomPackage,
     assignPackageToSchool,
     superAdminProfile,
@@ -293,8 +295,17 @@ export default function SuperAdminHub() {
     });
   };
 
+  const [editingPackagePrices, setEditingPackagePrices] = useState({});
+
   const handleModulePriceSave = (modKey) => {
     updateModulePrice(modKey, editingModulePrices[modKey]);
+  };
+
+  const handlePackagePriceSave = (pkgId) => {
+    const newPrice = editingPackagePrices[pkgId];
+    if (newPrice !== undefined && newPrice !== '') {
+      updateCustomPackagePrice(pkgId, newPrice);
+    }
   };
 
   const handleToggleModuleInBuilder = (modKey) => {
@@ -1160,38 +1171,129 @@ export default function SuperAdminHub() {
           </div>
 
           {/* Section C: Saved Custom Packages Directory */}
-          <div className="glass-panel p-6 rounded-3xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl space-y-4">
-            <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-wider">
-              Saved Custom Packages Catalog
-            </h3>
+          <div className="glass-panel p-6 rounded-3xl border-2 border-purple-300 dark:border-purple-900/50 bg-white dark:bg-slate-900 shadow-xl space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+                  <Package className="h-5 w-5 text-purple-600" />
+                  <span>3. Saved Custom Packages Catalog (Real-Time Price Sync)</span>
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-0.5">
+                  Package prices dynamically adjust when module definitions change. You can also override prices individually or assign packages to schools.
+                </p>
+              </div>
+              <span className="px-3 py-1 bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-200 text-xs font-black rounded-full border border-purple-300">
+                {customPackages.length} Catalog Packages Saved
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {customPackages.map((pkg) => (
-                <div key={pkg.id} className="p-5 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] font-black bg-purple-200 dark:bg-purple-900 text-purple-950 dark:text-purple-200 px-2 py-0.5 rounded">
-                      {pkg.id}
-                    </span>
-                    <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-sm">
-                      ₹ {pkg.annualPriceINR.toLocaleString('en-IN')} / Yr
-                    </span>
-                  </div>
+              {customPackages.map((pkg) => {
+                let liveSum = 0;
+                Object.entries(pkg.includedModules || {}).forEach(([mKey, isInc]) => {
+                  if (isInc) {
+                    const mObj = modulePricingCatalog.find((m) => m.key === mKey);
+                    if (mObj) liveSum += mObj.annualPriceINR;
+                  }
+                });
 
-                  <h4 className="font-black text-sm text-slate-900 dark:text-white">{pkg.name}</h4>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">{pkg.description}</p>
+                return (
+                  <div key={pkg.id} className="p-5 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 space-y-4 shadow-md hover:border-purple-400 transition-all flex flex-col justify-between">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-[10px] font-black bg-purple-200 dark:bg-purple-900 text-purple-950 dark:text-purple-200 px-2 py-0.5 rounded">
+                          {pkg.id}
+                        </span>
+                        <div className="text-right">
+                          <span className="font-mono font-black text-emerald-700 dark:text-emerald-400 text-sm block">
+                            ₹ {pkg.annualPriceINR.toLocaleString('en-IN')} / Yr
+                          </span>
+                          {pkg.isCustomOverride ? (
+                            <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950 px-1.5 py-0.2 rounded">
+                              Custom Override
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-bold text-slate-500 block">
+                              (Auto-Synced from Modules)
+                            </span>
+                          )}
+                        </div>
+                      </div>
 
-                  <div className="space-y-1 border-t border-slate-200 dark:border-slate-700 pt-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
-                    <div className="font-black uppercase text-slate-500">Included Modules:</div>
-                    <ul className="space-y-0.5 list-disc list-inside">
-                      {Object.entries(pkg.includedModules).map(([mKey, isInc]) => {
-                        if (!isInc) return null;
-                        const mObj = modulePricingCatalog.find((m) => m.key === mKey);
-                        return <li key={mKey}>{mObj ? mObj.name : mKey}</li>;
-                      })}
-                    </ul>
+                      <h4 className="font-black text-sm text-slate-900 dark:text-white">{pkg.name}</h4>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">{pkg.description}</p>
+
+                      {/* Live Price Update Input */}
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 space-y-1.5">
+                        <label className="block text-[10px] font-black text-slate-500 uppercase">Update Package Price (₹ / Yr):</label>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-black text-slate-400">₹</span>
+                          <input
+                            type="number"
+                            value={editingPackagePrices[pkg.id] ?? pkg.annualPriceINR}
+                            onChange={(e) =>
+                              setEditingPackagePrices({
+                                ...editingPackagePrices,
+                                [pkg.id]: e.target.value
+                              })
+                            }
+                            className="w-full px-2.5 py-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-mono font-black text-emerald-700 dark:text-emerald-400"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handlePackagePriceSave(pkg.id)}
+                            className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white text-[11px] font-black rounded-lg cursor-pointer shrink-0"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 border-t border-slate-200 dark:border-slate-700 pt-2 text-[10px] font-bold text-slate-600 dark:text-slate-300">
+                        <div className="font-black uppercase text-slate-500 flex justify-between">
+                          <span>Included Modules:</span>
+                          <span className="font-mono text-purple-600 dark:text-purple-400">Sum: ₹{liveSum.toLocaleString('en-IN')}</span>
+                        </div>
+                        <ul className="space-y-1">
+                          {Object.entries(pkg.includedModules || {}).map(([mKey, isInc]) => {
+                            if (!isInc) return null;
+                            const mObj = modulePricingCatalog.find((m) => m.key === mKey);
+                            return (
+                              <li key={mKey} className="flex items-center justify-between bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
+                                <span>{mObj ? mObj.name : mKey}</span>
+                                <span className="font-mono font-bold text-emerald-600 text-[10px]">
+                                  + ₹{mObj ? mObj.annualPriceINR.toLocaleString('en-IN') : 0}
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center space-x-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAssignForm({ schoolId: '', packageId: pkg.id });
+                          setAssignPkgModalOpen(true);
+                        }}
+                        className="flex-1 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-black rounded-xl shadow cursor-pointer text-center"
+                      >
+                        Assign to School
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteCustomPackage(pkg.id)}
+                        className="p-1.5 bg-rose-100 hover:bg-rose-200 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-xs font-black rounded-xl border border-rose-300 cursor-pointer"
+                        title="Delete Package"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
