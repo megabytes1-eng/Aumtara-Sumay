@@ -47,6 +47,16 @@ export default function DataManagement() {
   const [editingItem, setEditingItem] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
 
+  // Custom Confirm Popup Modal State (Replaces native browser window.confirm)
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    confirmText: 'Yes, Delete',
+    cancelText: 'Cancel'
+  });
+
   // Form States with Shift fields
   const [classForm, setClassForm] = useState({
     name: '',
@@ -143,33 +153,68 @@ export default function DataManagement() {
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
     const count = selectedIds.length;
-    if (window.confirm(`⚠️ CONFIRM BULK DELETE: Are you sure you want to delete ${count} selected ${currentTab}?`)) {
-      selectedIds.forEach((id) => {
-        if (currentTab === 'classes') deleteClass(id);
-        else if (currentTab === 'subjects') deleteSubject(id);
-        else if (currentTab === 'teachers') deleteTeacher(id);
-        else if (currentTab === 'rooms') deleteRoom(id);
-      });
-      setSelectedIds([]);
-      showToast(`Successfully deleted ${count} selected ${currentTab} items!`, 'warning');
-    }
+    const tabLabel = currentTab === 'classes' ? 'Classes' : currentTab === 'subjects' ? 'Subjects' : currentTab === 'teachers' ? 'Teachers' : 'Rooms';
+
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete ${count} Selected ${tabLabel}?`,
+      message: `Are you sure you want to remove the ${count} selected entries from ${tabLabel}? This action cannot be undone.`,
+      confirmText: `Yes, Delete (${count})`,
+      cancelText: 'No, Cancel',
+      onConfirm: () => {
+        selectedIds.forEach((id) => {
+          if (currentTab === 'classes') deleteClass(id);
+          else if (currentTab === 'subjects') deleteSubject(id);
+          else if (currentTab === 'teachers') deleteTeacher(id);
+          else if (currentTab === 'rooms') deleteRoom(id);
+        });
+        setSelectedIds([]);
+        showToast(`Successfully deleted ${count} selected ${currentTab} items!`, 'warning');
+      }
+    });
   };
 
   const handleWipeCategory = () => {
     const tabLabel = currentTab === 'classes' ? 'Classes & Sections' : currentTab === 'subjects' ? 'Subjects Catalog' : currentTab === 'teachers' ? 'Teachers Directory' : 'Rooms & Labs';
-    if (window.confirm(`⚠️ CONFIRM WIPE: Are you sure you want to clear ALL entries in "${tabLabel}"?\n\nThis will remove all saved data in this section so you can start entering fresh data.`)) {
-      if (currentTab === 'classes') {
-        clearSelectiveData({ clearClasses: true });
-      } else if (currentTab === 'subjects') {
-        clearSelectiveData({ clearSubjects: true });
-      } else if (currentTab === 'teachers') {
-        clearSelectiveData({ clearTeachers: true });
-      } else if (currentTab === 'rooms') {
-        clearSelectiveData({ clearRooms: true });
+
+    setConfirmModal({
+      isOpen: true,
+      title: `Wipe All ${tabLabel} Data?`,
+      message: `Are you sure you want to clear ALL entries in "${tabLabel}"? This will empty this section so you can enter fresh data.`,
+      confirmText: 'Yes, Wipe All Data',
+      cancelText: 'No, Cancel',
+      onConfirm: () => {
+        if (currentTab === 'classes') {
+          clearSelectiveData({ clearClasses: true });
+        } else if (currentTab === 'subjects') {
+          clearSelectiveData({ clearSubjects: true });
+        } else if (currentTab === 'teachers') {
+          clearSelectiveData({ clearTeachers: true });
+        } else if (currentTab === 'rooms') {
+          clearSelectiveData({ clearRooms: true });
+        }
+        setSelectedIds([]);
+        showToast(`Wiped all ${tabLabel} entries successfully! You can add new items or reload demo sample data.`, 'success');
       }
-      setSelectedIds([]);
-      showToast(`Wiped all ${tabLabel} entries successfully! You can add new items or reload demo sample data.`, 'success');
-    }
+    });
+  };
+
+  const handleSingleDelete = (id, name, type) => {
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete ${type} "${name}"?`,
+      message: `Are you sure you want to delete this item?`,
+      confirmText: 'Yes, Delete',
+      cancelText: 'No, Cancel',
+      onConfirm: () => {
+        if (type === 'Class') deleteClass(id);
+        else if (type === 'Subject') deleteSubject(id);
+        else if (type === 'Teacher') deleteTeacher(id);
+        else if (type === 'Room') deleteRoom(id);
+        setSelectedIds((prev) => prev.filter((i) => i !== id));
+        showToast(`Deleted ${type} "${name}".`, 'warning');
+      }
+    });
   };
 
   const handleOpenModal = (item = null) => {
@@ -435,7 +480,7 @@ export default function DataManagement() {
                         <button onClick={() => handleOpenModal(cls)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg">
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => deleteClass(cls.id)} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
+                        <button onClick={() => handleSingleDelete(cls.id, cls.name, 'Class')} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </td>
@@ -513,7 +558,7 @@ export default function DataManagement() {
                         <button onClick={() => handleOpenModal(sub)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg">
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => deleteSubject(sub.id)} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
+                        <button onClick={() => handleSingleDelete(sub.id, sub.name, 'Subject')} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </td>
@@ -591,7 +636,7 @@ export default function DataManagement() {
                         <button onClick={() => handleOpenModal(tch)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg">
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => deleteTeacher(tch.id)} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
+                        <button onClick={() => handleSingleDelete(tch.id, tch.name, 'Teacher')} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </td>
@@ -665,7 +710,7 @@ export default function DataManagement() {
                         <button onClick={() => handleOpenModal(rm)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg">
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        <button onClick={() => deleteRoom(rm.id)} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
+                        <button onClick={() => handleSingleDelete(rm.id, rm.name, 'Room')} className="p-1.5 hover:bg-rose-100 dark:hover:bg-rose-500/20 text-slate-600 dark:text-slate-400 hover:text-rose-700 rounded-lg">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </td>
@@ -1047,6 +1092,47 @@ export default function DataManagement() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Custom Confirmation Popup Modal (Replaces Browser native window.confirm) */}
+      {confirmModal.isOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl border-2 border-slate-300 dark:border-slate-700 p-6 space-y-5 shadow-2xl animate-fadeIn text-slate-900 dark:text-slate-100 border-t-8 border-t-rose-600">
+            <div className="flex items-start space-x-3.5">
+              <div className="p-3.5 rounded-2xl bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300 dark:border-rose-800 shrink-0">
+                <AlertTriangle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-base font-black text-slate-950 dark:text-white uppercase tracking-tight">
+                  {confirmModal.title}
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-bold leading-relaxed">
+                  {confirmModal.message}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+                className="px-4 py-2.5 bg-slate-200 text-slate-800 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 text-xs font-black rounded-xl cursor-pointer transition-all border border-slate-300 dark:border-slate-700"
+              >
+                {confirmModal.cancelText || 'Cancel'}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirmModal.onConfirm) confirmModal.onConfirm();
+                  setConfirmModal({ ...confirmModal, isOpen: false });
+                }}
+                className="px-5 py-2.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-black rounded-xl shadow-lg border border-rose-900 cursor-pointer transition-all hover:scale-105 flex items-center space-x-1.5"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>{confirmModal.confirmText || 'Yes, Delete'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
