@@ -73,13 +73,24 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center: School Name (Large, Bold Text Without Background Box) */}
+        {/* Center: Title (Platform Master SaaS Command Center for Super Admin, School Name for regular view) */}
         <div className="flex-1 flex justify-center items-center px-4">
           <div className="flex items-center space-x-2.5 truncate max-w-xs sm:max-w-md md:max-w-xl">
-            <School className="h-5 w-5 text-indigo-700 dark:text-amber-400 shrink-0" />
-            <span className="text-base sm:text-lg font-black text-indigo-950 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
-              {institution.name}
-            </span>
+            {activeTab === 'superadmin' || currentUser?.role === 'superadmin' ? (
+              <>
+                <ShieldAlert className="h-5 w-5 text-amber-500 shrink-0" />
+                <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
+                  Platform Master SaaS Command Center
+                </span>
+              </>
+            ) : (
+              <>
+                <School className="h-5 w-5 text-indigo-700 dark:text-amber-400 shrink-0" />
+                <span className="text-base sm:text-lg font-black text-indigo-950 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
+                  {institution.name}
+                </span>
+              </>
+            )}
           </div>
         </div>
 

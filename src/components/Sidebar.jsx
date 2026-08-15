@@ -85,7 +85,7 @@ export default function Sidebar() {
               </button>
             </div>
             <h3 className="font-black text-xs text-white uppercase tracking-tight">SaaS Master Control</h3>
-            <p className="text-[10px] text-amber-200/80 font-mono">FHMIS Platform Command</p>
+            <p className="text-[10px] text-amber-200/80 font-mono">AUMTARA SAMAY SaaS Platform Command Center</p>
           </div>
 
           {/* Navigation Items */}
@@ -177,19 +177,17 @@ export default function Sidebar() {
               <History className="h-4 w-4 text-indigo-400" />
               <span>7. Platform Audit Logs</span>
             </button>
-          </div>
 
-          {/* Switch View Button */}
-          <div className="pt-4 border-t border-slate-800 space-y-2">
-            <p className="px-3 text-[10px] font-black tracking-widest text-slate-400 uppercase">
-              WORKSPACE MODE
-            </p>
             <button
-              onClick={() => setActiveTab('dashboard')}
-              className="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs rounded-xl border border-amber-500/30 flex items-center justify-center space-x-2 cursor-pointer transition-all"
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('profile'); }}
+              className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
+                activeTab === 'superadmin' && activeSubTab === 'profile'
+                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
+                  : 'text-slate-300 hover:bg-slate-800'
+              }`}
             >
-              <School className="h-4 w-4" />
-              <span>Switch to School Timetable</span>
+              <ShieldAlert className="h-4 w-4 text-amber-400" />
+              <span>8. Super Admin Profile & 2FA</span>
             </button>
           </div>
         </div>

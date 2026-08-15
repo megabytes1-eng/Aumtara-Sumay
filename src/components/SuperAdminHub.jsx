@@ -649,7 +649,19 @@ export default function SuperAdminHub() {
             }`}
           >
             <Clock className="h-4 w-4 text-emerald-400" />
-            <span>6. Platform Audit Logs</span>
+            <span>7. Platform Audit Logs</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              activeTab === 'profile'
+                ? 'bg-indigo-700 text-white shadow-lg border border-indigo-900 scale-105'
+                : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-700'
+            }`}
+          >
+            <ShieldAlert className="h-4 w-4 text-amber-400" />
+            <span>8. Super Admin Profile & 2FA</span>
           </button>
         </div>
 
@@ -1361,6 +1373,116 @@ export default function SuperAdminHub() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 8: Super Admin Master Profile & Security Credentials Page */}
+      {activeTab === 'profile' && (
+        <div className="glass-panel p-6 rounded-3xl border-2 border-amber-300 dark:border-amber-900 bg-white dark:bg-slate-900 shadow-xl space-y-6 animate-fadeIn">
+          <div>
+            <span className="px-3 py-1 bg-amber-400 text-slate-950 font-black text-[10px] uppercase rounded-full tracking-wider">
+              👑 Master Account Management
+            </span>
+            <h3 className="text-xl font-black text-slate-950 dark:text-white uppercase tracking-tight mt-2 flex items-center space-x-2">
+              <ShieldAlert className="h-6 w-6 text-amber-500" />
+              <span>Super Admin Profile & 2FA Security Control</span>
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-bold mt-1">
+              Manage your master Super Admin name, official email address, mobile SMS phone number, and security password.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Profile Badge Card */}
+            <div className="p-6 rounded-3xl border-2 border-indigo-200 dark:border-indigo-900/50 bg-slate-50 dark:bg-slate-800/50 space-y-4 text-center">
+              <div className="h-24 w-24 rounded-full bg-gradient-to-tr from-amber-400 via-indigo-600 to-purple-600 mx-auto flex items-center justify-center text-4xl shadow-xl border-4 border-white dark:border-slate-700">
+                👑
+              </div>
+
+              <div>
+                <h4 className="font-black text-lg text-slate-900 dark:text-white">{superAdminProfile.name}</h4>
+                <p className="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">SaaS Master Super Administrator</p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-emerald-100 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800 space-y-1 text-left">
+                <span className="text-[10px] font-black text-emerald-900 dark:text-emerald-200 uppercase block">2FA Security Status:</span>
+                <div className="flex items-center space-x-1.5 font-bold text-xs text-emerald-950 dark:text-emerald-300">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>Email & Mobile OTP Verified</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Profile Edit Form Card */}
+            <div className="md:col-span-2 p-6 rounded-3xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-5">
+              <h4 className="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider border-b border-slate-200 dark:border-slate-800 pb-2">
+                Edit Master Contact Credentials
+              </h4>
+
+              <form onSubmit={handleSaveSuperAdminProfile} className="space-y-4 text-xs">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Official Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileForm.name}
+                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">Master Admin Password *</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileForm.password}
+                      onChange={(e) => setProfileForm({ ...profileForm, password: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono text-indigo-700 dark:text-indigo-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">
+                      Original Email Address (For 2FA OTP Delivery) *
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={profileForm.email}
+                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono text-indigo-700 dark:text-indigo-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-black text-slate-700 dark:text-slate-300 mb-1">
+                      Original Mobile Phone Number (For 2FA SMS Delivery) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={profileForm.phone}
+                      onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-xl font-bold font-mono text-indigo-700 dark:text-indigo-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                  <button
+                    type="submit"
+                    className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-lg border border-amber-300 cursor-pointer transition-all hover:scale-105"
+                  >
+                    Save Master Profile Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
