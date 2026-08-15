@@ -15,7 +15,8 @@ import {
   LogOut,
   School,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  ShieldAlert
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
