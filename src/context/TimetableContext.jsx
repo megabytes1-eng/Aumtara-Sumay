@@ -489,8 +489,34 @@ export function TimetableProvider({ children }) {
     showToast('Signed out of Aumtara Samay.', 'info');
   };
 
+  // Data Sanitizer: Fix swapped planTier vs renewalDate if bad data was previously saved in localStorage
+  const sanitizeSubscribedSchools = (schools) => {
+    if (!Array.isArray(schools)) return [];
+    return schools.map((sch) => {
+      let planTier = sch.planTier;
+      let renewalDate = sch.renewalDate;
+
+      // Check if planTier is a date format YYYY-MM-DD
+      const isPlanTierADate = typeof planTier === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(planTier.trim());
+      // Check if renewalDate is NOT a date format YYYY-MM-DD
+      const isRenewalDateAPlan = typeof renewalDate === 'string' && !/^\d{4}-\d{2}-\d{2}$/.test(renewalDate.trim());
+
+      if (isPlanTierADate || isRenewalDateAPlan) {
+        const temp = planTier;
+        planTier = isRenewalDateAPlan ? renewalDate : 'Standard Dual-Shift';
+        renewalDate = isPlanTierADate ? temp : '2027-01-01';
+      }
+
+      return {
+        ...sch,
+        planTier,
+        renewalDate
+      };
+    });
+  };
+
   // SaaS Multi-Tenant Subscribed Institutions Master State
-  const [subscribedSchools, setSubscribedSchools] = useLocalStorage('aumtara_subscribed_schools', [
+  const [subscribedSchoolsRaw, setSubscribedSchoolsRaw] = useLocalStorage('aumtara_subscribed_schools', [
     {
       id: 'SCH-001',
       code: 'APEX-CBSE-001',
@@ -577,6 +603,16 @@ export function TimetableProvider({ children }) {
     }
   ]);
 
+  const subscribedSchools = sanitizeSubscribedSchools(subscribedSchoolsRaw);
+
+  const setSubscribedSchools = (valOrFn) => {
+    if (typeof valOrFn === 'function') {
+      setSubscribedSchoolsRaw((prev) => sanitizeSubscribedSchools(valOrFn(prev)));
+    } else {
+      setSubscribedSchoolsRaw(sanitizeSubscribedSchools(valOrFn));
+    }
+  };
+
   const toggleSchoolStatus = (schoolId) => {
     setSubscribedSchools((prev) =>
       prev.map((sch) => {
@@ -620,15 +656,30 @@ export function TimetableProvider({ children }) {
     showToast('Updated school administrator login credentials!', 'success');
   };
 
-  const updateSchoolSubscription = (schoolId, newPrice, newRenewalDate, newTier) => {
+  const updateSchoolSubscription = (schoolIdOrObj, planTier, annualPriceINR, renewalDate, paymentStatus) => {
+    let targetId = schoolIdOrObj;
+    let tier = planTier;
+    let price = annualPriceINR;
+    let date = renewalDate;
+    let status = paymentStatus;
+
+    if (typeof schoolIdOrObj === 'object' && schoolIdOrObj !== null) {
+      targetId = schoolIdOrObj.schoolId || schoolIdOrObj.id;
+      tier = schoolIdOrObj.planTier;
+      price = schoolIdOrObj.annualPriceINR;
+      date = schoolIdOrObj.renewalDate;
+      status = schoolIdOrObj.paymentStatus;
+    }
+
     setSubscribedSchools((prev) =>
       prev.map((sch) => {
-        if (sch.id === schoolId) {
+        if (sch.id === targetId) {
           return {
             ...sch,
-            annualPriceINR: Number(newPrice) || sch.annualPriceINR,
-            renewalDate: newRenewalDate || sch.renewalDate,
-            planTier: newTier || sch.planTier
+            planTier: tier || sch.planTier,
+            annualPriceINR: price !== undefined && price !== '' ? Number(price) : sch.annualPriceINR,
+            renewalDate: date || sch.renewalDate,
+            paymentStatus: status || sch.paymentStatus
           };
         }
         return sch;

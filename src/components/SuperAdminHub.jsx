@@ -258,13 +258,13 @@ export default function SuperAdminHub() {
 
   const handleSaveSubscription = (e) => {
     e.preventDefault();
-    updateSchoolSubscription(
-      subForm.schoolId,
-      subForm.planTier,
-      subForm.annualPriceINR,
-      subForm.renewalDate,
-      subForm.paymentStatus
-    );
+    updateSchoolSubscription({
+      schoolId: subForm.schoolId,
+      planTier: subForm.planTier,
+      annualPriceINR: subForm.annualPriceINR,
+      renewalDate: subForm.renewalDate,
+      paymentStatus: subForm.paymentStatus
+    });
     setSubscriptionModalOpen(false);
   };
 
