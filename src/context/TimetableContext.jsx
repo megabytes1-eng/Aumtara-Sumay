@@ -240,6 +240,13 @@ export function TimetableProvider({ children }) {
       setTimetableVersions((prev) => [newVer, ...prev]);
       setActiveVersionId(verId);
 
+      addCustomerUsageLog(
+        institution?.name || 'Apex State & International Public School',
+        '🤖 AI Generator',
+        `Generated 100% Zero-Clash Timetable (${Object.keys(res.timetable).length} slots, ${res.optimizationScore}% Score)`,
+        currentUser?.name || 'Academic Administrator'
+      );
+
       showToast(`Dual-Shift Timetable generated & saved as "${verName}"! Optimization score: ${res.optimizationScore}%`, 'success');
     }, 600);
   };
@@ -277,6 +284,13 @@ export function TimetableProvider({ children }) {
       setTimetableVersions((prev) => [newVer, ...prev]);
       setActiveVersionId(verId);
 
+      addCustomerUsageLog(
+        institution?.name || 'Apex State & International Public School',
+        '🤖 AI Conflict Auto-Solver',
+        `Auto-resolved all period, teacher & room conflicts (100% Zero-Clash Score achieved)`,
+        currentUser?.name || 'Academic Administrator'
+      );
+
       showToast(`All period conflicts automatically resolved & saved as "${verName}"! Optimization score: 100% (Zero Clash)`, 'success');
     }, 400);
   };
@@ -302,64 +316,136 @@ export function TimetableProvider({ children }) {
   const addClass = (cls) => {
     const newCls = { ...cls, id: `CLS-${Date.now().toString().slice(-4)}` };
     setClasses((prev) => [...prev, newCls]);
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏫 Class Setup',
+      `Created & added new Class Section ${cls.name} (${cls.shift || 'Morning Shift'})`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Class ${cls.name} added!`, 'success');
   };
 
   const updateClass = (updatedCls) => {
     setClasses((prev) => prev.map((c) => (c.id === updatedCls.id ? updatedCls : c)));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏫 Class Setup',
+      `Updated Class Section details for ${updatedCls.name}`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Class ${updatedCls.name} updated!`, 'info');
   };
 
   const deleteClass = (id) => {
     setClasses((prev) => prev.filter((c) => c.id !== id));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏫 Class Setup',
+      `Deleted Class Section record [${id}]`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Class deleted!', 'warning');
   };
 
   const addSubject = (sub) => {
     const newSub = { ...sub, id: `SUB-${Date.now().toString().slice(-4)}` };
     setSubjects((prev) => [...prev, newSub]);
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '📚 Subject Catalog',
+      `Created & added new Subject ${sub.name} (Code: ${sub.code || 'SUB'}, ${sub.weeklyPeriods || 4} p/wk)`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Subject ${sub.name} added!`, 'success');
   };
 
   const updateSubject = (updatedSub) => {
     setSubjects((prev) => prev.map((s) => (s.id === updatedSub.id ? updatedSub : s)));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '📚 Subject Catalog',
+      `Updated Subject details for ${updatedSub.name}`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Subject ${updatedSub.name} updated!`, 'info');
   };
 
   const deleteSubject = (id) => {
     setSubjects((prev) => prev.filter((s) => s.id !== id));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '📚 Subject Catalog',
+      `Deleted Subject record [${id}]`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Subject deleted!', 'warning');
   };
 
   const addTeacher = (tch) => {
     const newTch = { ...tch, id: `TCH-${Date.now().toString().slice(-4)}` };
     setTeachers((prev) => [...prev, newTch]);
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '👩‍🏫 Teacher Directory',
+      `Created & onboarded new Faculty Teacher ${tch.name} (${tch.department || 'General'})`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Teacher ${tch.name} added!`, 'success');
   };
 
   const updateTeacher = (updatedTch) => {
     setTeachers((prev) => prev.map((t) => (t.id === updatedTch.id ? updatedTch : t)));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '👩‍🏫 Teacher Directory',
+      `Updated Faculty Profile details for ${updatedTch.name}`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Teacher ${updatedTch.name} updated!`, 'info');
   };
 
   const deleteTeacher = (id) => {
     setTeachers((prev) => prev.filter((t) => t.id !== id));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '👩‍🏫 Teacher Directory',
+      `Deleted Faculty Teacher record [${id}]`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Teacher deleted!', 'warning');
   };
 
   const addRoom = (rm) => {
     const newRm = { ...rm, id: `RM-${Date.now().toString().slice(-4)}` };
     setRooms((prev) => [...prev, newRm]);
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏛️ Room & Lab Infra',
+      `Created & configured new Classroom/Lab ${rm.name} (Capacity: ${rm.capacity || 40})`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Room ${rm.name} added!`, 'success');
   };
 
   const updateRoom = (updatedRm) => {
     setRooms((prev) => prev.map((r) => (r.id === updatedRm.id ? updatedRm : r)));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏛️ Room & Lab Infra',
+      `Updated Classroom/Lab details for ${updatedRm.name}`,
+      currentUser?.name || 'School Admin'
+    );
     showToast(`Room ${updatedRm.name} updated!`, 'info');
   };
 
   const deleteRoom = (id) => {
     setRooms((prev) => prev.filter((r) => r.id !== id));
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🏛️ Room & Lab Infra',
+      `Deleted Classroom/Lab record [${id}]`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Room deleted!', 'warning');
   };
 
@@ -373,22 +459,41 @@ export function TimetableProvider({ children }) {
       }
       return next;
     });
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '📅 Timetable Grid',
+      `Manually edited timetable slot [${slotKey}]`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Timetable updated!', 'info');
   };
 
   const addAbsence = (absence) => {
     const newAbs = { ...absence, id: `ABS-${Date.now().toString().slice(-4)}`, status: 'Pending' };
     setAbsences((prev) => [newAbs, ...prev]);
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🔄 Substitute Cover',
+      `Recorded absence leave request for ${absence.teacherName || 'Faculty Teacher'} (Reason: ${absence.reason || 'Leave'})`,
+      currentUser?.name || 'School Admin'
+    );
     showToast('Absence recorded for teacher.', 'info');
   };
 
   const assignSubstitute = (absenceId, subTeacherId, subTeacherName) => {
+    const absObj = absences.find((a) => a.id === absenceId);
     setAbsences((prev) =>
       prev.map((abs) =>
         abs.id === absenceId
           ? { ...abs, assignedSubstituteId: subTeacherId, assignedSubstituteName: subTeacherName, status: 'Assigned' }
           : abs
       )
+    );
+    addCustomerUsageLog(
+      institution?.name || 'Apex State & International Public School',
+      '🔄 Substitute Cover',
+      `Assigned substitute teacher ${subTeacherName} for ${absObj?.teacherName || 'absent teacher'}`,
+      currentUser?.name || 'School Admin'
     );
     showToast(`Substitute teacher ${subTeacherName} assigned!`, 'success');
   };
