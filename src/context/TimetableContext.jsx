@@ -12,6 +12,29 @@ import { generateTimetable, autoSolveAllConflicts } from '../utils/generatorAlgo
 
 const TimetableContext = createContext();
 
+// Persistent LocalStorage Hook
+function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item !== null ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.warn(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(storedValue));
+    } catch (error) {
+      console.warn(`Error setting localStorage key "${key}":`, error);
+    }
+  }, [key, storedValue]);
+
+  return [storedValue, setStoredValue];
+}
+
 export function TimetableProvider({ children }) {
   // RBAC State
   const [activeRole, setActiveRole] = useState('admin'); // superadmin, admin, hod, faculty
@@ -56,7 +79,7 @@ export function TimetableProvider({ children }) {
   });
 
   // Super Admin Real Profile Credentials State
-  const [superAdminProfile, setSuperAdminProfile] = useState({
+  const [superAdminProfile, setSuperAdminProfile] = useLocalStorage('aumtara_superadmin_profile', {
     name: 'Aumtara SaaS Master Admin',
     email: 'admin@aumtara.com',
     phone: '+91 98765 43210',
@@ -65,7 +88,7 @@ export function TimetableProvider({ children }) {
   });
 
   // Super Admin 2-Factor Security Authentication State (Email & Mobile Confirmation)
-  const [superAdmin2FA, setSuperAdmin2FA] = useState({
+  const [superAdmin2FA, setSuperAdmin2FA] = useLocalStorage('aumtara_superadmin_2fa', {
     isVerified: true,
     email: 'admin@aumtara.com',
     phone: '+91 98765 43210',
@@ -75,7 +98,7 @@ export function TimetableProvider({ children }) {
   });
 
   // Platform Activity Audit Logs State
-  const [platformAuditLogs, setPlatformAuditLogs] = useState([
+  const [platformAuditLogs, setPlatformAuditLogs] = useLocalStorage('aumtara_audit_logs', [
     {
       id: 'LOG-001',
       timestamp: new Date().toLocaleString(),
@@ -109,22 +132,22 @@ export function TimetableProvider({ children }) {
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   // Master Data State
-  const [institution, setInstitution] = useState(initialInstitution);
-  const [bellSchedule, setBellSchedule] = useState(initialBellSchedule);
-  const [subjects, setSubjects] = useState(initialSubjects);
-  const [rooms, setRooms] = useState(initialRooms);
-  const [teachers, setTeachers] = useState(initialTeachers);
-  const [classes, setClasses] = useState(initialClasses);
-  const [constraints, setConstraints] = useState(initialConstraints);
+  const [institution, setInstitution] = useLocalStorage('aumtara_institution', initialInstitution);
+  const [bellSchedule, setBellSchedule] = useLocalStorage('aumtara_bell_schedule', initialBellSchedule);
+  const [subjects, setSubjects] = useLocalStorage('aumtara_subjects', initialSubjects);
+  const [rooms, setRooms] = useLocalStorage('aumtara_rooms', initialRooms);
+  const [teachers, setTeachers] = useLocalStorage('aumtara_teachers', initialTeachers);
+  const [classes, setClasses] = useLocalStorage('aumtara_classes', initialClasses);
+  const [constraints, setConstraints] = useLocalStorage('aumtara_constraints', initialConstraints);
 
   // Timetable Engine State
-  const [timetable, setTimetable] = useState({});
+  const [timetable, setTimetable] = useLocalStorage('aumtara_timetable', {});
   const [conflicts, setConflicts] = useState([]);
   const [optimizationScore, setOptimizationScore] = useState(98);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Substitute Management State
-  const [absences, setAbsences] = useState([
+  const [absences, setAbsences] = useLocalStorage('aumtara_absences', [
     {
       id: 'ABS-001',
       teacherId: 'TCH-201',
@@ -335,7 +358,7 @@ export function TimetableProvider({ children }) {
   };
 
   // Authentication & Dynamic Users Management State
-  const [userAccounts, setUserAccounts] = useState([
+  const [userAccounts, setUserAccounts] = useLocalStorage('aumtara_user_accounts', [
     { username: 'superadmin', email: 'admin@fhmis.com', password: 'admin123', name: 'Aumtara SaaS Super Admin', role: 'superadmin' },
     { username: 'admin@fhmis.com', email: 'admin@fhmis.com', password: 'admin123', name: 'Aumtara SaaS Master Admin', role: 'superadmin' },
     { username: 'admin', password: 'admin123', name: 'Dr. Sarah Jenkins (Principal)', role: 'admin' },
@@ -343,7 +366,7 @@ export function TimetableProvider({ children }) {
     { username: 'teacher', password: 'teacher123', name: 'Dr. Vikram Sarabhai (Faculty)', role: 'faculty' }
   ]);
 
-  const [currentUser, setCurrentUser] = useState({
+  const [currentUser, setCurrentUser] = useLocalStorage('aumtara_current_user', {
     username: 'admin',
     name: 'Dr. Sarah Jenkins (Principal)',
     role: 'admin',
@@ -467,7 +490,7 @@ export function TimetableProvider({ children }) {
   };
 
   // SaaS Multi-Tenant Subscribed Institutions Master State
-  const [subscribedSchools, setSubscribedSchools] = useState([
+  const [subscribedSchools, setSubscribedSchools] = useLocalStorage('aumtara_subscribed_schools', [
     {
       id: 'SCH-001',
       code: 'APEX-CBSE-001',
@@ -526,54 +549,26 @@ export function TimetableProvider({ children }) {
     },
     {
       id: 'SCH-003',
-      code: 'DPS-ACAD-003',
+      code: 'DPS-SEC-003',
       name: 'Delhi Public Senior Secondary Academy',
-      address: 'Ring Road, Civil Lines, Jaipur, Rajasthan',
-      principalName: 'Mrs. Sunita Agarwal',
-      adminEmail: 'contact@dpsjaipur.ac.in',
-      adminPassword: 'dpsjaipurpass',
+      address: 'Knowledge Park III, Greater Noida, UP',
+      principalName: 'Dr. Rajesh Sharma',
+      adminEmail: 'dps.gknoida@edu.in',
+      adminPassword: 'dpsadmin2026',
       phone: '+91 99887 76655',
       status: 'Trialing',
-      planTier: 'Enterprise Dual-Shift',
-      annualPriceINR: 75000,
-      currency: 'INR',
-      billingCycle: 'Annual',
-      subscriptionStartDate: '2026-08-01',
-      renewalDate: '2026-08-31',
-      paymentStatus: 'Trial Active (14 Days Remaining)',
-      maxClassesLimit: 50,
-      maxTeachersLimit: 150,
-      enabledModules: {
-        aiGenerator: true,
-        substituteFinder: true,
-        loadAnalyzer: true,
-        reportsExport: true,
-        multiShiftMatrix: true,
-        customLogo: true
-      }
-    },
-    {
-      id: 'SCH-004',
-      code: 'KVS-ZONE-004',
-      name: 'Kendriya Vidyalaya Command Branch',
-      address: 'Air Force Station Area, Chandigarh',
-      principalName: 'Shri R.K. Varma',
-      adminEmail: 'admin@kvschandigarh.nic.in',
-      adminPassword: 'kvspassword123',
-      phone: '+91 97766 55443',
-      status: 'Suspended',
-      planTier: 'Basic Single Shift',
+      planTier: 'Starter Single-Shift',
       annualPriceINR: 35000,
       currency: 'INR',
       billingCycle: 'Annual',
-      subscriptionStartDate: '2025-06-01',
-      renewalDate: '2026-06-01',
-      paymentStatus: 'Past Due (Renewal Required)',
+      subscriptionStartDate: '2026-07-01',
+      renewalDate: '2026-08-31',
+      paymentStatus: 'Trial Active (15 Days Left)',
       maxClassesLimit: 15,
-      maxTeachersLimit: 40,
+      maxTeachersLimit: 30,
       enabledModules: {
-        aiGenerator: false,
-        substituteFinder: true,
+        aiGenerator: true,
+        substituteFinder: false,
         loadAnalyzer: false,
         reportsExport: true,
         multiShiftMatrix: false,
@@ -582,59 +577,62 @@ export function TimetableProvider({ children }) {
     }
   ]);
 
-  const toggleSchoolStatus = (schoolId, newStatus) => {
+  const toggleSchoolStatus = (schoolId) => {
     setSubscribedSchools((prev) =>
-      prev.map((sch) => (sch.id === schoolId ? { ...sch, status: newStatus } : sch))
+      prev.map((sch) => {
+        if (sch.id === schoolId) {
+          const nextStatus = sch.status === 'Active' ? 'Suspended' : 'Active';
+          showToast(`Institutional status updated for ${sch.name} -> [${nextStatus}]`, 'info');
+          return { ...sch, status: nextStatus };
+        }
+        return sch;
+      })
     );
-    showToast(`Updated institution status to "${newStatus}".`, 'info');
   };
 
   const toggleSchoolModule = (schoolId, moduleKey) => {
     setSubscribedSchools((prev) =>
-      prev.map((sch) =>
-        sch.id === schoolId
-          ? {
-              ...sch,
-              enabledModules: {
-                ...sch.enabledModules,
-                [moduleKey]: !sch.enabledModules?.[moduleKey]
-              }
-            }
-          : sch
-      )
+      prev.map((sch) => {
+        if (sch.id === schoolId) {
+          const currentVal = sch.enabledModules[moduleKey] ?? false;
+          const updatedModules = { ...sch.enabledModules, [moduleKey]: !currentVal };
+          showToast(`Updated module "${moduleKey}" permission for ${sch.name}`, 'success');
+          return { ...sch, enabledModules: updatedModules };
+        }
+        return sch;
+      })
     );
-    showToast('Updated school module permission setting.', 'success');
   };
 
-  const updateSchoolAdminCredentials = (schoolId, newEmail, newPassword, newPrincipal) => {
+  const updateSchoolAdminCredentials = (schoolId, newEmail, newPassword) => {
     setSubscribedSchools((prev) =>
-      prev.map((sch) =>
-        sch.id === schoolId
-          ? {
-              ...sch,
-              adminEmail: newEmail || sch.adminEmail,
-              adminPassword: newPassword || sch.adminPassword,
-              principalName: newPrincipal || sch.principalName
-            }
-          : sch
-      )
+      prev.map((sch) => {
+        if (sch.id === schoolId) {
+          return {
+            ...sch,
+            adminEmail: newEmail || sch.adminEmail,
+            adminPassword: newPassword || sch.adminPassword
+          };
+        }
+        return sch;
+      })
     );
-    showToast('School Admin account details & password updated successfully!', 'success');
+    showToast('Updated school administrator login credentials!', 'success');
   };
 
-  const updateSchoolSubscription = (schoolId, newPlan, newPriceINR, newRenewalDate, newPaymentStatus) => {
+  const updateSchoolSubscription = (schoolId, newPrice, newRenewalDate, newTier) => {
     setSubscribedSchools((prev) =>
-      prev.map((sch) =>
-        sch.id === schoolId
-          ? {
-              ...sch,
-              planTier: newPlan || sch.planTier,
-              annualPriceINR: Number(newPriceINR) || sch.annualPriceINR,
-              renewalDate: newRenewalDate || sch.renewalDate,
-              paymentStatus: newPaymentStatus || sch.paymentStatus
-            }
-          : sch
-      )
+      prev.map((sch) => {
+        if (sch.id === schoolId) {
+          return {
+            ...sch,
+            annualPriceINR: Number(newPrice) || sch.annualPriceINR,
+            renewalDate: newRenewalDate || sch.renewalDate,
+            planTier: newTier || sch.planTier
+          };
+        }
+        return sch;
+      })
     );
     showToast('School annual subscription pricing & renewal date updated!', 'success');
   };
@@ -664,7 +662,7 @@ export function TimetableProvider({ children }) {
   };
 
   // SaaS Module-Wise Pricing Studio Catalog State
-  const [modulePricingCatalog, setModulePricingCatalog] = useState([
+  const [modulePricingCatalog, setModulePricingCatalog] = useLocalStorage('aumtara_module_pricing', [
     {
       key: 'aiGenerator',
       name: '🤖 AI Timetable Engine & Conflict Solver',
@@ -710,7 +708,7 @@ export function TimetableProvider({ children }) {
   ]);
 
   // SaaS Custom Packages Master State
-  const [customPackages, setCustomPackages] = useState([
+  const [customPackages, setCustomPackages] = useLocalStorage('aumtara_custom_packages', [
     {
       id: 'PKG-001',
       name: 'Starter Single-Shift Package',
@@ -741,8 +739,8 @@ export function TimetableProvider({ children }) {
     },
     {
       id: 'PKG-003',
-      name: 'Enterprise All-Access Suite',
-      description: 'Complete suite with AI solver, substitute finder, analytics & multi-shift.',
+      name: 'Enterprise Ultra Dual-Shift Suite',
+      description: 'Full unlimited access to all 6 platform core modules for mega institutions.',
       annualPriceINR: 75000,
       includedModules: {
         aiGenerator: true,
@@ -956,7 +954,7 @@ export function TimetableProvider({ children }) {
 
   // Version History State
   const [activeVersionId, setActiveVersionId] = useState('VER-003');
-  const [timetableVersions, setTimetableVersions] = useState([
+  const [timetableVersions, setTimetableVersions] = useLocalStorage('aumtara_timetable_versions', [
     {
       id: 'VER-003',
       name: 'v1.2 - Dummy Timetable Revision Snapshot (Exam & Cover Adjusted)',
@@ -1103,7 +1101,20 @@ export function TimetableProvider({ children }) {
     }
   };
 
+  const resetAllDataToDefaults = () => {
+    try {
+      window.localStorage.clear();
+      showToast('Cleared local storage! Reloading initial sample data...', 'info');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (e) {
+      showToast('Error resetting local storage.', 'error');
+    }
+  };
+
   const value = {
+    resetAllDataToDefaults,
     activeTab,
     setActiveTab,
     activeSubTab,
