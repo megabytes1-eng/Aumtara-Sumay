@@ -103,7 +103,7 @@ export default function Sidebar() {
               }`}
             >
               <LayoutDashboard className="h-4 w-4 text-amber-400" />
-              <span>1. SA Executive Dashboard</span>
+              <span>SA Executive Dashboard</span>
             </button>
 
             <button
@@ -115,7 +115,7 @@ export default function Sidebar() {
               }`}
             >
               <Building className="h-4 w-4 text-indigo-400" />
-              <span>2. Subscribed Institutions ({subscribedSchools ? subscribedSchools.length : 0})</span>
+              <span>Subscribed Institutions ({subscribedSchools ? subscribedSchools.length : 0})</span>
             </button>
 
             <button
@@ -127,7 +127,7 @@ export default function Sidebar() {
               }`}
             >
               <Sliders className="h-4 w-4 text-emerald-400" />
-              <span>3. Module Access Matrix</span>
+              <span>Module Access Matrix</span>
             </button>
 
             <button
@@ -139,7 +139,7 @@ export default function Sidebar() {
               }`}
             >
               <Layers className="h-4 w-4 text-purple-400" />
-              <span>4. Package & Pricing Studio</span>
+              <span>Package & Pricing Studio</span>
             </button>
 
             <button
@@ -151,7 +151,7 @@ export default function Sidebar() {
               }`}
             >
               <BarChart3 className="h-4 w-4 text-emerald-400" />
-              <span>5. Annual Revenue & Billing</span>
+              <span>Annual Revenue & Billing</span>
             </button>
 
             <button
@@ -163,7 +163,7 @@ export default function Sidebar() {
               }`}
             >
               <Users className="h-4 w-4 text-rose-400" />
-              <span>6. School Admin Passwords</span>
+              <span>School Admin Passwords</span>
             </button>
 
             <button
@@ -175,7 +175,7 @@ export default function Sidebar() {
               }`}
             >
               <History className="h-4 w-4 text-indigo-400" />
-              <span>7. Platform Audit Logs</span>
+              <span>Platform Audit Logs</span>
             </button>
 
             <button
@@ -187,7 +187,7 @@ export default function Sidebar() {
               }`}
             >
               <ShieldAlert className="h-4 w-4 text-amber-400" />
-              <span>8. Super Admin Profile & 2FA</span>
+              <span>Super Admin Profile & 2FA</span>
             </button>
           </div>
         </div>

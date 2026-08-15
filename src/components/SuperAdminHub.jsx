@@ -521,69 +521,85 @@ export default function SuperAdminHub() {
         </div>
       </div>
 
-      {/* Financial & Operational KPI Cards */}
+      {/* Financial & Operational Interactive KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel p-5 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md">
+        <button
+          onClick={() => setActiveTab('schools')}
+          className="glass-panel p-5 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-md text-left transition-all hover:scale-[1.02] hover:border-indigo-500 cursor-pointer group"
+        >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <span className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider group-hover:text-indigo-600 transition-colors">
               Total Subscriptions
             </span>
-            <div className="p-2.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl">
+            <div className="p-2.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl group-hover:scale-110 transition-transform">
               <Building2 className="h-5 w-5" />
             </div>
           </div>
           <p className="text-2xl font-black text-slate-900 dark:text-white mt-2">{totalSchools}</p>
-          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mt-1">
-            {activeSchools} Active • {trialingSchools} Trial • {suspendedSchools} Suspended
+          <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mt-1 flex items-center justify-between">
+            <span>{activeSchools} Active • {trialingSchools} Trial</span>
+            <span className="text-indigo-600 dark:text-indigo-400 text-[10px] font-black">View Directory →</span>
           </p>
-        </div>
+        </button>
 
-        <div className="glass-panel p-5 rounded-2xl border-2 border-emerald-300 dark:border-emerald-900/50 bg-white dark:bg-slate-900 shadow-md">
+        <button
+          onClick={() => setActiveTab('billing')}
+          className="glass-panel p-5 rounded-2xl border-2 border-emerald-300 dark:border-emerald-900/50 bg-white dark:bg-slate-900 shadow-md text-left transition-all hover:scale-[1.02] hover:border-emerald-500 cursor-pointer group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
               Annual Recurring Revenue
             </span>
-            <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl">
+            <div className="p-2.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-xl group-hover:scale-110 transition-transform">
               <DollarSign className="h-5 w-5" />
             </div>
           </div>
           <p className="text-2xl font-black text-emerald-900 dark:text-emerald-200 mt-2">
             ₹ {totalARR.toLocaleString('en-IN')} / Yr
           </p>
-          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1">
-            Total ARR across subscribed schools
+          <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 mt-1 flex items-center justify-between">
+            <span>Total ARR across subscribed schools</span>
+            <span className="text-[10px] font-black underline">View Billing →</span>
           </p>
-        </div>
+        </button>
 
-        <div className="glass-panel p-5 rounded-2xl border-2 border-purple-300 dark:border-purple-900/50 bg-white dark:bg-slate-900 shadow-md">
+        <button
+          onClick={() => setActiveTab('packages')}
+          className="glass-panel p-5 rounded-2xl border-2 border-purple-300 dark:border-purple-900/50 bg-white dark:bg-slate-900 shadow-md text-left transition-all hover:scale-[1.02] hover:border-purple-500 cursor-pointer group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-purple-700 dark:text-purple-400 uppercase tracking-wider">
               Modular Packages Built
             </span>
-            <div className="p-2.5 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-xl">
+            <div className="p-2.5 bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 rounded-xl group-hover:scale-110 transition-transform">
               <Package className="h-5 w-5" />
             </div>
           </div>
           <p className="text-2xl font-black text-purple-950 dark:text-purple-200 mt-2">{customPackages.length} Packages</p>
-          <p className="text-[11px] font-bold text-purple-600 dark:text-purple-400 mt-1">
-            Custom module-wise pricing defined
+          <p className="text-[11px] font-bold text-purple-600 dark:text-purple-400 mt-1 flex items-center justify-between">
+            <span>Custom module-wise pricing</span>
+            <span className="text-[10px] font-black underline">Open Studio →</span>
           </p>
-        </div>
+        </button>
 
-        <div className="glass-panel p-5 rounded-2xl border-2 border-amber-300 dark:border-amber-900/50 bg-white dark:bg-slate-900 shadow-md">
+        <button
+          onClick={() => setActiveTab('profile')}
+          className="glass-panel p-5 rounded-2xl border-2 border-amber-300 dark:border-amber-900/50 bg-white dark:bg-slate-900 shadow-md text-left transition-all hover:scale-[1.02] hover:border-amber-500 cursor-pointer group"
+        >
           <div className="flex items-center justify-between">
             <span className="text-xs font-black text-amber-700 dark:text-amber-400 uppercase tracking-wider">
               Security 2FA Authentication
             </span>
-            <div className="p-2.5 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 rounded-xl">
+            <div className="p-2.5 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 rounded-xl group-hover:scale-110 transition-transform">
               <Lock className="h-5 w-5" />
             </div>
           </div>
           <p className="text-2xl font-black text-amber-950 dark:text-amber-200 mt-2">Verified</p>
-          <p className="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-1">
-            Email & SMS OTP Confirmed
+          <p className="text-[11px] font-bold text-amber-600 dark:text-amber-400 mt-1 flex items-center justify-between">
+            <span>Email & SMS OTP Confirmed</span>
+            <span className="text-[10px] font-black underline">Master Profile →</span>
           </p>
-        </div>
+        </button>
       </div>
 
       {/* Navigation Sub-Tabs */}
@@ -598,7 +614,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Sparkles className="h-4 w-4 text-amber-950 dark:text-amber-300" />
-            <span>1. SA Executive Dashboard</span>
+            <span>SA Executive Dashboard</span>
           </button>
 
           <button
@@ -610,7 +626,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Building2 className="h-4 w-4" />
-            <span>2. Subscribed Institutions ({totalSchools})</span>
+            <span>Subscribed Institutions ({totalSchools})</span>
           </button>
 
           <button
@@ -622,7 +638,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Sliders className="h-4 w-4" />
-            <span>2. Module Access Matrix</span>
+            <span>Module Access Matrix</span>
           </button>
 
           <button
@@ -634,7 +650,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Layers className="h-4 w-4 text-purple-400" />
-            <span>3. Package & Module Pricing Studio</span>
+            <span>Package & Pricing Studio</span>
           </button>
 
           <button
@@ -646,7 +662,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <DollarSign className="h-4 w-4" />
-            <span>4. Annual Subscriptions</span>
+            <span>Annual Subscriptions & Revenue</span>
           </button>
 
           <button
@@ -658,7 +674,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Key className="h-4 w-4" />
-            <span>5. Admin Passwords</span>
+            <span>School Admin Passwords</span>
           </button>
 
           <button
@@ -670,7 +686,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <Clock className="h-4 w-4 text-emerald-400" />
-            <span>7. Platform Audit Logs</span>
+            <span>Platform Audit Logs</span>
           </button>
 
           <button
@@ -682,7 +698,7 @@ export default function SuperAdminHub() {
             }`}
           >
             <ShieldAlert className="h-4 w-4 text-amber-400" />
-            <span>8. Super Admin Profile & 2FA</span>
+            <span>Super Admin Profile & 2FA</span>
           </button>
         </div>
 
@@ -767,7 +783,7 @@ export default function SuperAdminHub() {
                 </span>
                 <span className="text-xs font-mono font-black text-emerald-600">6 Core Modules</span>
               </div>
-              <h4 className="font-black text-sm text-slate-900 dark:text-white">Module Feature Permission Matrix</h4>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Module Feature Access Matrix</h4>
               <p className="text-xs text-slate-500 font-bold">Turn AI Generator, Substitute Finder, & Exports on/off per school.</p>
             </button>
 
@@ -783,6 +799,48 @@ export default function SuperAdminHub() {
               </div>
               <h4 className="font-black text-sm text-slate-900 dark:text-white">Custom Package & Pricing Studio</h4>
               <p className="text-xs text-slate-500 font-bold">Define per-year module pricing & build custom subscription packages.</p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('billing')}
+              className="p-5 rounded-2xl border-2 border-amber-200 dark:border-amber-900/50 bg-white dark:bg-slate-900 hover:border-amber-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <DollarSign className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-amber-600">₹ {totalARR.toLocaleString('en-IN')}/Yr</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Annual Subscriptions & Billing</h4>
+              <p className="text-xs text-slate-500 font-bold">Manage renewal dates, per-year pricing, and institutional invoices.</p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('security')}
+              className="p-5 rounded-2xl border-2 border-rose-200 dark:border-rose-900/50 bg-white dark:bg-slate-900 hover:border-rose-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <Key className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-rose-600">{totalSchools} Accounts</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">School Admin Passwords Vault</h4>
+              <p className="text-xs text-slate-500 font-bold">Inspect, reset, or change passwords for school administrators.</p>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('logs')}
+              className="p-5 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900/50 bg-white dark:bg-slate-900 hover:border-indigo-500 transition-all text-left space-y-2 cursor-pointer shadow-md group"
+            >
+              <div className="flex items-center justify-between">
+                <span className="p-2.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-xl group-hover:scale-110 transition-transform">
+                  <Clock className="h-5 w-5" />
+                </span>
+                <span className="text-xs font-mono font-black text-indigo-600">{platformAuditLogs.length} Log Entries</span>
+              </div>
+              <h4 className="font-black text-sm text-slate-900 dark:text-white">Platform Activity Audit Logs</h4>
+              <p className="text-xs text-slate-500 font-bold">Track administrative activity, security events, and system changes.</p>
             </button>
           </div>
 
