@@ -842,44 +842,69 @@ export function TimetableProvider({ children }) {
     });
 
     // 2. Automatically update & recalculate prices for all packages in customPackages catalog
-    setCustomPackages((prevPackages) =>
-      prevPackages.map((pkg) => {
-        if (pkg.isCustomOverride) {
-          return pkg; // preserve manual custom price override if explicitly set
+    let updatedPackagesMap = {};
+    setCustomPackages((prevPackages) => {
+      return prevPackages.map((pkg) => {
+        let finalPrice = pkg.annualPriceINR;
+        if (!pkg.isCustomOverride) {
+          let reCalculatedTotal = 0;
+          Object.keys(pkg.includedModules || {}).forEach((mKey) => {
+            if (pkg.includedModules[mKey]) {
+              const catalogItem = updatedCatalog.find((m) => m.key === mKey);
+              const mPrice = mKey === moduleKey ? numPrice : (catalogItem ? catalogItem.annualPriceINR : 0);
+              reCalculatedTotal += mPrice;
+            }
+          });
+          finalPrice = reCalculatedTotal > 0 ? reCalculatedTotal : pkg.annualPriceINR;
         }
-        let reCalculatedTotal = 0;
-        Object.keys(pkg.includedModules || {}).forEach((mKey) => {
-          if (pkg.includedModules[mKey]) {
-            const catalogItem = updatedCatalog.find((m) => m.key === mKey);
-            const mPrice = mKey === moduleKey ? numPrice : (catalogItem ? catalogItem.annualPriceINR : 0);
-            reCalculatedTotal += mPrice;
-          }
-        });
-        return {
-          ...pkg,
-          annualPriceINR: reCalculatedTotal > 0 ? reCalculatedTotal : pkg.annualPriceINR
-        };
+        updatedPackagesMap[pkg.id] = finalPrice;
+        updatedPackagesMap[pkg.name] = finalPrice;
+        return { ...pkg, annualPriceINR: finalPrice };
+      });
+    });
+
+    // 3. Automatically sync annual price across all subscribed schools & billing panels
+    setSubscribedSchools((prevSchools) =>
+      prevSchools.map((sch) => {
+        const pkgPrice = updatedPackagesMap[sch.packageId] || updatedPackagesMap[sch.planTier];
+        if (pkgPrice) {
+          return { ...sch, annualPriceINR: pkgPrice };
+        }
+        return sch;
       })
     );
 
     addAuditLog('UPDATE_MODULE_PRICE', `Updated annual price for module "${moduleKey}" to ₹${numPrice.toLocaleString('en-IN')}/Yr`);
-    showToast(`Updated module price to ₹${numPrice.toLocaleString('en-IN')}/Yr & synced Saved Custom Packages Catalog!`, 'success');
+    showToast(`Updated module price to ₹${numPrice.toLocaleString('en-IN')}/Yr & synced all package and school billing!`, 'success');
   };
 
   const updateCustomPackagePrice = (pkgId, newPrice) => {
     const numPrice = Number(newPrice);
     if (isNaN(numPrice) || numPrice < 0) return;
 
+    let targetPkgName = '';
     setCustomPackages((prev) =>
-      prev.map((pkg) =>
-        pkg.id === pkgId
-          ? { ...pkg, annualPriceINR: numPrice, isCustomOverride: true }
-          : pkg
-      )
+      prev.map((pkg) => {
+        if (pkg.id === pkgId) {
+          targetPkgName = pkg.name;
+          return { ...pkg, annualPriceINR: numPrice, isCustomOverride: true };
+        }
+        return pkg;
+      })
+    );
+
+    // Automatically sync all subscribed schools and billing panels for this package
+    setSubscribedSchools((prevSchools) =>
+      prevSchools.map((sch) => {
+        if (sch.packageId === pkgId || sch.planTier === targetPkgName) {
+          return { ...sch, annualPriceINR: numPrice };
+        }
+        return sch;
+      })
     );
 
     addAuditLog('UPDATE_PACKAGE_PRICE', `Updated price for custom package "${pkgId}" to ₹${numPrice.toLocaleString('en-IN')}/Yr`);
-    showToast(`Updated custom package price to ₹${numPrice.toLocaleString('en-IN')}/Yr!`, 'success');
+    showToast(`Updated custom package price to ₹${numPrice.toLocaleString('en-IN')}/Yr & synced subscribed school billing!`, 'success');
   };
 
   const deleteCustomPackage = (pkgId) => {
@@ -907,6 +932,7 @@ export function TimetableProvider({ children }) {
         sch.id === schoolId
           ? {
               ...sch,
+              packageId: packageObj.id,
               planTier: packageObj.name,
               annualPriceINR: packageObj.annualPriceINR,
               enabledModules: { ...packageObj.includedModules }
@@ -914,7 +940,8 @@ export function TimetableProvider({ children }) {
           : sch
       )
     );
-    showToast(`Assigned package "${packageObj.name}" to school!`, 'success');
+    addAuditLog('ASSIGN_PACKAGE', `Assigned package "${packageObj.name}" (₹${packageObj.annualPriceINR.toLocaleString('en-IN')}/Yr) to school ${schoolId}`);
+    showToast(`Assigned package "${packageObj.name}" (₹ ${packageObj.annualPriceINR.toLocaleString('en-IN')}/Yr) to school!`, 'success');
   };
 
   const updateRolePermission = (roleKey, permKey, boolValue) => {

@@ -1315,38 +1315,31 @@ export default function SuperAdminHub() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl border-2 border-indigo-200 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/20 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-indigo-200 dark:bg-indigo-900 text-indigo-950 dark:text-indigo-200 text-[10px] font-black">
-                TIER 1 PLAN
-              </span>
-              <h4 className="text-sm font-black text-slate-900 dark:text-white">Basic Single-Shift</h4>
-              <p className="text-2xl font-black text-indigo-950 dark:text-white">₹ 35,000 / Yr</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">
-                Up to 15 Grade Classes & 40 Teachers. Basic PDF timetable exports.
-              </p>
-            </div>
+            {customPackages.map((pkg) => {
+              const subscribedCount = subscribedSchools.filter(
+                (s) => s.packageId === pkg.id || s.planTier === pkg.name
+              ).length;
 
-            <div className="p-5 rounded-2xl border-2 border-purple-200 dark:border-purple-900/50 bg-purple-50/50 dark:bg-purple-950/20 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-purple-200 dark:bg-purple-900 text-purple-950 dark:text-purple-200 text-[10px] font-black">
-                TIER 2 PLAN
-              </span>
-              <h4 className="text-sm font-black text-slate-900 dark:text-white">Standard Dual-Shift</h4>
-              <p className="text-2xl font-black text-purple-950 dark:text-white">₹ 50,000 / Yr</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">
-                Up to 25 Grade Classes & 75 Teachers. Dual-Shift CBSE + State Board.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl border-2 border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-950 dark:text-emerald-200 text-[10px] font-black">
-                ENTERPRISE TIER
-              </span>
-              <h4 className="text-sm font-black text-slate-900 dark:text-white">Enterprise Multi-Campus</h4>
-              <p className="text-2xl font-black text-emerald-950 dark:text-white">₹ 75,000 / Yr</p>
-              <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">
-                Unlimited Classes & Faculty. AI Generator, Substitute Finder, Full Analytics.
-              </p>
-            </div>
+              return (
+                <div key={pkg.id} className="p-5 rounded-2xl border-2 border-emerald-300 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2.5 shadow-md">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-200 dark:bg-emerald-900 text-emerald-950 dark:text-emerald-200 text-[10px] font-black font-mono">
+                      {pkg.id}
+                    </span>
+                    <span className="text-[10px] font-black text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-slate-300 dark:border-slate-700">
+                      {subscribedCount} School{subscribedCount === 1 ? '' : 's'} Active
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-black text-slate-900 dark:text-white">{pkg.name}</h4>
+                  <p className="text-2xl font-black text-emerald-950 dark:text-emerald-200">
+                    ₹ {pkg.annualPriceINR.toLocaleString('en-IN')} / Yr
+                  </p>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 font-bold">
+                    {pkg.description}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
           <div className="overflow-x-auto pt-4">
