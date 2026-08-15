@@ -200,6 +200,18 @@ export default function LoginModal({ isOpen, onClose }) {
               <LogIn className="h-4 w-4" />
               <span>Sign In to Aumtara Samay</span>
             </button>
+
+            <div className="pt-2 space-y-2 border-t border-slate-200 dark:border-slate-800 text-center">
+              <span className="text-[11px] font-black text-slate-500 uppercase tracking-wider">Quick Super Admin Login</span>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('admin@fhmis.com', 'admin123')}
+                className="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow cursor-pointer flex items-center justify-center space-x-2 border border-amber-300 transition-all hover:scale-105"
+              >
+                <Shield className="h-4 w-4" />
+                <span>⚡ Super Admin Login (admin@fhmis.com / admin123)</span>
+              </button>
+            </div>
           </form>
         )}
 
