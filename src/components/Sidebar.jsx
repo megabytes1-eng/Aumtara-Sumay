@@ -72,25 +72,25 @@ export default function Sidebar() {
 
   if (isSuperAdminMode) {
     return (
-      <aside className="w-64 bg-slate-950 text-slate-100 border-r-2 border-amber-500/30 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-2xl">
+      <aside className="w-64 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border-r-2 border-slate-300 dark:border-slate-800 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-sm">
         <div className="p-4 space-y-4">
           {/* Header Badge */}
-          <div className="p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 via-indigo-500/20 to-purple-500/20 border border-amber-400/40 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 via-purple-500/15 to-indigo-500/15 border-2 border-amber-400/50 space-y-1.5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="px-2 py-0.5 bg-amber-400 text-slate-950 font-black text-[9px] uppercase rounded-full tracking-widest shadow">
+              <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 font-black text-[9px] uppercase rounded-full tracking-widest shadow">
                 👑 Super Admin
               </span>
-              <button onClick={toggleSidebar} className="text-slate-400 hover:text-white">
+              <button onClick={toggleSidebar} className="text-slate-500 hover:text-indigo-600 dark:hover:text-amber-300 transition-colors" title="Hide Sidebar">
                 <PanelLeftClose className="h-4 w-4" />
               </button>
             </div>
-            <h3 className="font-black text-xs text-white uppercase tracking-tight">SaaS Master Control</h3>
-            <p className="text-[10px] text-amber-200/80 font-mono">AUMTARA SAMAY SaaS Platform Command Center</p>
+            <h3 className="font-black text-xs text-slate-950 dark:text-white uppercase tracking-tight">SaaS Master Control</h3>
+            <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">AUMTARA SAMAY Platform Command</p>
           </div>
 
           {/* Navigation Items */}
-          <div className="space-y-1 text-xs font-black">
-            <p className="px-3 text-[10px] font-black tracking-widest text-amber-400 uppercase mb-2">
+          <div className="space-y-1.5 text-xs font-black">
+            <p className="px-3 text-[10px] font-black tracking-widest text-amber-600 dark:text-amber-400 uppercase mb-2">
               ⚡ SAAS MODULE CONTROL
             </p>
 
@@ -98,11 +98,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('dashboard'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && (activeSubTab === 'dashboard' || !activeSubTab)
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <LayoutDashboard className="h-4 w-4 text-amber-400" />
+              <LayoutDashboard className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>SA Executive Dashboard</span>
             </button>
 
@@ -110,11 +110,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('schools'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'schools'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <Building className="h-4 w-4 text-indigo-400" />
+              <Building className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
               <span>Subscribed Institutions ({subscribedSchools ? subscribedSchools.length : 0})</span>
             </button>
 
@@ -122,11 +122,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('modules'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'modules'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <Sliders className="h-4 w-4 text-emerald-400" />
+              <Sliders className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>Module Access Matrix</span>
             </button>
 
@@ -134,11 +134,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('packages'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'packages'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <Layers className="h-4 w-4 text-purple-400" />
+              <Layers className="h-4 w-4 text-purple-600 dark:text-purple-400 shrink-0" />
               <span>Package & Pricing Studio</span>
             </button>
 
@@ -146,11 +146,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('billing'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'billing'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <BarChart3 className="h-4 w-4 text-emerald-400" />
+              <BarChart3 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
               <span>Annual Revenue & Billing</span>
             </button>
 
@@ -158,11 +158,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('security'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'security'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <Users className="h-4 w-4 text-rose-400" />
+              <Users className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>School Admin Passwords</span>
             </button>
 
@@ -170,11 +170,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('logs'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'logs'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <History className="h-4 w-4 text-indigo-400" />
+              <History className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
               <span>Platform Audit Logs</span>
             </button>
 
@@ -182,11 +182,11 @@ export default function Sidebar() {
               onClick={() => { setActiveTab('superadmin'); setActiveSubTab('profile'); }}
               className={`w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition-all cursor-pointer ${
                 activeTab === 'superadmin' && activeSubTab === 'profile'
-                  ? 'bg-amber-400 text-slate-950 shadow-lg font-black scale-105'
-                  : 'text-slate-300 hover:bg-slate-800'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black border border-amber-500 scale-[1.02]'
+                  : 'text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/80'
               }`}
             >
-              <ShieldAlert className="h-4 w-4 text-amber-400" />
+              <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
               <span>Super Admin Profile & 2FA</span>
             </button>
           </div>
