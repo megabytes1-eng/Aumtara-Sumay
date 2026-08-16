@@ -27,10 +27,13 @@ import {
   Eye,
   EyeOff,
   Mail,
-  Key
+  Key,
+  Globe
 } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Settings() {
+  const { language, setLanguage, t } = useLanguage();
   const {
     themeMode,
     setThemeMode,
@@ -313,6 +316,26 @@ export default function Settings() {
           >
             Current Mode: {themeMode.toUpperCase()}
           </button>
+        </div>
+
+        {/* 1.5 System Language Selection */}
+        <div className="glass-panel p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between shadow-xl">
+          <div className="flex items-center space-x-3">
+            <Globe className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+            <div>
+              <p className="text-sm font-black text-slate-900 dark:text-white">Multilingual Platform Language (ભાષા પસંદગી / भाषा चयन)</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">Select your preferred system language: English (🇬🇧), Gujarati (🇬🇯), or Hindi (🇮🇳).</p>
+            </div>
+          </div>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="px-4 py-2.5 bg-indigo-50 dark:bg-slate-800 border-2 border-indigo-500 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none cursor-pointer shadow-sm"
+          >
+            <option value="en">🇬🇧 English (Default)</option>
+            <option value="gu">🇬🇯 ગુજરાતી (Gujarati)</option>
+            <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+          </select>
         </div>
 
         {/* 2. Interactive Role-Based Access Control (RBAC) Switcher & Editor */}

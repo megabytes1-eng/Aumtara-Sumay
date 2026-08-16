@@ -123,12 +123,16 @@ function AppContent() {
   );
 }
 
+import { LanguageProvider } from './context/LanguageContext';
+
 export default function App() {
   return (
     <ErrorBoundary>
-      <TimetableProvider>
-        <AppContent />
-      </TimetableProvider>
+      <LanguageProvider>
+        <TimetableProvider>
+          <AppContent />
+        </TimetableProvider>
+      </LanguageProvider>
     </ErrorBoundary>
   );
 }

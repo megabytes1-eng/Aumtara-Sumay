@@ -30,8 +30,11 @@ import {
   Award
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Sidebar() {
+  const { language, setLanguage, t } = useLanguage();
+
   const {
     activeTab,
     setActiveTab,
@@ -247,7 +250,7 @@ export default function Sidebar() {
             }`}
           >
             <LayoutDashboard className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
-            <span>Dashboard</span>
+            <span>{t('navDashboard')}</span>
           </button>
         </div>
 
@@ -257,7 +260,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('setup')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>Institutional Setup</span>
+            <span>{t('navSetup')}</span>
             {openSubmenus.setup ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -300,7 +303,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('data')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>Master Data Setup</span>
+            <span>{t('navData')}</span>
             {openSubmenus.data ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -319,7 +322,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Layers className="h-4 w-4 text-purple-700 dark:text-purple-400" />
-                <span>Classes & Sections</span>
+                <span>{t('tabClasses')}</span>
               </button>
 
               <button
@@ -331,7 +334,7 @@ export default function Sidebar() {
                 }`}
               >
                 <BookOpen className="h-4 w-4 text-blue-700 dark:text-blue-400" />
-                <span>Subjects Catalog</span>
+                <span>{t('tabSubjects')}</span>
               </button>
 
               <button
@@ -343,7 +346,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Users className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-                <span>Teachers Directory</span>
+                <span>{t('tabTeachers')}</span>
               </button>
 
               <button
@@ -355,7 +358,7 @@ export default function Sidebar() {
                 }`}
               >
                 <DoorOpen className="h-4 w-4 text-amber-700 dark:text-amber-400" />
-                <span>Rooms & Labs</span>
+                <span>{t('tabRooms')}</span>
               </button>
             </div>
           )}
@@ -372,7 +375,7 @@ export default function Sidebar() {
             }`}
           >
             <Sliders className="h-4 w-4 text-teal-700 dark:text-teal-400" />
-            <span>Rules & Constraints</span>
+            <span>{t('navConstraints')}</span>
           </button>
         </div>
 
@@ -382,7 +385,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('workspace')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>Generator & Grid</span>
+            <span>{t('navGenerator')}</span>
             {openSubmenus.workspace ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -401,7 +404,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Sparkles className="h-4 w-4 text-purple-700 dark:text-purple-400" />
-                <span>AI Generator</span>
+                <span>{t('navGenerator')}</span>
               </button>
 
               <button
@@ -415,56 +418,17 @@ export default function Sidebar() {
                 <Grid className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
                 <span>Drag & Drop Matrix</span>
               </button>
-
-              <button
-                onClick={() => handleNavClick('generator', 'conflicts')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'generator' && activeSubTab === 'conflicts'
-                    ? 'bg-rose-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <div className="flex items-center space-x-2.5">
-                  <AlertOctagon className="h-4 w-4 text-rose-700 dark:text-rose-400" />
-                  <span>Conflict Inspector</span>
-                </div>
-                {conflicts.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-black">
-                    {conflicts.length}
-                  </span>
-                )}
-              </button>
             </div>
           )}
-        </div>
-
-        {/* Primary Standalone: Saved Versions */}
-        <div>
-          <button
-            onClick={() => handleNavClick('history')}
-            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-black transition-all ${
-              activeTab === 'history'
-                ? 'bg-teal-700 text-white shadow-md border border-teal-800'
-                : 'text-slate-900 dark:text-slate-100 hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800'
-            }`}
-          >
-            <div className="flex items-center space-x-2.5">
-              <History className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
-              <span>Saved Versions</span>
-            </div>
-            <span className="px-2 py-0.5 rounded-full text-[10px] bg-teal-600 text-white font-black">
-              {(timetableVersions || []).length}
-            </span>
-          </button>
         </div>
 
         {/* Navigation Group: Substitute Management */}
         <div>
           <button
             onClick={() => toggleSubmenu('substitute')}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
+            className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700 font-sans"
           >
-            <span>Substitute Management</span>
+            <span>{t('navSubstitute')}</span>
             {openSubmenus.substitute ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -501,56 +465,13 @@ export default function Sidebar() {
           )}
         </div>
 
-        {/* Navigation Group: Free Tools & Analytics */}
-        <div>
-          <button
-            onClick={() => toggleSubmenu('tools')}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
-          >
-            <span>Free Tools & Load</span>
-            {openSubmenus.tools ? (
-              <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-            )}
-          </button>
-
-          {openSubmenus.tools && (
-            <div className="mt-1.5 space-y-1 pl-2">
-              <button
-                onClick={() => handleNavClick('tools', 'free-finder')}
-                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'tools' && activeSubTab === 'free-finder'
-                    ? 'bg-emerald-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <UserCheck className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-                <span>Free Teacher Finder</span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick('tools', 'workload')}
-                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'tools' && activeSubTab === 'workload'
-                    ? 'bg-indigo-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <BarChart3 className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
-                <span>Teacher Load Analyzer</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Navigation Group: Reports & Exports */}
+        {/* Navigation Group: Reports & DEO */}
         <div>
           <button
             onClick={() => toggleSubmenu('reports')}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
+            className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700 font-sans"
           >
-            <span>Reports & Exports</span>
+            <span>{t('navDEO')}</span>
             {openSubmenus.reports ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -561,51 +482,15 @@ export default function Sidebar() {
           {openSubmenus.reports && (
             <div className="mt-1.5 space-y-1 pl-2">
               <button
-                onClick={() => handleNavClick('reports', 'master')}
-                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'reports' && activeSubTab === 'master'
-                    ? 'bg-indigo-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <FileSpreadsheet className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
-                <span>Master Timetable</span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick('reports', 'class')}
-                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'reports' && activeSubTab === 'class'
-                    ? 'bg-teal-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <FileText className="h-4 w-4 text-teal-700 dark:text-teal-400" />
-                <span>Class & Teacher Charts</span>
-              </button>
-
-              <button
                 onClick={() => handleNavClick('reports', 'export')}
                 className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
                   activeTab === 'reports' && activeSubTab === 'export'
-                    ? 'bg-cyan-700 text-white shadow-sm'
-                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
-                }`}
-              >
-                <Printer className="h-4 w-4 text-cyan-700 dark:text-cyan-400" />
-                <span>PDF / Excel Export</span>
-              </button>
-
-              <button
-                onClick={() => handleNavClick('reports', 'deo')}
-                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
-                  activeTab === 'reports' && activeSubTab === 'deo'
                     ? 'bg-amber-500 text-slate-950 shadow-sm font-black'
                     : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
                 }`}
               >
                 <Award className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                <span>DEO Official Formats</span>
+                <span>{t('navDEO')}</span>
               </button>
             </div>
           )}
@@ -622,7 +507,7 @@ export default function Sidebar() {
             }`}
           >
             <Settings className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-            <span>System Settings</span>
+            <span>{t('navSettings')}</span>
           </button>
         </div>
       </div>
