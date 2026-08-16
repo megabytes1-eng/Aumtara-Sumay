@@ -107,6 +107,7 @@ export default function ReportsExport() {
       }
     } else if (currentTab === 'deo') {
       const deoTitles = {
+        guj_sec_patrak_a: 'DEO_Gujarat_Patrak_A_Secondary_Class_Allocation',
         guj_sec_patrak_k: 'DEO_Gujarat_Patrak_K_Secondary_Workload_Certificate',
         guj_sec_patrak_b: 'DEO_Gujarat_Patrak_B_Secondary_Teacher_Workload',
         guj_hsec_patrak_k: 'DEO_Gujarat_Patrak_K_HigherSec_Workload_Certificate',
@@ -191,7 +192,17 @@ export default function ReportsExport() {
     let csvContent = "data:text/csv;charset=utf-8,";
     const reportFilename = getActiveReportFilename();
 
-    if (deoFormat === 'guj_sec_patrak_k') {
+    if (deoFormat === 'guj_sec_patrak_a') {
+      csvContent += "ધોરણ,વિષય Details,ગુજરાતી,અંગ્રેજી,ગણિત,વિજ્ઞાન,સંસ્કૃત,સા.વિજ્ઞાન,હિન્દી,ચિત્ર,વ્યાયામ,સ.ઉ.પ્ર.,ઉદ્યોગ-૧,ઉદ્યોગ-૨,એમ.ડી.,કોમ્પ્યુટર,પી.ટી,કુલ તાસ\n";
+      csvContent += `"ધોરણ ૯","તાસની સંખ્યા",6,6,6,6,6,6,6,6,2,6,6,6,6,6,6,86\n`;
+      csvContent += `"","વર્ગોની સંખ્યા",2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,30\n`;
+      csvContent += `"","કુલ તાસ",12,12,12,12,12,12,12,12,4,12,12,12,12,12,12,172\n`;
+      csvContent += `"ધોરણ ૧૦","તાસની સંખ્યા",6,6,6,6,6,6,6,6,2,6,6,6,6,6,6,86\n`;
+      csvContent += `"","વર્ગોની સંખ્યા",2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,30\n`;
+      csvContent += `"","કુલ તાસ",12,12,12,12,12,12,12,12,4,12,12,12,12,12,12,172\n`;
+      csvContent += `"એકંદરે","વર્ગોની સંખ્યા",4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,60\n`;
+      csvContent += `"","કુલ તાસ",24,24,24,24,24,24,24,24,8,24,24,24,24,24,24,344\n`;
+    } else if (deoFormat === 'guj_sec_patrak_k') {
       csvContent += "વિષય,ગુજરાતી,અંગ્રેજી,ગણિત,વિજ્ઞાન,સંસ્કૃત,સા.વિજ્ઞાન,હિન્દી,ચિત્ર,વ્યાયામ,સ.ઉ.પ્ર.,ઉદ્યોગ-૧,ઉદ્યોગ-૨,એમ.ડી.,કોમ્પ્યુટર,પી.ટી,કુલ તાસ\n";
       const patrakARow = secSubKeys.map(s => getSubjectPeriodCount(s));
       const totalA = patrakARow.reduce((a, b) => a + b, 0);
@@ -549,11 +560,12 @@ export default function ReportsExport() {
                 className="px-4 py-2 bg-white dark:bg-slate-800 border-2 border-amber-500 rounded-xl text-xs font-black text-slate-900 dark:text-white focus:outline-none shadow-sm cursor-pointer"
               >
                 <optgroup label="🇬🇯 GUJARAT DEO OFFICIAL PATRAK FORMATS (ગુજરાત ડી.ઈ.ઓ. પત્રકો)">
-                  <option value="guj_sec_patrak_k">માધ્યમિક વિભાગ - કાર્યભાર પત્રક-ક (Secondary Workload Certificate Patrak-K)</option>
+                  <option value="guj_sec_patrak_a">માધ્યમિક વિભાગ - કાર્યભાર પત્રક-અ (Secondary Class Allocation Patrak-A)</option>
                   <option value="guj_sec_patrak_b">માધ્યમિક વિભાગ - પત્રક-બ (Secondary Teacher Workload Load Patrak-B)</option>
-                  <option value="guj_hsec_patrak_k">ઉ.માં. માધ્યમિક વિભાગ - કાર્યભાર પત્રક-ક (Higher Secondary Certificate Patrak-K)</option>
-                  <option value="guj_hsec_patrak_b">ઉચ્ચતર માધ્યમિક વિભાગ - પત્રક-બ (Higher Secondary Teacher Load Patrak-B)</option>
+                  <option value="guj_sec_patrak_k">માધ્યમિક વિભાગ - કાર્યભાર પત્રક-ક (Secondary Workload Certificate Patrak-K)</option>
                   <option value="guj_hsec_patrak_a">ઉ.માધ્યમિક વિભાગ - કાર્યભાર પત્રક-અ (Higher Secondary Class Allocation Patrak-A)</option>
+                  <option value="guj_hsec_patrak_b">ઉચ્ચતર માધ્યમિક વિભાગ - પત્રક-બ (Higher Secondary Teacher Load Patrak-B)</option>
+                  <option value="guj_hsec_patrak_k">ઉ.માં. માધ્યમિક વિભાગ - કાર્યભાર પત્રક-ક (Higher Secondary Certificate Patrak-K)</option>
                 </optgroup>
                 <optgroup label="🏛️ STANDARD ALL-INDIA DEO INSPECTION FORMATS">
                   <option value="format1">DEO Format 1: Teacher Workload & Load Master Register</option>
@@ -629,6 +641,100 @@ export default function ReportsExport() {
                 <span><strong>Report Date:</strong> {new Date().toLocaleDateString()}</span>
               </div>
             </div>
+
+            {/* GUJARAT DEO FORMAT: માધ્યમિક વિભાગ - કાર્યભાર પત્રક-અ */}
+            {deoFormat === 'guj_sec_patrak_a' && (
+              <div className="space-y-6 animate-fadeIn text-slate-950 dark:text-white">
+                <div className="text-center font-black border-b-2 border-slate-900 dark:border-slate-200 pb-3">
+                  <div className="flex justify-between items-center text-sm font-black mb-1">
+                    <span className="px-3 py-1 bg-amber-400 text-slate-950 rounded-lg">માધ્યમિક વિભાગ</span>
+                    <span className="text-base tracking-wide font-black">કાર્યભાર પત્રક-અ</span>
+                    <span className="text-xs font-mono text-slate-500">{institution.academicYear}</span>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border-2 border-slate-900 dark:border-slate-200">
+                  <table className="w-full text-center text-xs border-collapse font-black">
+                    <thead className="bg-slate-200 dark:bg-slate-800 text-slate-950 dark:text-white border-b-2 border-slate-900 dark:border-slate-200">
+                      <tr>
+                        <th className="p-3 text-left border-r border-slate-900 dark:border-slate-200 w-20">ધોરણ</th>
+                        <th className="p-3 text-left border-r border-slate-900 dark:border-slate-200 w-32">વિષય Details</th>
+                        {secSubKeys.map((sub) => (
+                          <th key={sub} className="p-2 border-r border-slate-900 dark:border-slate-200 text-[11px] font-black">{sub}</th>
+                        ))}
+                        <th className="p-2 text-indigo-950 dark:text-amber-300 font-black bg-slate-300 dark:bg-slate-700">કુલ તાસ</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-900 dark:divide-slate-200 font-black">
+                      {/* Std 9 */}
+                      <tr>
+                        <td rowSpan={3} className="p-3 text-center border-r-2 border-slate-900 dark:border-slate-200 font-black bg-slate-100 dark:bg-slate-800 text-sm">
+                          ૯
+                        </td>
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200">તાસની સંખ્યા</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono">{i === 8 ? 2 : 6}</td>)}
+                        <td className="p-2 font-mono font-black bg-slate-100 dark:bg-slate-800">૮૬</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200">વર્ગોની સંખ્યા</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono">૨</td>)}
+                        <td className="p-2 font-mono font-black bg-slate-100 dark:bg-slate-800">૩૦</td>
+                      </tr>
+                      <tr className="border-b-2 border-slate-900 dark:border-slate-200">
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200 font-black text-indigo-700 dark:text-indigo-400">કુલ તાસ</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono font-black">{i === 8 ? 4 : 12}</td>)}
+                        <td className="p-2 font-mono font-black text-sm bg-slate-200 dark:bg-slate-700 text-indigo-700 dark:text-indigo-300">૧૭૨</td>
+                      </tr>
+
+                      {/* Std 10 */}
+                      <tr>
+                        <td rowSpan={3} className="p-3 text-center border-r-2 border-slate-900 dark:border-slate-200 font-black bg-slate-100 dark:bg-slate-800 text-sm">
+                          ૧૦
+                        </td>
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200">તાસની સંખ્યા</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono">{i === 8 ? 2 : 6}</td>)}
+                        <td className="p-2 font-mono font-black bg-slate-100 dark:bg-slate-800">૮૬</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200">વર્ગોની સંખ્યા</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono">૨</td>)}
+                        <td className="p-2 font-mono font-black bg-slate-100 dark:bg-slate-800">૩૦</td>
+                      </tr>
+                      <tr className="border-b-2 border-slate-900 dark:border-slate-200">
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200 font-black text-indigo-700 dark:text-indigo-400">કુલ તાસ</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono font-black">{i === 8 ? 4 : 12}</td>)}
+                        <td className="p-2 font-mono font-black text-sm bg-slate-200 dark:bg-slate-700 text-indigo-700 dark:text-indigo-300">૧૭૨</td>
+                      </tr>
+
+                      {/* Overall Totals */}
+                      <tr className="bg-slate-200 dark:bg-slate-800">
+                        <td rowSpan={2} className="p-3 text-center border-r-2 border-slate-900 dark:border-slate-200 font-black text-amber-950 dark:text-amber-300 text-sm">
+                          એકંદરે
+                        </td>
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200 font-black">વર્ગોની સંખ્યા</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono font-black">૪</td>)}
+                        <td className="p-2 font-mono font-black">૬૦</td>
+                      </tr>
+                      <tr className="bg-slate-300 dark:bg-slate-700 text-slate-950 dark:text-white">
+                        <td className="p-2 text-left border-r border-slate-900 dark:border-slate-200 font-black text-sm">કુલ તાસ</td>
+                        {secSubKeys.map((s, i) => <td key={i} className="p-2 border-r border-slate-900 font-mono font-black text-sm">{i === 8 ? 8 : 24}</td>)}
+                        <td className="p-2 font-mono font-black text-base text-emerald-700 dark:text-emerald-300">૩૪૪</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="flex items-end justify-between pt-6 text-xs font-black">
+                  <div className="space-y-1">
+                    <p>તારીખ:- {new Date().toLocaleDateString('gu-IN')}</p>
+                    <p>સ્થળ:- {institution.address || 'અમદાવાદ'}</p>
+                  </div>
+                  <div className="border-2 border-dashed border-slate-900 dark:border-slate-300 p-4 rounded-xl text-center min-w-[220px]">
+                    <p className="font-black text-slate-950 dark:text-white text-sm">આચાર્યની સહી/સિક્કો</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* GUJARAT DEO FORMAT 1: માધ્યમિક વિભાગ - કાર્યભાર પત્રક-ક */}
             {deoFormat === 'guj_sec_patrak_k' && (
