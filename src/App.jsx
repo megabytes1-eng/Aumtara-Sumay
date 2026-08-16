@@ -91,8 +91,20 @@ class ErrorBoundary extends React.Component {
 }
 
 function AppContent() {
-  const { activeTab, themeMode, isLoginModalOpen, setIsLoginModalOpen } = useTimetable();
+  const { viewMode, activeTab, themeMode, isLoginModalOpen, setIsLoginModalOpen } = useTimetable();
 
+  // Public SaaS Marketing Landing Page
+  if (viewMode === 'landing') {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans relative">
+        <LandingPage />
+        <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+        <GlobalHelpFloatingButton />
+      </div>
+    );
+  }
+
+  // Internal School Control Management System
   return (
     <div className={`min-h-screen ${themeMode === 'dark' ? 'theme-dark bg-slate-900 text-slate-100' : 'bg-gradient-to-br from-slate-50 via-indigo-50/20 to-purple-50/30 text-slate-800'} flex flex-col font-sans transition-colors duration-300 relative`}>
       <Navbar />

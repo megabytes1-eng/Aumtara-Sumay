@@ -159,6 +159,7 @@ export function TimetableProvider({ children }) {
   ]);
 
   // Navigation State
+  const [viewMode, setViewMode] = useState('landing'); // 'landing' (Public SaaS Page) or 'app' (Control Management System)
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
   const [themeMode, setThemeMode] = useState('light');
@@ -1399,6 +1400,8 @@ export function TimetableProvider({ children }) {
 
   const value = {
     resetAllDataToDefaults,
+    viewMode,
+    setViewMode,
     activeTab,
     setActiveTab,
     activeSubTab,
