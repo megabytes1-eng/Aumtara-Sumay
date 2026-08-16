@@ -28,6 +28,8 @@ import {
   Award,
   BookOpen,
   Package,
+  School,
+  FileText,
   CheckSquare,
   Square
 } from 'lucide-react';
@@ -524,7 +526,15 @@ export default function SuperAdminHub() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all hover:scale-105 border border-emerald-400 flex items-center space-x-2 shrink-0 cursor-pointer"
+            >
+              <School className="h-4 w-4 text-amber-300" />
+              <span>🏫 Open School Platform View</span>
+            </button>
+
             <button
               onClick={() => setAssignPkgModalOpen(true)}
               className="px-4 py-3 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs rounded-2xl shadow-xl transition-all border border-purple-400 flex items-center space-x-2 cursor-pointer"

@@ -69,7 +69,7 @@ export default function Sidebar() {
   if (!isSidebarOpen) return null;
 
   // DEDICATED SUPER ADMIN SAAS CONTROL PANEL SIDEBAR (Aumtara Samay SaaS Mode)
-  const isSuperAdminMode = activeTab === 'superadmin' || currentUser?.role === 'superadmin';
+  const isSuperAdminMode = activeTab === 'superadmin';
 
   if (isSuperAdminMode) {
     return (
@@ -87,6 +87,14 @@ export default function Sidebar() {
             </div>
             <h3 className="font-black text-xs text-slate-950 dark:text-white uppercase tracking-tight">SaaS Master Control</h3>
             <p className="text-[10px] text-slate-600 dark:text-slate-400 font-bold">AUMTARA SAMAY Platform Command</p>
+
+            <button
+              onClick={() => { setActiveTab('dashboard'); }}
+              className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-gradient-to-r from-indigo-700 to-purple-700 hover:from-indigo-800 hover:to-purple-800 text-white font-black text-[11px] rounded-xl shadow transition-all hover:scale-105 border border-indigo-600 mt-1 cursor-pointer"
+            >
+              <School className="h-4 w-4 text-amber-300 shrink-0" />
+              <span>🏫 Open School Platform View</span>
+            </button>
           </div>
 
           {/* Navigation Items */}
@@ -199,6 +207,23 @@ export default function Sidebar() {
   return (
     <aside className="w-64 bg-white dark:bg-slate-900 border-r-2 border-slate-300 dark:border-slate-800 flex flex-col h-[calc(100vh-61px)] sticky top-[61px] overflow-y-auto select-none no-print shadow-sm">
       <div className="p-4 space-y-5">
+        {currentUser?.role === 'superadmin' && (
+          <div className="p-3 bg-amber-400/20 border-2 border-amber-400 rounded-2xl flex items-center justify-between shadow-sm">
+            <div className="flex items-center space-x-1.5">
+              <ShieldAlert className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
+              <span className="text-[10px] font-black text-amber-700 dark:text-amber-300 uppercase">
+                Super Admin Mode
+              </span>
+            </div>
+            <button
+              onClick={() => { setActiveTab('superadmin'); setActiveSubTab('dashboard'); }}
+              className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-[10px] rounded-lg shadow uppercase transition-all hover:scale-105 cursor-pointer"
+            >
+              SA Hub ➔
+            </button>
+          </div>
+        )}
+
         {/* Navigation Group: Main */}
         <div>
           <div className="flex items-center justify-between px-3 mb-2">

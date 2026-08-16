@@ -78,7 +78,7 @@ export default function Navbar() {
         {/* Center: Title (Platform Master SaaS Command Center for Super Admin, School Name for regular view) */}
         <div className="flex-1 flex justify-center items-center px-4">
           <div className="flex items-center space-x-2.5 truncate max-w-xs sm:max-w-md md:max-w-xl">
-            {activeTab === 'superadmin' || currentUser?.role === 'superadmin' ? (
+            {activeTab === 'superadmin' ? (
               <>
                 <ShieldAlert className="h-5 w-5 text-amber-500 shrink-0" />
                 <span className="text-base sm:text-lg font-black text-amber-600 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
@@ -98,6 +98,27 @@ export default function Navbar() {
 
         {/* Global Quick Actions */}
         <div className="flex items-center space-x-3">
+
+          {/* Super Admin View Mode Toggle */}
+          {currentUser?.role === 'superadmin' && (
+            <button
+              onClick={() => setActiveTab(activeTab === 'superadmin' ? 'dashboard' : 'superadmin')}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all hover:scale-105 border border-amber-500 cursor-pointer"
+              title={activeTab === 'superadmin' ? 'View & Test School Platform Pages' : 'Return to Super Admin Hub'}
+            >
+              {activeTab === 'superadmin' ? (
+                <>
+                  <School className="h-4 w-4" />
+                  <span className="hidden md:inline">🏫 View School App</span>
+                </>
+              ) : (
+                <>
+                  <ShieldAlert className="h-4 w-4" />
+                  <span className="hidden md:inline">👑 SA Hub</span>
+                </>
+              )}
+            </button>
+          )}
 
           {/* Solve Conflicts */}
           <button
