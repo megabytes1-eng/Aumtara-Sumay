@@ -26,7 +26,8 @@ import {
   HelpCircle,
   History,
   PanelLeftClose,
-  ShieldAlert
+  ShieldAlert,
+  Award
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
 
@@ -568,6 +569,18 @@ export default function Sidebar() {
               >
                 <Printer className="h-4 w-4 text-cyan-700 dark:text-cyan-400" />
                 <span>PDF / Excel Export</span>
+              </button>
+
+              <button
+                onClick={() => handleNavClick('reports', 'deo')}
+                className={`w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-extrabold transition-all ${
+                  activeTab === 'reports' && activeSubTab === 'deo'
+                    ? 'bg-amber-500 text-slate-950 shadow-sm font-black'
+                    : 'text-slate-900 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800'
+                }`}
+              >
+                <Award className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <span>DEO Official Formats</span>
               </button>
             </div>
           )}
