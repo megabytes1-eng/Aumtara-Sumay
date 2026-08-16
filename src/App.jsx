@@ -13,6 +13,7 @@ import ReportsExport from './components/ReportsExport';
 import Settings from './components/Settings';
 import VersionHistoryView from './components/VersionHistoryView';
 import SuperAdminHub from './components/SuperAdminHub';
+import LandingPage from './components/LandingPage';
 
 import GlobalHelpFloatingButton from './components/GlobalHelpFloatingButton';
 import LoginModal from './components/LoginModal';
