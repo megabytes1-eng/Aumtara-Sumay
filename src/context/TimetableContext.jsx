@@ -449,6 +449,42 @@ export function TimetableProvider({ children }) {
     showToast('Room deleted!', 'warning');
   };
 
+  const bulkAddTeachers = (teacherArray) => {
+    const newItems = teacherArray.map((t, idx) => ({
+      ...t,
+      id: t.id || `TCH-BLK-${Date.now().toString().slice(-4)}-${idx + 1}`
+    }));
+    setTeachers((prev) => [...prev, ...newItems]);
+    showToast(`Bulk imported ${newItems.length} teachers successfully!`, 'success');
+  };
+
+  const bulkAddSubjects = (subjectArray) => {
+    const newItems = subjectArray.map((s, idx) => ({
+      ...s,
+      id: s.id || `SUB-BLK-${Date.now().toString().slice(-4)}-${idx + 1}`
+    }));
+    setSubjects((prev) => [...prev, ...newItems]);
+    showToast(`Bulk imported ${newItems.length} subjects successfully!`, 'success');
+  };
+
+  const bulkAddClasses = (classArray) => {
+    const newItems = classArray.map((c, idx) => ({
+      ...c,
+      id: c.id || `CLS-BLK-${Date.now().toString().slice(-4)}-${idx + 1}`
+    }));
+    setClasses((prev) => [...prev, ...newItems]);
+    showToast(`Bulk imported ${newItems.length} classes successfully!`, 'success');
+  };
+
+  const bulkAddRooms = (roomArray) => {
+    const newItems = roomArray.map((r, idx) => ({
+      ...r,
+      id: r.id || `RM-BLK-${Date.now().toString().slice(-4)}-${idx + 1}`
+    }));
+    setRooms((prev) => [...prev, ...newItems]);
+    showToast(`Bulk imported ${newItems.length} rooms successfully!`, 'success');
+  };
+
   const updateTimetableSlot = (slotKey, newSlotData) => {
     setTimetable((prev) => {
       const next = { ...prev };
@@ -1421,6 +1457,10 @@ export function TimetableProvider({ children }) {
     addRoom,
     updateRoom,
     deleteRoom,
+    bulkAddTeachers,
+    bulkAddSubjects,
+    bulkAddClasses,
+    bulkAddRooms,
     updateTimetableSlot,
     absences,
     addAbsence,

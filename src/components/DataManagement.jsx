@@ -13,8 +13,11 @@ import {
   CheckSquare,
   Square,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Upload,
+  FileSpreadsheet
 } from 'lucide-react';
+import BulkUploadModal from './BulkUploadModal';
 
 export default function DataManagement() {
   const {
@@ -44,6 +47,7 @@ export default function DataManagement() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -410,6 +414,15 @@ export default function DataManagement() {
               <span>Wipe & Start Fresh</span>
             </button>
           )}
+
+          <button
+            onClick={() => setIsBulkModalOpen(true)}
+            className="flex items-center space-x-1.5 px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl shadow-md transition-all hover:scale-105 border border-emerald-900 cursor-pointer"
+            title={`Bulk Upload ${currentTab} via CSV or Excel`}
+          >
+            <FileSpreadsheet className="h-4 w-4 text-emerald-300" />
+            <span>Bulk Upload CSV / Excel</span>
+          </button>
 
           <button
             onClick={() => handleOpenModal(null)}
@@ -1277,6 +1290,13 @@ export default function DataManagement() {
           </div>
         </div>
       )}
+
+      {/* Bulk CSV / Excel Upload Modal */}
+      <BulkUploadModal
+        isOpen={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        type={currentTab}
+      />
     </div>
   );
 }
