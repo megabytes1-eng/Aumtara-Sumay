@@ -30,11 +30,8 @@ import {
   Award
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
-import { useLanguage } from '../context/LanguageContext';
 
 export default function Sidebar() {
-  const { language, setLanguage, t } = useLanguage();
-
   const {
     activeTab,
     setActiveTab,
@@ -250,7 +247,7 @@ export default function Sidebar() {
             }`}
           >
             <LayoutDashboard className="h-4 w-4 text-indigo-700 dark:text-indigo-400" />
-            <span>{t('navDashboard')}</span>
+            <span>Dashboard</span>
           </button>
         </div>
 
@@ -260,7 +257,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('setup')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>{t('navSetup')}</span>
+            <span>Institutional Setup</span>
             {openSubmenus.setup ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -303,7 +300,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('data')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>{t('navData')}</span>
+            <span>Master Data Setup</span>
             {openSubmenus.data ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -322,7 +319,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Layers className="h-4 w-4 text-purple-700 dark:text-purple-400" />
-                <span>{t('tabClasses')}</span>
+                <span>Classes & Sections</span>
               </button>
 
               <button
@@ -334,7 +331,7 @@ export default function Sidebar() {
                 }`}
               >
                 <BookOpen className="h-4 w-4 text-blue-700 dark:text-blue-400" />
-                <span>{t('tabSubjects')}</span>
+                <span>Subjects Catalog</span>
               </button>
 
               <button
@@ -346,7 +343,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Users className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
-                <span>{t('tabTeachers')}</span>
+                <span>Teachers Directory</span>
               </button>
 
               <button
@@ -358,7 +355,7 @@ export default function Sidebar() {
                 }`}
               >
                 <DoorOpen className="h-4 w-4 text-amber-700 dark:text-amber-400" />
-                <span>{t('tabRooms')}</span>
+                <span>Rooms & Labs</span>
               </button>
             </div>
           )}
@@ -375,7 +372,7 @@ export default function Sidebar() {
             }`}
           >
             <Sliders className="h-4 w-4 text-teal-700 dark:text-teal-400" />
-            <span>{t('navConstraints')}</span>
+            <span>Rules & Constraints</span>
           </button>
         </div>
 
@@ -385,7 +382,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('workspace')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700"
           >
-            <span>{t('navGenerator')}</span>
+            <span>Generator & Grid</span>
             {openSubmenus.workspace ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -404,7 +401,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Sparkles className="h-4 w-4 text-purple-700 dark:text-purple-400" />
-                <span>{t('navGenerator')}</span>
+                <span>AI Generator</span>
               </button>
 
               <button
@@ -428,7 +425,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('substitute')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700 font-sans"
           >
-            <span>{t('navSubstitute')}</span>
+            <span>Substitute Management</span>
             {openSubmenus.substitute ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -471,7 +468,7 @@ export default function Sidebar() {
             onClick={() => toggleSubmenu('reports')}
             className="w-full flex items-center justify-between px-3 py-1.5 text-[11px] font-black tracking-wider text-slate-800 dark:text-slate-300 uppercase hover:text-indigo-700 font-sans"
           >
-            <span>{t('navDEO')}</span>
+            <span>DEO Official Reports</span>
             {openSubmenus.reports ? (
               <ChevronDown className="h-4 w-4 text-slate-700 dark:text-slate-300" />
             ) : (
@@ -490,7 +487,7 @@ export default function Sidebar() {
                 }`}
               >
                 <Award className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                <span>{t('navDEO')}</span>
+                <span>🏛️ DEO Official Formats</span>
               </button>
             </div>
           )}
@@ -507,7 +504,7 @@ export default function Sidebar() {
             }`}
           >
             <Settings className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-            <span>{t('navSettings')}</span>
+            <span>System Settings</span>
           </button>
         </div>
       </div>

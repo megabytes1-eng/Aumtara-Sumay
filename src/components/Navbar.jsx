@@ -16,11 +16,9 @@ import {
   School,
   PanelLeftClose,
   PanelLeftOpen,
-  ShieldAlert,
-  Globe
+  ShieldAlert
 } from 'lucide-react';
 import HelpGuideModal from './HelpGuideModal';
-import { useLanguage } from '../context/LanguageContext';
 
 export default function Navbar() {
   const {
@@ -41,7 +39,6 @@ export default function Navbar() {
     toggleSidebar
   } = useTimetable();
 
-  const { language, setLanguage, t } = useLanguage();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
@@ -101,21 +98,6 @@ export default function Navbar() {
 
         {/* Global Quick Actions */}
         <div className="flex items-center space-x-3">
-          {/* 1-Click Language Switcher Dropdown */}
-          <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-slate-800 rounded-xl border-2 border-indigo-200 dark:border-slate-700 shadow-sm">
-            <Globe className="h-4 w-4 text-indigo-600 dark:text-amber-400 shrink-0" />
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-transparent text-xs font-black text-slate-900 dark:text-white focus:outline-none cursor-pointer"
-              title="Change System Language (ભાષા બદલો / भाषा बदलें)"
-            >
-              <option value="en" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">🇬🇧 English</option>
-              <option value="gu" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">🇬🇯 ગુજરાતી</option>
-              <option value="hi" className="dark:bg-slate-900 text-slate-900 dark:text-white font-bold">🇮🇳 हिंदी</option>
-            </select>
-          </div>
-
           {/* Solve Conflicts */}
           <button
             onClick={solveAllConflicts}
