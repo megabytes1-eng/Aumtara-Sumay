@@ -253,14 +253,26 @@ export default function DataManagement() {
             }
       );
     } else if (currentTab === 'teachers') {
+      const primId = item?.primarySubjectId || item?.subjects?.[0] || (subjects[0]?.id || '');
+      const secIds = item?.secondarySubjectIds || (item?.subjects ? item.subjects.filter(id => id !== primId) : []);
+      const subIds = item?.substituteSubjectIds || [];
       setTeacherForm(
         item
-          ? { ...item, subjects: item.subjects || [] }
+          ? {
+              ...item,
+              primarySubjectId: primId,
+              secondarySubjectIds: secIds,
+              substituteSubjectIds: subIds,
+              subjects: item.subjects || [primId, ...secIds, ...subIds]
+            }
           : {
               name: '',
               email: '',
               phone: '',
-              subjects: subjects[0] ? [subjects[0].id] : [],
+              primarySubjectId: primId,
+              secondarySubjectIds: [],
+              substituteSubjectIds: [],
+              subjects: primId ? [primId] : [],
               maxDaily: 5,
               maxWeekly: 24,
               offDay: 'None',
@@ -587,17 +599,18 @@ export default function DataManagement() {
                   />
                 </th>
                 <th className="p-3.5">Teacher Name</th>
+                <th className="p-3.5">Subject Expertise & Capabilities</th>
                 <th className="p-3.5">Contact Email & Phone</th>
                 <th className="p-3.5">Primary Shift</th>
-                <th className="p-3.5">Designated Off-Day</th>
-                <th className="p-3.5">Max Weekly Load</th>
+                <th className="p-3.5">Off-Day</th>
+                <th className="p-3.5">Weekly Load</th>
                 <th className="p-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-200 font-bold">
               {filteredTeachers.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="p-12 text-center text-slate-500">
+                  <td colSpan="8" className="p-12 text-center text-slate-500">
                     <div className="space-y-3 py-4">
                       <Users className="h-10 w-10 text-emerald-600 mx-auto" />
                       <p className="text-base font-black text-slate-950 dark:text-white">No Teachers Data Found</p>
@@ -613,6 +626,10 @@ export default function DataManagement() {
               ) : (
                 filteredTeachers.map((tch) => {
                   const isSelected = selectedIds.includes(tch.id);
+                  const primSub = subjects.find(s => s.id === (tch.primarySubjectId || tch.subjects?.[0]));
+                  const secSubs = (tch.secondarySubjectIds || []).map(id => subjects.find(s => s.id === id)).filter(Boolean);
+                  const subSubs = (tch.substituteSubjectIds || []).map(id => subjects.find(s => s.id === id)).filter(Boolean);
+
                   return (
                     <tr key={tch.id} className={`transition-colors ${isSelected ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-l-4 border-l-indigo-600' : 'hover:bg-slate-100 dark:hover:bg-slate-800/50'}`}>
                       <td className="p-3.5 text-center">
@@ -624,14 +641,31 @@ export default function DataManagement() {
                         />
                       </td>
                       <td className="p-3.5 font-black text-indigo-950 dark:text-white">{tch.name}</td>
-                      <td className="p-3.5 font-mono text-slate-900 dark:text-slate-200 font-black">{tch.email || 'N/A'} • {tch.phone || 'N/A'}</td>
+                      <td className="p-3.5 space-y-1 max-w-xs">
+                        {primSub && (
+                          <span className="inline-block px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-200 border border-blue-300 text-[10px] font-black mr-1 mb-1">
+                            ⭐ Main: {primSub.name}
+                          </span>
+                        )}
+                        {secSubs.map(s => (
+                          <span key={s.id} className="inline-block px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 border border-emerald-300 text-[10px] font-black mr-1 mb-1">
+                            🌿 2nd: {s.code}
+                          </span>
+                        ))}
+                        {subSubs.map(s => (
+                          <span key={s.id} className="inline-block px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-950 text-purple-900 dark:text-purple-200 border border-purple-300 text-[10px] font-black mr-1 mb-1">
+                            🔄 Proxy: {s.code}
+                          </span>
+                        ))}
+                      </td>
+                      <td className="p-3.5 font-mono text-slate-900 dark:text-slate-200 font-black">{tch.email || 'N/A'}</td>
                       <td className="p-3.5">
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 dark:bg-emerald-500/20 dark:text-emerald-300 text-[10px] font-black">
+                        <span className="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-900 border border-slate-300 dark:bg-slate-800 dark:text-slate-200 text-[10px] font-black">
                           {tch.shift}
                         </span>
                       </td>
                       <td className="p-3.5 font-black text-indigo-700 dark:text-indigo-300">{tch.offDay}</td>
-                      <td className="p-3.5 font-mono text-slate-900 dark:text-slate-200 font-black">{tch.maxWeekly} Periods / Wk</td>
+                      <td className="p-3.5 font-mono text-slate-900 dark:text-slate-200 font-black">{tch.maxWeekly} p/wk</td>
                       <td className="p-3.5 text-right space-x-2">
                         <button onClick={() => handleOpenModal(tch)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg">
                           <Edit2 className="h-4 w-4" />
@@ -947,6 +981,113 @@ export default function DataManagement() {
                         className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none focus:border-indigo-600"
                         placeholder="+91 9876543210"
                       />
+                    </div>
+                  </div>
+
+                  {/* Multi-Subject Capability Setup Box */}
+                  <div className="p-4 bg-indigo-50/50 dark:bg-slate-800/60 rounded-2xl border-2 border-indigo-200 dark:border-slate-700 space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Award className="h-4 w-4 text-indigo-600" />
+                      <h4 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                        Teacher Subject Expertise & Capabilities (૨-૩ વિષય જ્ઞાન)
+                      </h4>
+                    </div>
+
+                    {/* 1. Primary Specialization Subject */}
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                        ⭐ Primary Specialization Subject (મુખ્ય વિષય) <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        value={teacherForm.primarySubjectId || ''}
+                        onChange={(e) => {
+                          const primId = e.target.value;
+                          const newSec = (teacherForm.secondarySubjectIds || []).filter(id => id !== primId);
+                          const newSub = (teacherForm.substituteSubjectIds || []).filter(id => id !== primId);
+                          const allSubs = Array.from(new Set([primId, ...newSec, ...newSub]));
+                          setTeacherForm({
+                            ...teacherForm,
+                            primarySubjectId: primId,
+                            secondarySubjectIds: newSec,
+                            substituteSubjectIds: newSub,
+                            subjects: allSubs
+                          });
+                        }}
+                        className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-indigo-500 text-slate-900 dark:text-white font-black rounded-xl focus:outline-none"
+                        required
+                      >
+                        {subjects.map((sub) => (
+                          <option key={sub.id} value={sub.id}>
+                            {sub.code} - {sub.name} ({sub.shift})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* 2. Secondary Subject Capabilities */}
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                        🌿 Secondary Subject Capabilities (ગૌણ વિષય / ૨જો-૩જો વિષય જ્ઞાન)
+                      </label>
+                      <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700">
+                        {subjects.filter(s => s.id !== teacherForm.primarySubjectId).map((sub) => {
+                          const isChecked = (teacherForm.secondarySubjectIds || []).includes(sub.id);
+                          return (
+                            <label key={sub.id} className="flex items-center space-x-2 text-xs font-bold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  const updatedSec = isChecked
+                                    ? teacherForm.secondarySubjectIds.filter(id => id !== sub.id)
+                                    : [...(teacherForm.secondarySubjectIds || []), sub.id];
+                                  const allSubs = Array.from(new Set([teacherForm.primarySubjectId, ...updatedSec, ...(teacherForm.substituteSubjectIds || [])]));
+                                  setTeacherForm({
+                                    ...teacherForm,
+                                    secondarySubjectIds: updatedSec,
+                                    subjects: allSubs
+                                  });
+                                }}
+                                className="w-4 h-4 rounded accent-emerald-600 cursor-pointer"
+                              />
+                              <span className="truncate">{sub.name} ({sub.code})</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 3. Emergency Proxy / Substitute Subjects */}
+                    <div>
+                      <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
+                        🔄 Emergency Proxy / Substitute Subjects (એવેજી/સબ્સ્ટિટ્યુટ તાસ જ્ઞાન)
+                      </label>
+                      <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto p-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700">
+                        {subjects.filter(s => s.id !== teacherForm.primarySubjectId).map((sub) => {
+                          const isChecked = (teacherForm.substituteSubjectIds || []).includes(sub.id);
+                          return (
+                            <label key={sub.id} className="flex items-center space-x-2 text-xs font-bold cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  const updatedSub = isChecked
+                                    ? teacherForm.substituteSubjectIds.filter(id => id !== sub.id)
+                                    : [...(teacherForm.substituteSubjectIds || []), sub.id];
+                                  const allSubs = Array.from(new Set([teacherForm.primarySubjectId, ...(teacherForm.secondarySubjectIds || []), ...updatedSub]));
+                                  setTeacherForm({
+                                    ...teacherForm,
+                                    substituteSubjectIds: updatedSub,
+                                    subjects: allSubs
+                                  });
+                                }}
+                                className="w-4 h-4 rounded accent-purple-600 cursor-pointer"
+                              />
+                              <span className="truncate">{sub.name} ({sub.code})</span>
+                            </label>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
 

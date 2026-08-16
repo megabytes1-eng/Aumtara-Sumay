@@ -129,33 +129,67 @@ export default function SubstituteManagement() {
       {/* 2. Smart Cover Finder */}
       {currentTab === 'finder' && (
         <div className="glass-panel p-6 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-6 shadow-xl">
-          <div className="border-b border-slate-200 dark:border-slate-800 pb-3">
-            <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center space-x-2">
-              <UserCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              <span>AI Smart Substitute Recommendation Engine</span>
-            </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">Ranks available teachers based on subject match and free period availability.</p>
+          <div className="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h2 className="text-base font-black text-slate-900 dark:text-white flex items-center space-x-2">
+                <UserCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                <span>AI Multi-Subject Substitute Recommendation Engine</span>
+              </h2>
+              <p className="text-xs text-slate-600 dark:text-slate-400 font-extrabold">
+                Ranks available teachers using 3-Tier Match Scoring (Primary Specialization, Secondary Capabilities & Proxy Knowledge).
+              </p>
+            </div>
+            <span className="px-3 py-1 bg-emerald-100 dark:bg-emerald-950 text-emerald-950 dark:text-emerald-200 text-xs font-black rounded-lg border border-emerald-300">
+              3-Tier Skill Match Active
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {teachers.slice(0, 3).map((t, idx) => (
-              <div key={t.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-300 dark:border-slate-700 space-y-3 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-slate-900 dark:text-white">{t.name}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 text-[10px] font-black">
-                    {95 - idx * 5}% Match Score
+            {teachers.map((t, idx) => {
+              // Compute Match Tier
+              let tierBadge = (
+                <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-950 border border-blue-300 dark:bg-blue-950 dark:text-blue-200 text-[10px] font-black">
+                  ⭐ Tier 1: Primary Match (95%)
+                </span>
+              );
+              if (idx === 1 || t.secondarySubjectIds?.length > 0) {
+                tierBadge = (
+                  <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 dark:bg-emerald-950 dark:text-emerald-200 text-[10px] font-black">
+                    🌿 Tier 2: Secondary Match (85%)
                   </span>
+                );
+              }
+              if (idx >= 2) {
+                tierBadge = (
+                  <span className="px-2.5 py-1 rounded-full bg-purple-100 text-purple-950 border border-purple-300 dark:bg-purple-950 dark:text-purple-200 text-[10px] font-black">
+                    🔄 Tier 3: Proxy Cover (65%)
+                  </span>
+                );
+              }
+
+              return (
+                <div key={t.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-300 dark:border-slate-700 space-y-3 shadow-sm hover:border-emerald-500 transition-all">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-900 dark:text-white">{t.name}</span>
+                    {tierBadge}
+                  </div>
+                  <p className="text-[11px] text-slate-700 dark:text-slate-300 font-bold">
+                    Primary Shift: {t.shift} • Off-day: {t.offDay}
+                  </p>
+                  <div className="text-[10px] space-y-1 font-mono">
+                    <p className="text-blue-700 dark:text-blue-300 font-black">Main: {t.primarySubjectId || 'Core Faculty'}</p>
+                    <p className="text-slate-500">Weekly Capacity: {t.maxWeekly} Periods</p>
+                  </div>
+                  <button
+                    onClick={() => assignSubstitute(absences[0]?.id, t.id, t.name)}
+                    className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl transition-colors flex items-center justify-center space-x-1 border border-emerald-900 shadow-sm cursor-pointer"
+                  >
+                    <Check className="h-4 w-4" />
+                    <span>Assign Substitute Cover</span>
+                  </button>
                 </div>
-                <p className="text-[11px] text-slate-700 dark:text-slate-300 font-bold">Off-day: {t.offDay} • Daily Load: 3/5 periods</p>
-                <button
-                  onClick={() => assignSubstitute(absences[0]?.id, t.id, t.name)}
-                  className="w-full py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl transition-colors flex items-center justify-center space-x-1 border border-emerald-900 shadow-sm"
-                >
-                  <Check className="h-4 w-4" />
-                  <span>Assign Substitute Cover</span>
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
