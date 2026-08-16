@@ -53,33 +53,103 @@ export default function ReportsExport() {
     }
   }, [selectedShiftFilter, classes]);
 
+  // Helper to compute short, clean, descriptive file names matching active report heading
+  const getActiveReportFilename = () => {
+    const yearTag = (institution.academicYear || '2026').replace(/\s+/g, '_');
+    if (currentTab === 'master') {
+      const shiftTag = selectedShiftFilter === 'All Shifts' ? 'Combined_Master' : selectedShiftFilter.replace(/\s+/g, '_');
+      return `Master_Timetable_${shiftTag}_${yearTag}`;
+    } else if (currentTab === 'class') {
+      if (reportMode === 'class') {
+        const selClass = classes.find((c) => c.id === selectedClassId);
+        const className = selClass ? selClass.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Class_Schedule';
+        return `Class_${className}_Timetable_${yearTag}`;
+      } else {
+        const selTeacher = teachers.find((t) => t.id === selectedTeacherId);
+        const teacherName = selTeacher ? selTeacher.name.replace(/[^a-zA-Z0-9]/g, '_') : 'Teacher_Duty';
+        return `Teacher_${teacherName}_Schedule_${yearTag}`;
+      }
+    } else if (currentTab === 'deo') {
+      const deoTitles = {
+        format1: 'DEO_Format_1_Teacher_Workload_Register',
+        format2: 'DEO_Format_2_Class_Period_Allocation_Register',
+        format3: 'DEO_Format_3_Room_Utilization_Audit_Register',
+        format4: 'DEO_Format_4_DualShift_Bell_Schedule_Register',
+        format5: 'DEO_Format_5_Faculty_Absence_Substitute_Register'
+      };
+      return `${deoTitles[deoFormat] || 'DEO_Official_Report'}_${yearTag}`;
+    }
+    return `Aumtara_Samay_Report_${yearTag}`;
+  };
+
   const handlePrint = () => {
+    const originalTitle = document.title;
+    const reportFilename = getActiveReportFilename();
+    document.title = reportFilename;
     window.print();
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   };
 
   const handleExportCSV = () => {
-    let csvContent = "data:text/csv;charset=utf-8,Shift,Board,Day,Period,Class,Subject,Teacher,Room\n";
-    Object.entries(timetable).forEach(([k, slot]) => {
-      if (slot) {
-        if (selectedShiftFilter === 'All Shifts' || slot.shift === selectedShiftFilter) {
-          csvContent += `"${slot.shift}","${slot.classBoard}",${slot.day},${slot.period},"${slot.className}","${slot.subjectName}","${slot.teacherName}","${slot.roomName}"\n`;
-        }
+    let csvContent = "data:text/csv;charset=utf-8,";
+    const reportFilename = getActiveReportFilename();
+
+    if (currentTab === 'class') {
+      if (reportMode === 'class') {
+        const selClass = classes.find((c) => c.id === selectedClassId);
+        csvContent += `Class Timetable Report for ${selClass?.name || 'Class'} (${selClass?.shift || 'Shift'})\nDay,Period,Subject,Teacher,Room\n`;
+        days.forEach((day) => {
+          Array.from({ length: periodCount }).forEach((_, pIdx) => {
+            const period = pIdx + 1;
+            const slot = timetable[`${day}_${period}_${selectedClassId}`];
+            if (slot) {
+              csvContent += `"${day}",${period},"${slot.subjectName}","${slot.teacherName}","${slot.roomName}"\n`;
+            }
+          });
+        });
+      } else {
+        const selTeacher = teachers.find((t) => t.id === selectedTeacherId);
+        csvContent += `Faculty Duty Schedule for ${selTeacher?.name || 'Teacher'} (${selTeacher?.shift || 'Shift'})\nDay,Period,Class,Subject,Room\n`;
+        days.forEach((day) => {
+          Array.from({ length: periodCount }).forEach((_, pIdx) => {
+            const period = pIdx + 1;
+            const slot = Object.values(timetable).find(
+              (s) => s && s.day === day && s.period === period && s.teacherId === selectedTeacherId
+            );
+            if (slot) {
+              csvContent += `"${day}",${period},"${slot.className}","${slot.subjectName}","${slot.roomName}"\n`;
+            }
+          });
+        });
       }
-    });
+    } else {
+      csvContent += "Shift,Board,Day,Period,Class,Subject,Teacher,Room\n";
+      Object.entries(timetable).forEach(([k, slot]) => {
+        if (slot) {
+          if (selectedShiftFilter === 'All Shifts' || slot.shift === selectedShiftFilter) {
+            csvContent += `"${slot.shift}","${slot.classBoard}",${slot.day},${slot.period},"${slot.className}","${slot.subjectName}","${slot.teacherName}","${slot.roomName}"\n`;
+          }
+        }
+      });
+    }
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Aumtara_Samay_Combined_Dual_Shift_Report_${institution.academicYear}.csv`);
+    link.setAttribute("download", `${reportFilename}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    showToast('Exported Combined Dual-Shift Report CSV!', 'success');
+    showToast(`Exported ${reportFilename}.csv!`, 'success');
   };
 
   const handleExportDEOCSV = () => {
     let csvContent = "data:text/csv;charset=utf-8,";
+    const reportFilename = getActiveReportFilename();
+
     if (deoFormat === 'format1') {
       csvContent += "S.No,Teacher Name,Designation,Department,Morning Shift Load,Afternoon Shift Load,Total Weekly Load,DEO Max Limit,Workload Status\n";
       teachers.forEach((tch, idx) => {
@@ -124,12 +194,12 @@ export default function ReportsExport() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `DEO_Official_Report_${deoFormat.toUpperCase()}_${institution.academicYear}.csv`);
+    link.setAttribute("download", `${reportFilename}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 
-    showToast(`Exported DEO Official ${deoFormat.toUpperCase()} CSV Report!`, 'success');
+    showToast(`Exported ${reportFilename}.csv!`, 'success');
   };
 
   return (
