@@ -13,10 +13,8 @@ import ReportsExport from './components/ReportsExport';
 import Settings from './components/Settings';
 import VersionHistoryView from './components/VersionHistoryView';
 import SuperAdminHub from './components/SuperAdminHub';
-import LandingPage from './components/LandingPage';
 
 import GlobalHelpFloatingButton from './components/GlobalHelpFloatingButton';
-import LoginModal from './components/LoginModal';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -115,9 +113,6 @@ function AppContent() {
           {!['dashboard', 'setup', 'data', 'constraints', 'generator', 'substitute', 'tools', 'reports', 'settings', 'history', 'superadmin'].includes(activeTab) && <Dashboard />}
         </main>
       </div>
-
-      {/* Global Authentication Modal */}
-      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
 
       {/* Global Floating Colorful Help Button present on EVERY Page */}
       <GlobalHelpFloatingButton />
