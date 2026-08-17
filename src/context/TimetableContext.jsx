@@ -168,37 +168,29 @@ export function TimetableProvider({ children }) {
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  // Master Data State
-  const [institution, setInstitution] = useLocalStorage('aumtara_institution', initialInstitution);
+  // Master Data State (Fresh Empty Startup for User Bulk Upload)
+  const [institution, setInstitution] = useLocalStorage('aumtara_institution', {
+    name: 'Aumtara State & International Public School',
+    code: 'SCH-1001',
+    address: 'School Campus, Gujarat, India',
+    principalName: 'School Principal / Administrator',
+    affiliations: ['Morning CBSE', 'Afternoon State Board']
+  });
   const [bellSchedule, setBellSchedule] = useLocalStorage('aumtara_bell_schedule', initialBellSchedule);
-  const [subjects, setSubjects] = useLocalStorage('aumtara_subjects', initialSubjects);
-  const [rooms, setRooms] = useLocalStorage('aumtara_rooms', initialRooms);
-  const [teachers, setTeachers] = useLocalStorage('aumtara_teachers', initialTeachers);
-  const [classes, setClasses] = useLocalStorage('aumtara_classes', initialClasses);
+  const [subjects, setSubjects] = useLocalStorage('aumtara_subjects', []);
+  const [rooms, setRooms] = useLocalStorage('aumtara_rooms', []);
+  const [teachers, setTeachers] = useLocalStorage('aumtara_teachers', []);
+  const [classes, setClasses] = useLocalStorage('aumtara_classes', []);
   const [constraints, setConstraints] = useLocalStorage('aumtara_constraints', initialConstraints);
 
   // Timetable Engine State
   const [timetable, setTimetable] = useLocalStorage('aumtara_timetable', {});
   const [conflicts, setConflicts] = useState([]);
-  const [optimizationScore, setOptimizationScore] = useState(98);
+  const [optimizationScore, setOptimizationScore] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
 
   // Substitute Management State
-  const [absences, setAbsences] = useLocalStorage('aumtara_absences', [
-    {
-      id: 'ABS-001',
-      teacherId: 'TCH-201',
-      teacherName: 'Prof. Ramanujan Sharma',
-      date: new Date().toISOString().split('T')[0],
-      day: 'Monday',
-      shift: 'Afternoon Shift',
-      periods: [1, 2, 3],
-      reason: 'State Board Meeting',
-      assignedSubstituteId: 'TCH-202',
-      assignedSubstituteName: 'Dr. Vikram Sarabhai',
-      status: 'Assigned'
-    }
-  ]);
+  const [absences, setAbsences] = useLocalStorage('aumtara_absences', []);
 
   // Toast Notification
   const [toast, setToast] = useState(null);
@@ -1269,42 +1261,8 @@ export function TimetableProvider({ children }) {
   };
 
   // Version History State
-  const [activeVersionId, setActiveVersionId] = useState('VER-003');
-  const [timetableVersions, setTimetableVersions] = useLocalStorage('aumtara_timetable_versions', [
-    {
-      id: 'VER-003',
-      name: 'v1.2 - Dummy Timetable Revision Snapshot (Exam & Cover Adjusted)',
-      description: 'Pre-created dummy timetable snapshot showing Grade 9A Physics practical lab swap and afternoon State Board English cover.',
-      timestamp: new Date().toLocaleString(),
-      createdBy: 'Academic Administrator',
-      optimizationScore: 100,
-      conflictsCount: 0,
-      slotsCount: 120,
-      timetableData: {}
-    },
-    {
-      id: 'VER-002',
-      name: 'v1.1 - AI Zero-Clash Master Matrix (Morning CBSE + Afternoon State Board)',
-      description: 'Fully optimized dual-shift timetable generated with 100% Zero Clash score across all 5 grade sections.',
-      timestamp: new Date(Date.now() - 1800000).toLocaleString(),
-      createdBy: 'Academic Administrator',
-      optimizationScore: 100,
-      conflictsCount: 0,
-      slotsCount: 120,
-      timetableData: {}
-    },
-    {
-      id: 'VER-001',
-      name: 'v1.0 - Baseline Dual-Shift Matrix',
-      description: 'Original baseline schedule generated for Morning CBSE & Afternoon State Board.',
-      timestamp: new Date(Date.now() - 3600000).toLocaleString(),
-      createdBy: 'Academic Administrator',
-      optimizationScore: 98,
-      conflictsCount: 0,
-      slotsCount: 120,
-      timetableData: {}
-    }
-  ]);
+  const [activeVersionId, setActiveVersionId] = useState('');
+  const [timetableVersions, setTimetableVersions] = useLocalStorage('aumtara_timetable_versions', []);
 
   const saveTimetableVersion = (name, description) => {
     const verId = `VER-${Date.now().toString().slice(-4)}`;
@@ -1420,7 +1378,7 @@ export function TimetableProvider({ children }) {
   const resetAllDataToDefaults = () => {
     try {
       window.localStorage.clear();
-      showToast('Cleared local storage! Reloading initial sample data...', 'info');
+      showToast('Wiped local storage! Software is now 100% clean with 0 records.', 'info');
       setTimeout(() => {
         window.location.reload();
       }, 1000);

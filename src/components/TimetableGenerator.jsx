@@ -330,14 +330,14 @@ export default function TimetableGenerator() {
                 <div>
                   <p className="text-base font-black text-slate-950 dark:text-white">No Timetable Matrix Data to Display</p>
                   <p className="text-xs text-slate-600 dark:text-slate-400 font-bold max-w-md mx-auto mt-1">
-                    The dataset for this section has been cleared. Add new entries in Master Data Setup or reload sample demo data in Settings.
+                    No timetable grid found. Please upload your school master data to generate a new schedule.
                   </p>
                 </div>
                 <button
-                  onClick={loadSampleData}
+                  onClick={() => setActiveTab('data')}
                   className="px-5 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-black rounded-xl shadow-lg border border-indigo-900 cursor-pointer"
                 >
-                  Reload Sample Demo Data
+                  ⚡ Upload School Master Data
                 </button>
               </div>
             ) : (

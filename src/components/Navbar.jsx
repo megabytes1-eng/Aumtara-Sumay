@@ -25,7 +25,6 @@ export default function Navbar() {
   const {
     activeTab,
     institution,
-    loadSampleData,
     runGenerator,
     solveAllConflicts,
     isGenerating,

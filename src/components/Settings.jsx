@@ -594,14 +594,6 @@ export default function Settings() {
                 </button>
 
                 <button
-                  onClick={loadSampleData}
-                  className="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-black rounded-xl transition-all flex items-center space-x-1"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  <span>Reload Sample Demo Data</span>
-                </button>
-
-                <button
                   onClick={() => {
                     setClearConfirmationChecked(false);
                     setClearModalOpen(true);
