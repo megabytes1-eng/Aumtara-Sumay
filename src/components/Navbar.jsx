@@ -122,22 +122,41 @@ export default function Navbar() {
             <span>{isGenerating ? 'Solving Shifts...' : 'Run Dual-Shift AI'}</span>
           </button>
 
-          {/* Full Master Access Unlocked Badge */}
-          <div className="flex items-center space-x-2 pl-2 border-l-2 border-slate-300 dark:border-slate-700">
-            <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-300 dark:border-emerald-700">
-              <div className="h-6 w-6 rounded-full bg-emerald-600 text-white font-black text-[10px] flex items-center justify-center">
-                👑
+          {/* User Authentication Badge & Sign Out / Sign In Button */}
+          {currentUser?.isLoggedIn ? (
+            <div className="flex items-center space-x-2 pl-2 border-l-2 border-slate-300 dark:border-slate-700">
+              <div className="flex items-center space-x-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700">
+                <div className="h-6 w-6 rounded-full bg-indigo-600 text-white font-black text-[10px] flex items-center justify-center uppercase">
+                  {(currentUser.username || 'AD').slice(0, 2)}
+                </div>
+                <div className="hidden lg:block text-left leading-tight">
+                  <p className="text-[11px] font-black text-slate-900 dark:text-slate-100 truncate max-w-[140px]">
+                    {currentUser.name ? currentUser.name.split(' ')[0] : 'School User'}
+                  </p>
+                  <span className="text-[9px] font-black uppercase text-indigo-700 dark:text-amber-300">
+                    {currentUser.role || 'Principal'}
+                  </span>
+                </div>
               </div>
-              <div className="hidden lg:block text-left leading-tight">
-                <p className="text-[11px] font-black text-slate-900 dark:text-slate-100 truncate max-w-[140px]">
-                  Master System
-                </p>
-                <span className="text-[9px] font-black uppercase text-emerald-700 dark:text-emerald-300">
-                  Full Access Unlocked
-                </span>
-              </div>
+
+              <button
+                onClick={logout}
+                title="Sign Out of Aumtara Samay"
+                className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl border border-rose-800 transition-all cursor-pointer shadow hover:scale-105"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
             </div>
-          </div>
+          ) : (
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              title="Sign In to Aumtara Samay"
+              className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl border border-emerald-800 transition-all cursor-pointer shadow hover:scale-105 flex items-center space-x-1 px-3 py-1.5 font-black text-xs"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
       </div>
 
