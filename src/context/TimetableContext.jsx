@@ -40,7 +40,7 @@ export function TimetableProvider({ children }) {
   const [activeRole, setActiveRole] = useState('admin'); // superadmin, admin, hod, faculty
   const [rolePermissions, setRolePermissions] = useState({
     superadmin: {
-      name: "SaaS Super Administrator",
+      name: "Academic System Administrator",
       description: "Platform Control, Multi-Tenant Subscriptions, Module Toggles & Billing",
       canEditData: true,
       canRunAISolver: true,
@@ -80,7 +80,7 @@ export function TimetableProvider({ children }) {
 
   // Super Admin Real Profile Credentials State
   const [superAdminProfile, setSuperAdminProfile] = useLocalStorage('aumtara_superadmin_profile', {
-    name: 'Aumtara SaaS Master Admin',
+    name: 'School Master Administrator',
     email: 'megabytes1@gmail.com',
     phone: '+91 99241 00585',
     password: 'admin123',

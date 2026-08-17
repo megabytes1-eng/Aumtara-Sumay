@@ -8,7 +8,7 @@ export const translations = {
     appName: "Aumtara Samay",
     tagline: "Dual-Shift School Timetable Platform",
     schoolPortal: "School Institution Portal",
-    superAdminPortal: "Super Admin SaaS Portal",
+    superAdminPortal: "School Admin Portal",
     viewSchoolApp: "View School App",
     viewSAHub: "Super Admin Hub",
     activeYear: "Academic Session",
