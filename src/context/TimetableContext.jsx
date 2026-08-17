@@ -486,6 +486,37 @@ export function TimetableProvider({ children }) {
     showToast(`Bulk imported ${newItems.length} rooms successfully!`, 'success');
   };
 
+  const bulkImportAllMasterData = ({ teachers: tArr = [], subjects: sArr = [], classes: cArr = [], rooms: rArr = [] }) => {
+    let importedCounts = [];
+
+    if (tArr.length > 0) {
+      const newT = tArr.map((t, idx) => ({ ...t, id: t.id || `TCH-MBLK-${Date.now().toString().slice(-4)}-${idx + 1}` }));
+      setTeachers((prev) => [...prev, ...newT]);
+      importedCounts.push(`${newT.length} Teachers`);
+    }
+    if (sArr.length > 0) {
+      const newS = sArr.map((s, idx) => ({ ...s, id: s.id || `SUB-MBLK-${Date.now().toString().slice(-4)}-${idx + 1}` }));
+      setSubjects((prev) => [...prev, ...newS]);
+      importedCounts.push(`${newS.length} Subjects`);
+    }
+    if (cArr.length > 0) {
+      const newC = cArr.map((c, idx) => ({ ...c, id: c.id || `CLS-MBLK-${Date.now().toString().slice(-4)}-${idx + 1}` }));
+      setClasses((prev) => [...prev, ...newC]);
+      importedCounts.push(`${newC.length} Classes`);
+    }
+    if (rArr.length > 0) {
+      const newR = rArr.map((r, idx) => ({ ...r, id: r.id || `RM-MBLK-${Date.now().toString().slice(-4)}-${idx + 1}` }));
+      setRooms((prev) => [...prev, ...newR]);
+      importedCounts.push(`${newR.length} Rooms`);
+    }
+
+    if (importedCounts.length > 0) {
+      showToast(`⚡ All-in-One Bulk Import Complete! Added: ${importedCounts.join(', ')}`, 'success');
+    } else {
+      showToast('No valid master data rows found to import.', 'warning');
+    }
+  };
+
   const updateTimetableSlot = (slotKey, newSlotData) => {
     setTimetable((prev) => {
       const next = { ...prev };
@@ -1464,6 +1495,7 @@ export function TimetableProvider({ children }) {
     bulkAddSubjects,
     bulkAddClasses,
     bulkAddRooms,
+    bulkImportAllMasterData,
     updateTimetableSlot,
     absences,
     addAbsence,

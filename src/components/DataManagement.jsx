@@ -18,6 +18,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react';
 import BulkUploadModal from './BulkUploadModal';
+import AllInOneMasterUploadModal from './AllInOneMasterUploadModal';
 
 export default function DataManagement() {
   const {
@@ -48,6 +49,7 @@ export default function DataManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  const [isAllInOneModalOpen, setIsAllInOneModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -321,6 +323,37 @@ export default function DataManagement() {
 
   return (
     <div className="space-y-6 pb-12">
+      {/* ⚡ 1-Click All-in-One School Master Upload Banner */}
+      <div className="p-4 bg-gradient-to-r from-indigo-700 via-purple-700 to-emerald-700 rounded-3xl text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 border-2 border-indigo-500">
+        <div className="flex items-center space-x-3">
+          <div className="h-12 w-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-xl shadow-lg shrink-0">
+            ⚡
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="px-2.5 py-0.5 bg-amber-400 text-slate-950 font-black text-[9px] uppercase rounded-full tracking-wider shadow">
+                NEW FEATURE
+              </span>
+              <h3 className="font-black text-sm uppercase tracking-wide text-white">
+                1-Click All-in-One Master School Data Upload
+              </h3>
+            </div>
+            <p className="text-xs font-bold text-indigo-100 mt-0.5">
+              Upload your entire school roster (Teachers, Subjects, Classes & Rooms) in 1 single Excel/CSV file at once!
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setIsAllInOneModalOpen(true)}
+          className="px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center space-x-2 shrink-0 border border-amber-500 cursor-pointer hover:scale-105"
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          <span>⚡ Launch All-in-One Master Upload</span>
+        </button>
+      </div>
+
       {/* Subtab Header Navigation */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-slate-200 dark:border-slate-800 pb-3">
         <div className="flex items-center space-x-2">
@@ -1291,11 +1324,17 @@ export default function DataManagement() {
         </div>
       )}
 
-      {/* Bulk CSV / Excel Upload Modal */}
+      {/* Bulk CSV / Excel Upload Modal (Single Category) */}
       <BulkUploadModal
         isOpen={isBulkModalOpen}
         onClose={() => setIsBulkModalOpen(false)}
         type={currentTab}
+      />
+
+      {/* ⚡ 1-Click All-in-One Master Data Upload Modal (All Categories) */}
+      <AllInOneMasterUploadModal
+        isOpen={isAllInOneModalOpen}
+        onClose={() => setIsAllInOneModalOpen(false)}
       />
     </div>
   );
