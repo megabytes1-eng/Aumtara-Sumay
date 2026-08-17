@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useTimetable } from '../context/TimetableContext';
-import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin, Layers } from 'lucide-react';
+import { School, Clock, Sun, Sunset, Save, Plus, Trash2, Edit3, Sparkles, Upload, Image, MapPin, Layers, FileSpreadsheet } from 'lucide-react';
+import AllInOneMasterUploadModal from './AllInOneMasterUploadModal';
 
 export default function InstitutionalSetup() {
   const {
@@ -246,6 +247,18 @@ export default function InstitutionalSetup() {
         >
           <Clock className="h-4 w-4" />
           <span>Bell Schedule & Shift Timings Configurator</span>
+        </button>
+
+        <button
+          onClick={() => setActiveSubTab('master-upload')}
+          className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-black transition-all ${
+            activeSubTab === 'master-upload'
+              ? 'bg-amber-400 text-slate-950 shadow-md border-2 border-amber-500 scale-105'
+              : 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 hover:bg-amber-300'
+          }`}
+        >
+          <FileSpreadsheet className="h-4 w-4" />
+          <span>⚡ All-in-One Master Upload</span>
         </button>
       </div>
 
@@ -1049,6 +1062,14 @@ export default function InstitutionalSetup() {
             </button>
           </div>
         </form>
+      )}
+
+      {/* Subtab 3: ⚡ All-in-One Master Upload (Academic Info Page) */}
+      {activeSubTab === 'master-upload' && (
+        <AllInOneMasterUploadModal
+          isOpen={true}
+          onClose={() => setActiveSubTab('academic')}
+        />
       )}
     </div>
   );
