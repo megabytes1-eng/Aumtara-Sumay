@@ -159,7 +159,7 @@ export function TimetableProvider({ children }) {
   ]);
 
   // Navigation State
-  const [viewMode, setViewMode] = useState('landing'); // 'landing' (Public SaaS Page) or 'app' (Control Management System)
+  const [viewMode, setViewMode] = useState('app'); // Direct run Aumtara Samay School Software
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
   const [themeMode, setThemeMode] = useState('light');

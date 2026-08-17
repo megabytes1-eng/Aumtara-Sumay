@@ -100,16 +100,6 @@ export default function Navbar() {
 
         {/* Global Quick Actions */}
         <div className="flex items-center space-x-3">
-          {/* SaaS Public Landing Page Switcher */}
-          <button
-            onClick={() => setViewMode('landing')}
-            className="flex items-center space-x-1.5 px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-indigo-900 dark:text-amber-300 text-xs font-black rounded-xl border-2 border-indigo-200 dark:border-slate-700 shadow-sm transition-all hover:scale-105 cursor-pointer"
-            title="Return to Public SaaS Marketing Landing Page"
-          >
-            <Globe className="h-4 w-4 text-indigo-600 dark:text-amber-400" />
-            <span className="hidden sm:inline">SaaS Landing Page</span>
-          </button>
-
           {/* Solve Conflicts */}
           <button
             onClick={solveAllConflicts}
