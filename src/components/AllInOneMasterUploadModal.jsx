@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Upload, FileSpreadsheet, Download, CheckCircle2, AlertTriangle, Sparkles, Layers, Users, BookOpen, School, DoorClosed } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { useTimetable } from '../context/TimetableContext';
 
 export default function AllInOneMasterUploadModal({ isOpen, onClose }) {
@@ -18,99 +19,281 @@ export default function AllInOneMasterUploadModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  // Generate Sample All-in-One Master Template
-  const downloadMasterTemplate = () => {
-    const templateContent = `=== TEACHERS ===
-Name,Email,Phone,PrimarySubject,SecondarySubjects,Shift,MaxDaily,MaxWeekly
-Prof. Vikram Sarabhai,sarabhai@school.edu,9876543210,SUB-101,"SUB-102,SUB-103",Afternoon Shift,5,24
-Dr. APJ Abdul Kalam,kalam@school.edu,9876543211,SUB-102,"SUB-101",Morning Shift,5,24
-Smt. Savitribai Phule,savitri@school.edu,9876543212,SUB-103,,Morning Shift,4,20
+  // 📥 Download Real Multi-Sheet Excel (.xlsx) Template
+  const downloadMasterXLSXTemplate = () => {
+    try {
+      const wb = XLSX.utils.book_new();
 
-=== SUBJECTS ===
-Code,Name,Category,WeeklyPeriods,MaxDailyPeriods,IsLab,RoomType,Color,Shift
-SUB-101,Mathematics,Core,6,1,false,Classroom,#3b82f6,Afternoon Shift
-SUB-102,Physics & Science,Core,5,1,true,Science Lab,#10b981,Morning Shift
-SUB-103,Gujarati Literature,Language,4,1,false,Classroom,#8b5cf6,Morning Shift
+      // Sheet 1: Teachers
+      const teachersData = [
+        {
+          Name: 'Prof. Vikram Sarabhai',
+          Email: 'sarabhai@school.edu',
+          Phone: '9876543210',
+          PrimarySubject: 'SUB-101',
+          SecondarySubjects: 'SUB-102, SUB-103',
+          Shift: 'Afternoon Shift',
+          MaxDailyLectures: 5,
+          MaxWeeklyWorkload: 24
+        },
+        {
+          Name: 'Dr. APJ Abdul Kalam',
+          Email: 'kalam@school.edu',
+          Phone: '9876543211',
+          PrimarySubject: 'SUB-102',
+          SecondarySubjects: 'SUB-101',
+          Shift: 'Morning Shift',
+          MaxDailyLectures: 5,
+          MaxWeeklyWorkload: 24
+        },
+        {
+          Name: 'Smt. Savitribai Phule',
+          Email: 'savitri@school.edu',
+          Phone: '9876543212',
+          PrimarySubject: 'SUB-103',
+          SecondarySubjects: '',
+          Shift: 'Morning Shift',
+          MaxDailyLectures: 4,
+          MaxWeeklyWorkload: 20
+        }
+      ];
+      const wsTeachers = XLSX.utils.json_to_sheet(teachersData);
+      XLSX.utils.book_append_sheet(wb, wsTeachers, 'Teachers');
 
-=== CLASSES ===
-Name,Grade,Section,Board,Shift,Capacity
-Std 9-A (State),9,A,State Board,Afternoon Shift,45
-Std 10-A (CBSE),10,A,CBSE,Morning Shift,40
-Std 10-B (CBSE),10,B,CBSE,Morning Shift,38
+      // Sheet 2: Subjects
+      const subjectsData = [
+        {
+          Code: 'SUB-101',
+          Name: 'Mathematics',
+          Category: 'Core',
+          WeeklyPeriods: 6,
+          MaxDailyPeriods: 1,
+          IsLab: 'false',
+          RoomTypeNeeded: 'Classroom',
+          Color: '#3b82f6',
+          Shift: 'Afternoon Shift'
+        },
+        {
+          Code: 'SUB-102',
+          Name: 'Physics & Science',
+          Category: 'Core',
+          WeeklyPeriods: 5,
+          MaxDailyPeriods: 1,
+          IsLab: 'true',
+          RoomTypeNeeded: 'Science Lab',
+          Color: '#10b981',
+          Shift: 'Morning Shift'
+        },
+        {
+          Code: 'SUB-103',
+          Name: 'Gujarati Literature',
+          Category: 'Language',
+          WeeklyPeriods: 4,
+          MaxDailyPeriods: 1,
+          IsLab: 'false',
+          RoomTypeNeeded: 'Classroom',
+          Color: '#8b5cf6',
+          Shift: 'Morning Shift'
+        }
+      ];
+      const wsSubjects = XLSX.utils.json_to_sheet(subjectsData);
+      XLSX.utils.book_append_sheet(wb, wsSubjects, 'Subjects');
 
-=== ROOMS ===
-Name,Building,Floor,Type,Capacity,Shift
-Room 101,Main Block,1st Floor,Classroom,45,Shared (Both Shifts)
-Science Lab,Science Block,Ground Floor,Science Lab,35,Morning Shift
-Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
-`;
+      // Sheet 3: Classes
+      const classesData = [
+        {
+          Name: 'Std 9-A (State)',
+          Grade: '9',
+          Section: 'A',
+          Board: 'State Board',
+          Shift: 'Afternoon Shift',
+          Capacity: 45
+        },
+        {
+          Name: 'Std 10-A (CBSE)',
+          Grade: '10',
+          Section: 'A',
+          Board: 'CBSE',
+          Shift: 'Morning Shift',
+          Capacity: 40
+        },
+        {
+          Name: 'Std 10-B (CBSE)',
+          Grade: '10',
+          Section: 'B',
+          Board: 'CBSE',
+          Shift: 'Morning Shift',
+          Capacity: 38
+        }
+      ];
+      const wsClasses = XLSX.utils.json_to_sheet(classesData);
+      XLSX.utils.book_append_sheet(wb, wsClasses, 'Classes');
 
-    const blob = new Blob([templateContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'Aumtara_Samay_Master_School_Data_Template.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast('Downloaded All-in-One Master CSV Template!', 'success');
+      // Sheet 4: Rooms
+      const roomsData = [
+        {
+          Name: 'Room 101',
+          Building: 'Main Block',
+          Floor: '1st Floor',
+          Type: 'Classroom',
+          Capacity: 45,
+          Shift: 'Shared (Both Shifts)'
+        },
+        {
+          Name: 'Science Lab',
+          Building: 'Science Block',
+          Floor: 'Ground Floor',
+          Type: 'Science Lab',
+          Capacity: 35,
+          Shift: 'Morning Shift'
+        },
+        {
+          Name: 'Computer Lab 1',
+          Building: 'IT Wing',
+          Floor: '2nd Floor',
+          Type: 'Computer Lab',
+          Capacity: 40,
+          Shift: 'Shared (Both Shifts)'
+        }
+      ];
+      const wsRooms = XLSX.utils.json_to_sheet(roomsData);
+      XLSX.utils.book_append_sheet(wb, wsRooms, 'Rooms');
+
+      // Write and download .xlsx file
+      XLSX.writeFile(wb, 'Aumtara_Samay_Master_School_Data_Template.xlsx');
+      showToast('Downloaded 4-Sheet Master Excel Template (.xlsx)!', 'success');
+    } catch (err) {
+      console.error('Error generating Excel file:', err);
+      showToast('Could not download Excel template.', 'error');
+    }
   };
 
-  // Parse Multi-Section Master CSV / Text
-  const parseMasterText = (textToParse) => {
+  // ⚡ Handle 1-Click Excel (.xlsx) / CSV File Upload
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFileName(file.name);
+
+    const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+    if (isExcel) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          const data = new Uint8Array(evt.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          const result = { teachers: [], subjects: [], classes: [], rooms: [] };
+
+          workbook.SheetNames.forEach((sheetName) => {
+            const lowerName = sheetName.toLowerCase().trim();
+            const sheet = workbook.Sheets[sheetName];
+            const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+            if (lowerName.includes('teacher')) {
+              result.teachers = rows.map((r) => ({
+                name: r.Name || r.name || 'Faculty Member',
+                email: r.Email || r.email || '',
+                phone: r.Phone || r.phone || '',
+                primarySubject: r.PrimarySubject || r.primarySubject || 'SUB-101',
+                secondarySubjects: typeof r.SecondarySubjects === 'string' ? r.SecondarySubjects.split(',').map(s=>s.trim()) : [],
+                preferredShift: r.Shift || r.shift || 'Morning Shift',
+                maxDailyLectures: parseInt(r.MaxDailyLectures || r.maxDailyLectures, 10) || 5,
+                maxWeeklyWorkload: parseInt(r.MaxWeeklyWorkload || r.maxWeeklyWorkload, 10) || 24,
+                assignedRole: 'Faculty'
+              }));
+            } else if (lowerName.includes('subject')) {
+              result.subjects = rows.map((r) => ({
+                code: r.Code || r.code || `SUB-${Date.now().toString().slice(-3)}`,
+                name: r.Name || r.name || 'General Subject',
+                category: r.Category || r.category || 'Core',
+                weeklyPeriods: parseInt(r.WeeklyPeriods || r.weeklyPeriods, 10) || 5,
+                maxDailyPeriods: parseInt(r.MaxDailyPeriods || r.maxDailyPeriods, 10) || 1,
+                isLab: String(r.IsLab || r.isLab).toLowerCase() === 'true',
+                roomTypeNeeded: r.RoomTypeNeeded || r.roomTypeNeeded || 'Classroom',
+                color: r.Color || r.color || '#3b82f6',
+                shift: r.Shift || r.shift || 'Morning Shift'
+              }));
+            } else if (lowerName.includes('class')) {
+              result.classes = rows.map((r) => ({
+                name: r.Name || r.name || 'Grade 10-A',
+                grade: String(r.Grade || r.grade || '10'),
+                section: r.Section || r.section || 'A',
+                board: r.Board || r.board || 'CBSE',
+                shift: r.Shift || r.shift || 'Morning Shift',
+                capacity: parseInt(r.Capacity || r.capacity, 10) || 40,
+                room: 'Room 101'
+              }));
+            } else if (lowerName.includes('room')) {
+              result.rooms = rows.map((r) => ({
+                name: r.Name || r.name || 'Room 101',
+                building: r.Building || r.building || 'Main Block',
+                floor: r.Floor || r.floor || 'Ground Floor',
+                type: r.Type || r.type || 'Classroom',
+                capacity: parseInt(r.Capacity || r.capacity, 10) || 45,
+                shift: r.Shift || r.shift || 'Shared (Both Shifts)'
+              }));
+            }
+          });
+
+          setParsedData(result);
+          setIsParsed(true);
+
+          const totalRows =
+            result.teachers.length +
+            result.subjects.length +
+            result.classes.length +
+            result.rooms.length;
+
+          if (totalRows > 0) {
+            showToast(
+              `Successfully read Excel workbook (${result.teachers.length} Teachers, ${result.subjects.length} Subjects, ${result.classes.length} Classes, ${result.rooms.length} Rooms)!`,
+              'success'
+            );
+          } else {
+            showToast('No valid sheet records found in Excel file.', 'warning');
+          }
+        } catch (err) {
+          console.error('Error reading Excel file:', err);
+          showToast('Failed to parse Excel file. Please ensure it is a valid .xlsx file.', 'error');
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      // Text/CSV Fallback
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const content = evt.target.result;
+        setRawText(content);
+        parseMasterCSVText(content);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // CSV Text Fallback Parser
+  const parseMasterCSVText = (textToParse) => {
     if (!textToParse.trim()) {
-      showToast('Please paste data or select a CSV/Text file first!', 'warning');
+      showToast('Please paste data or select a file first!', 'warning');
       return;
     }
 
     const lines = textToParse.split(/\r?\n/);
     let currentSection = 'teachers';
-    const result = {
-      teachers: [],
-      subjects: [],
-      classes: [],
-      rooms: []
-    };
-
-    let sectionHeaders = [];
+    const result = { teachers: [], subjects: [], classes: [], rooms: [] };
 
     lines.forEach((line) => {
       const trimmed = line.trim();
       if (!trimmed) return;
 
-      // Section markers check
       const upperLine = trimmed.toUpperCase();
-      if (upperLine.includes('TEACHER')) {
-        currentSection = 'teachers';
-        sectionHeaders = [];
-        return;
-      }
-      if (upperLine.includes('SUBJECT')) {
-        currentSection = 'subjects';
-        sectionHeaders = [];
-        return;
-      }
-      if (upperLine.includes('CLASS')) {
-        currentSection = 'classes';
-        sectionHeaders = [];
-        return;
-      }
-      if (upperLine.includes('ROOM')) {
-        currentSection = 'rooms';
-        sectionHeaders = [];
-        return;
-      }
+      if (upperLine.includes('TEACHER')) { currentSection = 'teachers'; return; }
+      if (upperLine.includes('SUBJECT')) { currentSection = 'subjects'; return; }
+      if (upperLine.includes('CLASS')) { currentSection = 'classes'; return; }
+      if (upperLine.includes('ROOM')) { currentSection = 'rooms'; return; }
 
-      // Check header row
-      if (
-        trimmed.toLowerCase().startsWith('name,') ||
-        trimmed.toLowerCase().startsWith('code,')
-      ) {
-        sectionHeaders = trimmed.split(',').map((h) => h.trim().toLowerCase());
-        return;
-      }
+      if (trimmed.toLowerCase().startsWith('name,') || trimmed.toLowerCase().startsWith('code,')) return;
 
-      // Parse values row
       const cols = trimmed.split(',').map((c) => c.replace(/^"|"$/g, '').trim());
       if (cols.length < 2) return;
 
@@ -162,35 +345,8 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
 
     setParsedData(result);
     setIsParsed(true);
-
-    const totalRows =
-      result.teachers.length +
-      result.subjects.length +
-      result.classes.length +
-      result.rooms.length;
-
-    if (totalRows > 0) {
-      showToast(
-        `Parsed ${totalRows} total master records (${result.teachers.length} Teachers, ${result.subjects.length} Subjects, ${result.classes.length} Classes, ${result.rooms.length} Rooms)!`,
-        'success'
-      );
-    } else {
-      showToast('No valid master data rows found! Please check formatting.', 'warning');
-    }
-  };
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setFileName(file.name);
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      const content = evt.target.result;
-      setRawText(content);
-      parseMasterText(content);
-    };
-    reader.readAsText(file);
+    const totalRows = result.teachers.length + result.subjects.length + result.classes.length + result.rooms.length;
+    showToast(`Parsed ${totalRows} total master records!`, 'success');
   };
 
   const handleImportConfirm = () => {
@@ -216,19 +372,19 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
             </div>
             <div>
               <span className="px-2.5 py-0.5 bg-indigo-100 dark:bg-indigo-950 text-indigo-900 dark:text-amber-300 font-black text-[10px] uppercase rounded-full tracking-wider border border-indigo-300">
-                ⚡ 1-Click Master Importer
+                ⚡ 1-Click Multi-Sheet Excel (.xlsx) Importer
               </span>
               <h2 className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">
-                All-in-One Master Data Excel Importer
+                All-in-One Multi-Sheet Excel Importer
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold">
-                Import Teachers, Subjects, Classes, and Rooms all at once in 1 step!
+                Select 1 Excel file (.xlsx) with 4 sheets (Teachers, Subjects, Classes, Rooms) to import everything in 1 click!
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors"
+            className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl transition-colors cursor-pointer"
           >
             <X className="h-6 w-6" />
           </button>
@@ -242,56 +398,56 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
               <div className="space-y-1 text-center sm:text-left">
                 <h4 className="text-sm font-black text-emerald-950 dark:text-emerald-300 flex items-center justify-center sm:justify-start space-x-2">
                   <FileSpreadsheet className="h-5 w-5 text-emerald-600" />
-                  <span>Download Master All-in-One Template</span>
+                  <span>Download 4-Sheet Master Excel Template (.xlsx)</span>
                 </h4>
                 <p className="text-xs text-emerald-800 dark:text-emerald-400 font-medium">
-                  Download 1 ready CSV template containing Teachers, Subjects, Classes, and Rooms sections.
+                  Download 1 ready Excel (.xlsx) file with pre-formatted sheets for Teachers, Subjects, Classes, and Rooms.
                 </p>
               </div>
               <button
                 type="button"
-                onClick={downloadMasterTemplate}
+                onClick={downloadMasterXLSXTemplate}
                 className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 cursor-pointer shrink-0 border border-emerald-800 hover:scale-105"
               >
                 <Download className="h-4 w-4" />
-                <span>Download Master CSV Template</span>
+                <span>Download Master Excel (.xlsx)</span>
               </button>
             </div>
 
-            {/* Option A: Upload CSV File */}
-            <div className="border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-2xl p-6 text-center bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-50 transition-all">
+            {/* Option A: Upload XLSX File */}
+            <div className="border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-2xl p-8 text-center bg-indigo-50/50 dark:bg-indigo-950/20 hover:bg-indigo-50 transition-all cursor-pointer">
               <input
                 type="file"
-                accept=".csv,.txt"
+                accept=".xlsx,.xls,.csv,.txt"
                 onChange={handleFileUpload}
                 id="master-file-upload"
                 className="hidden"
               />
               <label htmlFor="master-file-upload" className="cursor-pointer block space-y-3">
-                <div className="h-12 w-12 rounded-2xl bg-indigo-600 text-white mx-auto flex items-center justify-center shadow">
-                  <Upload className="h-6 w-6" />
+                <div className="h-14 w-14 rounded-2xl bg-indigo-600 text-white mx-auto flex items-center justify-center shadow-lg">
+                  <Upload className="h-7 w-7" />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-indigo-950 dark:text-indigo-200">
-                    {fileName ? `Selected: ${fileName}` : 'Click to Upload Master CSV / Text File'}
+                  <p className="text-base font-black text-indigo-950 dark:text-indigo-200">
+                    {fileName ? `Selected: ${fileName}` : 'Click to Select 1 Excel Workbook (.xlsx / .xls)'}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                    Supports All-in-One master files containing Teachers, Subjects, Classes & Rooms
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    System reads all 4 sheets (Teachers, Subjects, Classes, Rooms) automatically in 1 single click!
                   </p>
                 </div>
               </label>
             </div>
 
-            {/* Option B: Copy Paste CSV Text */}
+            {/* Option B: Copy Paste Text */}
             <div className="space-y-2">
               <label className="block text-xs font-black text-slate-900 dark:text-slate-200">
                 Or Paste Master CSV Text Data Directly:
               </label>
               <textarea
-                rows={7}
+                rows={5}
                 value={rawText}
                 onChange={(e) => setRawText(e.target.value)}
-                placeholder={`Paste your entire school master roster here (e.g. === TEACHERS === ... === SUBJECTS === ...)`}
+                placeholder={`Paste master text here...`}
                 className="w-full p-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 rounded-2xl text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:border-indigo-600"
               />
             </div>
@@ -299,11 +455,11 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
             {/* Parse Action Button */}
             <button
               type="button"
-              onClick={() => parseMasterText(rawText)}
+              onClick={() => parseMasterCSVText(rawText)}
               className="w-full py-3 bg-indigo-700 hover:bg-indigo-800 text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center space-x-2 border border-indigo-900 cursor-pointer"
             >
               <Sparkles className="h-5 w-5 text-amber-300" />
-              <span>Parse & Preview All Master Data</span>
+              <span>Parse & Preview All Sheets</span>
             </button>
           </div>
         ) : (
@@ -321,7 +477,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 }`}
               >
                 <Users className="h-4 w-4" />
-                <span>Teachers ({parsedData.teachers.length})</span>
+                <span>Teachers Sheet ({parsedData.teachers.length})</span>
               </button>
 
               <button
@@ -334,7 +490,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 }`}
               >
                 <BookOpen className="h-4 w-4" />
-                <span>Subjects ({parsedData.subjects.length})</span>
+                <span>Subjects Sheet ({parsedData.subjects.length})</span>
               </button>
 
               <button
@@ -347,7 +503,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 }`}
               >
                 <School className="h-4 w-4" />
-                <span>Classes ({parsedData.classes.length})</span>
+                <span>Classes Sheet ({parsedData.classes.length})</span>
               </button>
 
               <button
@@ -360,7 +516,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 }`}
               >
                 <DoorClosed className="h-4 w-4" />
-                <span>Rooms ({parsedData.rooms.length})</span>
+                <span>Rooms Sheet ({parsedData.rooms.length})</span>
               </button>
             </div>
 
@@ -426,7 +582,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 onClick={() => setIsParsed(false)}
                 className="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-black text-xs rounded-xl hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors cursor-pointer"
               >
-                ← Back to Upload
+                ← Select Another File
               </button>
 
               <button
@@ -436,7 +592,7 @@ Computer Lab 1,IT Wing,2nd Floor,Computer Lab,40,Shared (Both Shifts)
                 className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center space-x-2 cursor-pointer border border-emerald-800 hover:scale-105"
               >
                 <CheckCircle2 className="h-4 w-4 text-emerald-200" />
-                <span>Confirm & Import All {totalParsedCount} Master Records</span>
+                <span>Confirm & Import All {totalParsedCount} Records in 1 Click</span>
               </button>
             </div>
           </div>
