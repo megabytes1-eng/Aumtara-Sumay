@@ -608,21 +608,33 @@ export default function InstitutionalSetup() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {shifts.map((shift, idx) => (
-                <div
-                  key={shift.id || idx}
-                  className={`p-5 rounded-2xl border-2 space-y-4 shadow-sm ${
-                    idx === 0
-                      ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/40 text-amber-950 dark:text-amber-200'
-                      : 'bg-purple-50 dark:bg-purple-950/20 border-purple-300 dark:border-purple-500/40 text-purple-950 dark:text-purple-200'
-                  }`}
-                >
-                  <div className="flex items-center space-x-2 font-black text-sm border-b border-slate-300 dark:border-slate-800 pb-3">
-                    {idx === 0 ? <Sun className="h-5 w-5 text-amber-600" /> : <Sunset className="h-5 w-5 text-purple-700" />}
-                    <input
-                      type="text"
-                      value={shift.name}
+            <div className={`grid grid-cols-1 ${institution.shiftMode?.includes('Single') ? 'max-w-xl mx-auto' : 'lg:grid-cols-2'} gap-6`}>
+              {shifts
+                .filter((shift, idx) => {
+                  if (institution.shiftMode === 'Single Shift (Morning Only)') {
+                    return shift.id === 'morning' || idx === 0;
+                  }
+                  if (institution.shiftMode === 'Single Shift (Afternoon Only)') {
+                    return shift.id === 'afternoon' || idx === 1;
+                  }
+                  return true;
+                })
+                .map((shift) => {
+                  const idx = shifts.findIndex((s) => s.id === shift.id || s.name === shift.name);
+                  return (
+                    <div
+                      key={shift.id || idx}
+                      className={`p-5 rounded-2xl border-2 space-y-4 shadow-sm ${
+                        idx === 0
+                          ? 'bg-amber-50 dark:bg-amber-950/20 border-amber-300 dark:border-amber-500/40 text-amber-950 dark:text-amber-200'
+                          : 'bg-purple-50 dark:bg-purple-950/20 border-purple-300 dark:border-purple-500/40 text-purple-950 dark:text-purple-200'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2 font-black text-sm border-b border-slate-300 dark:border-slate-800 pb-3">
+                        {idx === 0 ? <Sun className="h-5 w-5 text-amber-600" /> : <Sunset className="h-5 w-5 text-purple-700" />}
+                        <input
+                          type="text"
+                          value={shift.name}
                       onChange={(e) => handleShiftChange(idx, 'name', e.target.value)}
                       className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-sm px-3 py-1 rounded-lg focus:outline-none w-full"
                     />
@@ -702,7 +714,8 @@ export default function InstitutionalSetup() {
                     </div>
                   </div>
                 </div>
-              ))}
+              );
+            })}
             </div>
           </div>
 

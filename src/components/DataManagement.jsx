@@ -127,9 +127,13 @@ export default function DataManagement() {
     (r) => r && (r.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || r.shift === selectedShiftFilter || r.shift === 'Shared (Both Shifts)')
   );
 
-  // Reset selection checkboxes when changing subtabs or search term
+  // Reset selection checkboxes & sync form shift defaults when changing subtabs or selectedShiftFilter
   useEffect(() => {
     setSelectedIds([]);
+    const defaultShift = selectedShiftFilter === 'Morning Shift' ? 'Morning Shift' : 'Afternoon Shift';
+    setClassForm((prev) => ({ ...prev, shift: defaultShift }));
+    setSubjectForm((prev) => ({ ...prev, shift: defaultShift }));
+    setTeacherForm((prev) => ({ ...prev, shift: defaultShift }));
   }, [currentTab, searchTerm, selectedShiftFilter]);
 
   const currentDataset =
