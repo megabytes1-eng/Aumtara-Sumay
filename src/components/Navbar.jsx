@@ -76,13 +76,59 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Center: School Name */}
+        {/* Center: School Name & Active Shift Badge */}
         <div className="flex-1 flex justify-center items-center px-4">
-          <div className="flex items-center space-x-2.5 truncate max-w-xs sm:max-w-md md:max-w-xl">
-            <School className="h-5 w-5 text-indigo-700 dark:text-amber-400 shrink-0" />
-            <span className="text-base sm:text-lg font-black text-indigo-950 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
-              {institution.name}
-            </span>
+          <div className="flex flex-col sm:flex-row items-center sm:space-x-3 gap-1 truncate max-w-xs sm:max-w-md md:max-w-xl">
+            <div className="flex items-center space-x-2 truncate">
+              <School className="h-5 w-5 text-indigo-700 dark:text-amber-400 shrink-0" />
+              <span className="text-sm sm:text-base font-black text-indigo-950 dark:text-amber-300 tracking-wide uppercase font-sans truncate">
+                {institution.name}
+              </span>
+            </div>
+
+            {/* Shift Mode Selector Pill */}
+            <div className="flex items-center space-x-1 bg-slate-200/80 dark:bg-slate-800 p-1 rounded-xl border border-slate-300 dark:border-slate-700 shrink-0">
+              <button
+                type="button"
+                onClick={() => setSelectedShiftFilter('Morning Shift')}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all flex items-center space-x-1 cursor-pointer ${
+                  selectedShiftFilter === 'Morning Shift'
+                    ? 'bg-amber-500 text-amber-950 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+                title="View Morning Shift Data Only"
+              >
+                <Sun className="h-3 w-3" />
+                <span>Morning</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedShiftFilter('Afternoon Shift')}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all flex items-center space-x-1 cursor-pointer ${
+                  selectedShiftFilter === 'Afternoon Shift'
+                    ? 'bg-purple-700 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+                title="View Afternoon Shift Data Only (e.g. R N Naik)"
+              >
+                <Sunset className="h-3 w-3" />
+                <span>Afternoon</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedShiftFilter('All Shifts')}
+                className={`px-2 py-0.5 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                  selectedShiftFilter === 'All Shifts'
+                    ? 'bg-indigo-700 text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                }`}
+                title="View All Shifts Combined"
+              >
+                <span>All</span>
+              </button>
+            </div>
           </div>
         </div>
 

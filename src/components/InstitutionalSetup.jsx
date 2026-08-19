@@ -370,15 +370,29 @@ export default function InstitutionalSetup() {
 
             <div>
               <label className="block text-xs font-black text-slate-900 dark:text-slate-200 mb-1.5">
-                Academic Shift Mode
+                Academic Shift Mode <span className="text-rose-500 font-bold">*</span>
               </label>
               <select
                 value={institution.shiftMode || 'Dual Shift (Morning & Afternoon)'}
-                onChange={(e) => setInstitution({ ...institution, shiftMode: e.target.value })}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setInstitution({ ...institution, shiftMode: val });
+                  if (val === 'Single Shift (Morning Only)') {
+                    setSelectedShiftFilter('Morning Shift');
+                    showToast('Configured School for Single Shift (Morning Shift Only)', 'info');
+                  } else if (val === 'Single Shift (Afternoon Only)') {
+                    setSelectedShiftFilter('Afternoon Shift');
+                    showToast('Configured School for Single Shift (Afternoon Shift Only)', 'info');
+                  } else {
+                    setSelectedShiftFilter('All Shifts');
+                    showToast('Configured School for Dual Shift (Morning & Afternoon)', 'info');
+                  }
+                }}
                 className="w-full px-3.5 py-2 bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white font-black text-xs rounded-xl focus:outline-none focus:border-indigo-600"
               >
                 <option value="Dual Shift (Morning & Afternoon)">Dual Shift (Morning CBSE & Afternoon State Board)</option>
-                <option value="Single Shift">Single Shift Only</option>
+                <option value="Single Shift (Morning Only)">Single Shift (Morning Shift Only)</option>
+                <option value="Single Shift (Afternoon Only)">Single Shift (Afternoon Shift Only - e.g. R N Naik)</option>
               </select>
             </div>
 

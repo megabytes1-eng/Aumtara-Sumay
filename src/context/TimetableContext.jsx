@@ -163,7 +163,7 @@ export function TimetableProvider({ children }) {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [activeSubTab, setActiveSubTab] = useState('');
   const [themeMode, setThemeMode] = useState('light');
-  const [selectedShiftFilter, setSelectedShiftFilter] = useState('Morning Shift'); // Always default to Morning Shift on open/login
+  const [selectedShiftFilter, setSelectedShiftFilter] = useLocalStorage('aumtara_selected_shift_filter', 'All Shifts');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
