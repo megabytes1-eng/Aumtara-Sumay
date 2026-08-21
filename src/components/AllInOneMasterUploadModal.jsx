@@ -185,52 +185,52 @@ export default function AllInOneMasterUploadModal({ isOpen, onClose }) {
 
           const result = { teachers: [], subjects: [], classes: [], rooms: [] };
 
-          workbook.SheetNames.forEach((sheetName) => {
+          workbook.SheetNames.forEach((sheetName, sIdx) => {
             const lowerName = sheetName.toLowerCase().trim();
             const sheet = workbook.Sheets[sheetName];
             const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
-            if (lowerName.includes('teacher')) {
+            if (lowerName.includes('teacher') || lowerName.includes('faculty') || lowerName.includes('staff') || (sIdx === 0 && !result.teachers.length)) {
               result.teachers = rows.map((r) => ({
-                name: r.Name || r.name || 'Faculty Member',
-                email: r.Email || r.email || '',
-                phone: r.Phone || r.phone || '',
-                primarySubject: r.PrimarySubject || r.primarySubject || 'SUB-101',
+                name: r.Name || r.name || r['Teacher Name'] || 'Faculty Member',
+                email: r.Email || r.email || r['Email Address'] || '',
+                phone: r.Phone || r.phone || r['Phone Number'] || '',
+                primarySubject: r.PrimarySubject || r.primarySubject || r['Primary Subject'] || 'SUB-101',
                 secondarySubjects: typeof r.SecondarySubjects === 'string' ? r.SecondarySubjects.split(',').map(s=>s.trim()) : [],
-                preferredShift: r.Shift || r.shift || 'Morning Shift',
-                maxDailyLectures: parseInt(r.MaxDailyLectures || r.maxDailyLectures, 10) || 5,
-                maxWeeklyWorkload: parseInt(r.MaxWeeklyWorkload || r.maxWeeklyWorkload, 10) || 24,
+                preferredShift: r.Shift || r.shift || r['Shift'] || 'Morning Shift',
+                maxDailyLectures: parseInt(r.MaxDailyLectures || r.maxDailyLectures || r['Max Daily'], 10) || 5,
+                maxWeeklyWorkload: parseInt(r.MaxWeeklyWorkload || r.maxWeeklyWorkload || r['Max Weekly'], 10) || 24,
                 assignedRole: 'Faculty'
               }));
-            } else if (lowerName.includes('subject')) {
+            } else if (lowerName.includes('subject') || lowerName.includes('course') || lowerName.includes('sub') || (sIdx === 1 && !result.subjects.length)) {
               result.subjects = rows.map((r) => ({
-                code: r.Code || r.code || `SUB-${Date.now().toString().slice(-3)}`,
-                name: r.Name || r.name || 'General Subject',
+                code: r.Code || r.code || r['Subject Code'] || `SUB-${Date.now().toString().slice(-3)}`,
+                name: r.Name || r.name || r['Subject Name'] || 'General Subject',
                 category: r.Category || r.category || 'Core',
-                weeklyPeriods: parseInt(r.WeeklyPeriods || r.weeklyPeriods, 10) || 5,
-                maxDailyPeriods: parseInt(r.MaxDailyPeriods || r.maxDailyPeriods, 10) || 1,
-                isLab: String(r.IsLab || r.isLab).toLowerCase() === 'true',
-                roomTypeNeeded: r.RoomTypeNeeded || r.roomTypeNeeded || 'Classroom',
+                weeklyPeriods: parseInt(r.WeeklyPeriods || r.weeklyPeriods || r['Weekly Periods'], 10) || 5,
+                maxDailyPeriods: parseInt(r.MaxDailyPeriods || r.maxDailyPeriods || r['Max Daily Periods'], 10) || 1,
+                isLab: String(r.IsLab || r.isLab || r['Is Lab']).toLowerCase() === 'true',
+                roomTypeNeeded: r.RoomTypeNeeded || r.roomTypeNeeded || r['Room Type'] || 'Classroom',
                 color: r.Color || r.color || '#3b82f6',
                 shift: r.Shift || r.shift || 'Morning Shift'
               }));
-            } else if (lowerName.includes('class')) {
+            } else if (lowerName.includes('class') || lowerName.includes('grade') || lowerName.includes('std') || (sIdx === 2 && !result.classes.length)) {
               result.classes = rows.map((r) => ({
-                name: r.Name || r.name || 'Grade 10-A',
+                name: r.Name || r.name || r['Class Name'] || 'Grade 10-A',
                 grade: String(r.Grade || r.grade || '10'),
                 section: r.Section || r.section || 'A',
                 board: r.Board || r.board || 'CBSE',
                 shift: r.Shift || r.shift || 'Morning Shift',
-                capacity: parseInt(r.Capacity || r.capacity, 10) || 40,
+                capacity: parseInt(r.Capacity || r.capacity || r['Student Capacity'], 10) || 40,
                 room: 'Room 101'
               }));
-            } else if (lowerName.includes('room')) {
+            } else if (lowerName.includes('room') || lowerName.includes('lab') || lowerName.includes('hall') || lowerName.includes('infra') || lowerName.includes('facility') || (sIdx === 3 && !result.rooms.length)) {
               result.rooms = rows.map((r) => ({
-                name: r.Name || r.name || 'Room 101',
-                building: r.Building || r.building || 'Main Block',
+                name: r.Name || r.name || r['Room Name'] || r['Room Code'] || 'Room 101',
+                building: r.Building || r.building || r['Building Name'] || 'Main Block',
                 floor: r.Floor || r.floor || 'Ground Floor',
-                type: r.Type || r.type || 'Classroom',
-                capacity: parseInt(r.Capacity || r.capacity, 10) || 45,
+                type: r.Type || r.type || r['Room Type'] || 'Classroom',
+                capacity: parseInt(r.Capacity || r.capacity || r['Seating Capacity'], 10) || 45,
                 shift: r.Shift || r.shift || 'Shared (Both Shifts)'
               }));
             }
