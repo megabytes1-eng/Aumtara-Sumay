@@ -124,7 +124,7 @@ export default function DataManagement() {
   );
 
   const filteredRooms = (rooms || []).filter(
-    (r) => r && (r.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || !r.shift || r.shift === selectedShiftFilter || r.shift === 'Shared (Both Shifts)' || r.shift === 'Shared' || r.shift === 'Both Shifts' || r.shift === 'All Shifts')
+    (r) => r && (r.name || '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Reset selection checkboxes & sync form shift defaults when changing subtabs or selectedShiftFilter
