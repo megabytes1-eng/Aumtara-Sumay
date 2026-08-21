@@ -379,10 +379,10 @@ export default function ReportsExport() {
             <table className="w-full text-left border-collapse text-xs">
               <thead className="bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black border-b-2 border-slate-300 dark:border-slate-700">
                 <tr>
-                  <th className="p-3.5 border-r border-slate-300 dark:border-slate-700">Class & Shift</th>
-                  <th className="p-3.5 border-r border-slate-300 dark:border-slate-700 text-center">Day</th>
+                  <th className="p-2.5 w-32 min-w-[120px] max-w-[130px] border-r border-slate-300 dark:border-slate-700 text-left">Class & Shift</th>
+                  <th className="p-2.5 w-14 min-w-[55px] border-r border-slate-300 dark:border-slate-700 text-center">Day</th>
                   {Array.from({ length: periodCount }).map((_, pIdx) => (
-                    <th key={pIdx} className="p-3.5 text-center border-r border-slate-300/80 dark:border-slate-700/50">
+                    <th key={pIdx} className="p-2.5 min-w-[110px] text-center border-r border-slate-300/80 dark:border-slate-700/50">
                       P{pIdx + 1}
                     </th>
                   ))}
@@ -393,31 +393,31 @@ export default function ReportsExport() {
                   days.map((day, dIdx) => (
                     <tr key={`${cls.id}_${day}`} className="hover:bg-slate-100 dark:hover:bg-slate-800/40">
                       {dIdx === 0 && (
-                        <td rowSpan={days.length} className="p-3.5 font-black text-indigo-950 dark:text-indigo-300 border-r-2 border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 align-top">
-                          <p>{cls.name}</p>
-                          <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${
+                        <td rowSpan={days.length} className="p-2.5 w-32 min-w-[120px] max-w-[130px] font-black text-indigo-950 dark:text-indigo-300 border-r-2 border-slate-300 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 align-top break-words">
+                          <p className="font-black text-xs leading-snug">{cls.name}</p>
+                          <span className={`inline-block mt-1 text-[9px] font-black px-1.5 py-0.5 rounded-md border leading-tight ${
                             cls.shift === 'Afternoon Shift'
                               ? 'bg-purple-100 text-purple-950 border-purple-300 dark:bg-purple-500/20 dark:text-purple-300'
                               : 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-500/20 dark:text-amber-300'
                           }`}>
-                            {cls.shift} ({cls.board})
+                            {cls.shift?.includes('Afternoon') ? 'Afternoon' : 'Morning'} ({cls.board || 'State'})
                           </span>
                         </td>
                       )}
-                      <td className="p-2.5 font-black text-slate-900 dark:text-slate-200 border-r border-slate-300 dark:border-slate-800 text-center bg-slate-50 dark:bg-slate-900/30">
+                      <td className="p-2 w-14 min-w-[55px] font-black text-slate-900 dark:text-slate-200 border-r border-slate-300 dark:border-slate-800 text-center bg-slate-50 dark:bg-slate-900/30">
                         {day}
                       </td>
                       {Array.from({ length: periodCount }).map((_, pIdx) => {
                         const slotKey = `${day}_${pIdx + 1}_${cls.id}`;
                         const slot = timetable[slotKey];
                         return (
-                          <td key={pIdx} className="p-1.5 border-r border-slate-200 dark:border-slate-800 text-center">
+                          <td key={pIdx} className="p-1.5 min-w-[110px] border-r border-slate-200 dark:border-slate-800 text-center">
                             {slot ? (
                               <div
                                 style={{ backgroundColor: `${slot.subjectColor}25`, borderColor: slot.subjectColor }}
-                                className="p-1.5 rounded-xl border-2 text-[10px] leading-tight font-black shadow-sm"
+                                className="p-1.5 rounded-xl border-2 text-[10px] leading-tight font-black shadow-sm space-y-0.5"
                               >
-                                <p className="font-black text-slate-950 dark:text-white">{slot.subjectCode}</p>
+                                <p className="font-black text-slate-950 dark:text-white text-[11px]">{slot.subjectCode}</p>
                                 <p className="text-slate-900 dark:text-slate-200 font-extrabold truncate text-[9px]">{slot.teacherName.split(' ')[1] || slot.teacherName}</p>
                               </div>
                             ) : (
