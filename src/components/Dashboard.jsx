@@ -69,9 +69,7 @@ export default function Dashboard() {
     ? teachers
     : teachers.filter((t) => t.shift === selectedShiftFilter || t.shift === 'Both Shifts');
 
-  const filteredRooms = selectedShiftFilter === 'All Shifts'
-    ? rooms
-    : rooms.filter((r) => r.shift === selectedShiftFilter || r.shift === 'Shared (Both Shifts)');
+  const filteredRooms = rooms;
 
   const navigateTo = (tab, subtab = '') => {
     setActiveTab(tab);
