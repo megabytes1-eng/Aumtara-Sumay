@@ -15,7 +15,8 @@ import {
   AlertTriangle,
   RefreshCw,
   Upload,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Award
 } from 'lucide-react';
 import BulkUploadModal from './BulkUploadModal';
 import AllInOneMasterUploadModal from './AllInOneMasterUploadModal';
