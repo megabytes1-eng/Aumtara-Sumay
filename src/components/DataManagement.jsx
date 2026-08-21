@@ -112,19 +112,19 @@ export default function DataManagement() {
   const currentTab = activeSubTab || 'classes';
 
   const filteredClasses = (classes || []).filter(
-    (c) => c && (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || c.shift === selectedShiftFilter || c.shift === 'Both Shifts')
+    (c) => c && (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || !c.shift || c.shift === selectedShiftFilter || c.shift === 'Both Shifts' || c.shift === 'Shared')
   );
 
   const filteredTeachers = (teachers || []).filter(
-    (t) => t && ((t.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (t.email || '').toLowerCase().includes(searchTerm.toLowerCase())) && (selectedShiftFilter === 'All Shifts' || t.shift === selectedShiftFilter || t.shift === 'Both Shifts')
+    (t) => t && ((t.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (t.email || '').toLowerCase().includes(searchTerm.toLowerCase())) && (selectedShiftFilter === 'All Shifts' || !t.shift || t.shift === selectedShiftFilter || t.shift === 'Both Shifts' || t.shift === 'Shared')
   );
 
   const filteredSubjects = (subjects || []).filter(
-    (s) => s && ((s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (s.code || '').toLowerCase().includes(searchTerm.toLowerCase())) && (selectedShiftFilter === 'All Shifts' || s.shift === selectedShiftFilter || s.shift === 'Both Shifts')
+    (s) => s && ((s.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || (s.code || '').toLowerCase().includes(searchTerm.toLowerCase())) && (selectedShiftFilter === 'All Shifts' || !s.shift || s.shift === selectedShiftFilter || s.shift === 'Both Shifts' || s.shift === 'Shared')
   );
 
   const filteredRooms = (rooms || []).filter(
-    (r) => r && (r.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || r.shift === selectedShiftFilter || r.shift === 'Shared (Both Shifts)')
+    (r) => r && (r.name || '').toLowerCase().includes(searchTerm.toLowerCase()) && (selectedShiftFilter === 'All Shifts' || !r.shift || r.shift === selectedShiftFilter || r.shift === 'Shared (Both Shifts)' || r.shift === 'Shared' || r.shift === 'Both Shifts' || r.shift === 'All Shifts')
   );
 
   // Reset selection checkboxes & sync form shift defaults when changing subtabs or selectedShiftFilter
